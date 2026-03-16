@@ -1,0 +1,41 @@
+{{#if scanResult}}
+## 프로젝트 컨텍스트
+
+- **스택**: {{languageList scanResult.languages}}
+- **프레임워크**: {{frameworkList scanResult.frameworks}}
+{{#if scanResult.packageManager}}- **패키지 매니저**: {{scanResult.packageManager}}{{/if}}
+{{#if scanResult.structure}}
+- **디렉토리 구조**:
+```
+{{structureToText scanResult.structure 2}}
+```
+{{/if}}
+{{/if}}
+
+## 상황
+
+코드 리뷰
+
+## 리뷰 대상 코드
+
+{{{codeBlock reviewCode}}}
+
+## 리뷰 포커스
+
+{{reviewFocus}}
+
+{{#if concernArea}}
+## 우려 영역
+
+{{concernArea}}
+{{/if}}
+
+{{#if codeContext}}
+## 코드 컨텍스트
+
+{{codeContext}}
+{{/if}}
+
+## 원하는 결과
+
+위 코드를 리뷰하고, 개선점과 잠재적 문제를 구체적으로 알려주세요.

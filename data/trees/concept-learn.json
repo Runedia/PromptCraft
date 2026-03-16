@@ -1,0 +1,54 @@
+{
+  "id": "concept-learn",
+  "title": "개념 학습",
+  "startNodeId": "concept",
+  "nodes": {
+    "concept": {
+      "id": "concept",
+      "question": "배우고 싶은 개념이 무엇인가요? (예: Promise, 클로저, RESTful API)",
+      "key": "concept",
+      "inputType": "text",
+      "required": true,
+      "next": "skill-level"
+    },
+    "skill-level": {
+      "id": "skill-level",
+      "question": "현재 이 개념에 대한 이해 수준은 어느 정도인가요?",
+      "key": "skillLevel",
+      "inputType": "select",
+      "options": ["완전 초보", "어느 정도 알지만 헷갈림", "심화 학습"],
+      "required": true,
+      "next": "prefer-analogy"
+    },
+    "prefer-analogy": {
+      "id": "prefer-analogy",
+      "question": "이해를 돕기 위한 비유나 실생활 예시를 선호하시나요?",
+      "key": "preferAnalogy",
+      "inputType": "select",
+      "options": ["예", "아니오"],
+      "required": true,
+      "next": "has-related-code"
+    },
+    "has-related-code": {
+      "id": "has-related-code",
+      "question": "이 개념과 관련된 코드가 있나요?",
+      "key": "hasRelatedCode",
+      "inputType": "select",
+      "options": ["있음", "없음"],
+      "required": true,
+      "next": null,
+      "branchOn": {
+        "있음": "related-code",
+        "없음": null
+      }
+    },
+    "related-code": {
+      "id": "related-code",
+      "question": "관련 코드 스니펫을 입력해주세요.",
+      "key": "relatedCode",
+      "inputType": "multiline",
+      "required": true,
+      "next": null
+    }
+  }
+}

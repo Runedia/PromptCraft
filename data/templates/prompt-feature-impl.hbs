@@ -1,0 +1,47 @@
+{{#if scanResult}}
+## 프로젝트 컨텍스트
+
+- **스택**: {{languageList scanResult.languages}}
+- **프레임워크**: {{frameworkList scanResult.frameworks}}
+{{#if scanResult.packageManager}}- **패키지 매니저**: {{scanResult.packageManager}}{{/if}}
+{{#if scanResult.structure}}
+- **디렉토리 구조**:
+```
+{{structureToText scanResult.structure 2}}
+```
+{{/if}}
+{{/if}}
+
+## 상황
+
+기능 구현
+
+## 기능 설명
+
+{{featureDescription}}
+
+{{#if hasExistingCode}}
+## 기존 코드
+
+{{{codeBlock existingCode}}}
+{{/if}}
+
+{{#if referenceCode}}
+## 참고 코드
+
+{{{codeBlock referenceCode}}}
+{{/if}}
+
+{{#if constraints}}
+## 제약 조건
+
+{{constraints}}
+{{/if}}
+
+## 원하는 결과
+
+{{#if desiredResult}}
+{{desiredResult}}
+{{else}}
+위 기능을 구현하는 방법을 단계적으로 설명하고 코드를 작성해주세요.
+{{/if}}

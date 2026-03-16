@@ -1,0 +1,33 @@
+{{#if scanResult}}
+## 프로젝트 컨텍스트
+
+- **스택**: {{languageList scanResult.languages}}
+- **프레임워크**: {{frameworkList scanResult.frameworks}}
+{{#if scanResult.packageManager}}- **패키지 매니저**: {{scanResult.packageManager}}{{/if}}
+{{/if}}
+
+## 상황
+
+개념 학습
+
+## 학습 개념
+
+{{concept}}
+
+## 숙련도
+
+{{skillLevel}}
+
+{{#if preferAnalogy}}
+> 비유나 실생활 예시를 활용한 설명을 선호합니다.
+{{/if}}
+
+{{#if hasRelatedCode}}
+## 관련 코드
+
+{{{codeBlock relatedCode}}}
+{{/if}}
+
+## 원하는 결과
+
+{{concept}}에 대해 현재 숙련도({{skillLevel}})에 맞게 설명해주세요.{{#if preferAnalogy}} 비유나 실생활 예시를 포함해주세요.{{/if}}

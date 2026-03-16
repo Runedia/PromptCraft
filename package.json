@@ -1,0 +1,46 @@
+{
+  "name": "promptcraft",
+  "version": "0.1.0",
+  "description": "로컬 설치형 코딩 프롬프트 빌더",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "bin": {
+    "promptcraft": "./bin/promptcraft.js"
+  },
+  "scripts": {
+    "start": "node bin/promptcraft.js",
+    "dev": "nodemon bin/promptcraft.js",
+    "serve": "node bin/promptcraft.js serve",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "keywords": [
+    "prompt",
+    "ai",
+    "cli",
+    "coding-assistant"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "chalk": "^5.6.2",
+    "clipboardy": "^5.3.1",
+    "commander": "^14.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "glob": "^13.0.6",
+    "handlebars": "^4.7.8",
+    "inquirer": "^13.3.0",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.14"
+  }
+}

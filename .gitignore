@@ -1,0 +1,48 @@
+# 의존성
+node_modules/
+web/node_modules/
+
+# 빌드 산출물
+web/dist/
+web/build/
+
+# 데이터베이스
+*.db
+*.db-shm
+*.db-wal
+
+# 환경 변수
+.env
+.env.local
+.env.*.local
+
+# 로그
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# 에디터
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AI
+.claude
+CLAUDE.md
+.omc
+tasks
+
+# 테스트 커버리지
+coverage/
+
+# 임시 파일
+tmp/
+temp/

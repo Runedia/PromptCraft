@@ -1,0 +1,39 @@
+{{#if scanResult}}
+## 프로젝트 컨텍스트
+
+- **스택**: {{languageList scanResult.languages}}
+- **프레임워크**: {{frameworkList scanResult.frameworks}}
+{{#if scanResult.packageManager}}- **패키지 매니저**: {{scanResult.packageManager}}{{/if}}
+{{#if scanResult.structure}}
+- **디렉토리 구조**:
+```
+{{structureToText scanResult.structure 2}}
+```
+{{/if}}
+{{/if}}
+
+## 상황
+
+에러 해결{{#if language}} — {{language}}{{/if}}
+
+## 에러 메시지
+
+{{{codeBlock errorMessage}}}
+
+{{#if codeSnippet}}
+## 관련 코드
+
+{{{codeBlock codeSnippet language}}}
+{{/if}}
+
+## 시도한 방법
+
+{{triedMethods}}
+
+## 기대 동작
+
+{{expectedBehavior}}
+
+## 원하는 결과
+
+이 에러의 원인과 해결 방법을 단계적으로 설명해주세요.

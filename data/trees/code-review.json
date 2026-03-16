@@ -1,0 +1,40 @@
+{
+  "id": "code-review",
+  "title": "코드 리뷰",
+  "startNodeId": "review-code",
+  "nodes": {
+    "review-code": {
+      "id": "review-code",
+      "question": "리뷰받고 싶은 코드를 입력해주세요.",
+      "key": "reviewCode",
+      "inputType": "multiline",
+      "required": true,
+      "next": "review-focus"
+    },
+    "review-focus": {
+      "id": "review-focus",
+      "question": "리뷰 포커스를 선택해주세요.",
+      "key": "reviewFocus",
+      "inputType": "select",
+      "options": ["성능", "보안", "가독성", "전체"],
+      "required": true,
+      "next": "concern-area"
+    },
+    "concern-area": {
+      "id": "concern-area",
+      "question": "특별히 신경 쓰이는 부분이 있나요? (선택)",
+      "key": "concernArea",
+      "inputType": "text",
+      "required": false,
+      "next": "code-context"
+    },
+    "code-context": {
+      "id": "code-context",
+      "question": "코드의 맥락이나 배경을 설명해주세요. (선택, 예: 어떤 서비스의 일부인지)",
+      "key": "codeContext",
+      "inputType": "text",
+      "required": false,
+      "next": null
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "error-solving",
+  "title": "에러 해결",
+  "startNodeId": "lang-version",
+  "nodes": {
+    "lang-version": {
+      "id": "lang-version",
+      "question": "사용 중인 언어와 버전을 알려주세요. (예: Node.js 20, Python 3.11)",
+      "key": "language",
+      "inputType": "text",
+      "required": true,
+      "next": "error-message"
+    },
+    "error-message": {
+      "id": "error-message",
+      "question": "발생한 에러 메시지를 입력해주세요.",
+      "key": "errorMessage",
+      "inputType": "multiline",
+      "required": true,
+      "next": "tried-methods"
+    },
+    "tried-methods": {
+      "id": "tried-methods",
+      "question": "이미 시도해본 방법들을 설명해주세요.",
+      "key": "triedMethods",
+      "inputType": "multiline",
+      "required": true,
+      "next": "expected-behavior"
+    },
+    "expected-behavior": {
+      "id": "expected-behavior",
+      "question": "원래 기대하던 동작은 무엇인가요?",
+      "key": "expectedBehavior",
+      "inputType": "text",
+      "required": true,
+      "next": "code-snippet"
+    },
+    "code-snippet": {
+      "id": "code-snippet",
+      "question": "관련 코드 스니펫이 있다면 입력해주세요. (선택)",
+      "key": "codeSnippet",
+      "inputType": "multiline",
+      "required": false,
+      "next": null
+    }
+  }
+}

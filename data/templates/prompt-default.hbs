@@ -1,0 +1,61 @@
+{{#if scanResult}}
+## 프로젝트 컨텍스트
+
+- **스택**: {{languageList scanResult.languages}}
+- **프레임워크**: {{frameworkList scanResult.frameworks}}
+{{#if scanResult.packageManager}}- **패키지 매니저**: {{scanResult.packageManager}}{{/if}}
+{{#if scanResult.structure}}
+- **디렉토리 구조**:
+```
+{{structureToText scanResult.structure 2}}
+```
+{{/if}}
+{{/if}}
+
+## 상황
+
+{{situationLabel}}
+
+## 문제 설명
+
+{{#if problemDescription}}
+{{problemDescription}}
+{{/if}}
+
+{{#if errorMessage}}
+### 에러 메시지
+
+{{{codeBlock errorMessage}}}
+{{/if}}
+
+{{#if codeSnippet}}
+### 관련 코드
+
+{{{codeBlock codeSnippet language}}}
+{{/if}}
+
+{{#if triedMethods}}
+### 시도한 방법
+
+{{triedMethods}}
+{{/if}}
+
+{{#if constraints}}
+### 제약 조건
+
+{{constraints}}
+{{/if}}
+
+{{#if reviewFocus}}
+### 리뷰 포커스
+
+{{reviewFocus}}
+{{/if}}
+
+## 원하는 결과
+
+{{#if desiredResult}}
+{{desiredResult}}
+{{else}}
+위 상황을 해결하기 위한 구체적인 방법을 알려주세요.
+{{/if}}
