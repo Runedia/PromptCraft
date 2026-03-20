@@ -1,8 +1,8 @@
 'use strict';
 
-// chalk, inquirer는 ESM-only이므로 동적 import 사용
+// chalk, @inquirer/prompts는 ESM-only이므로 동적 import 사용
 let _chalk = null;
-let _inquirer = null;
+let _inquirerPrompts = null;
 
 async function getChalk() {
   if (!_chalk) {
@@ -12,12 +12,11 @@ async function getChalk() {
   return _chalk;
 }
 
-async function getInquirer() {
-  if (!_inquirer) {
-    const mod = await import('inquirer');
-    _inquirer = mod.default;
+async function getInquirerPrompts() {
+  if (!_inquirerPrompts) {
+    _inquirerPrompts = await import('@inquirer/prompts');
   }
-  return _inquirer;
+  return _inquirerPrompts;
 }
 
 // --no-color 옵션 적용
@@ -41,7 +40,7 @@ async function error(msg) {
 
 async function info(msg) {
   const chalk = await getChalk();
-  console.log(chalk.blue(msg));
+  console.log(chalk.cyan(msg));
 }
 
 async function warn(msg) {
@@ -60,37 +59,28 @@ async function section(title) {
 // ─── Inquirer 입력 헬퍼 ──────────────────────────────────────────
 
 async function askText(message, options = {}) {
-  const inquirer = await getInquirer();
-  const { answer } = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'answer',
-      message,
-      default: options.default,
-      validate: options.validate,
-    },
-  ]);
-  return answer;
+  const { input } = await getInquirerPrompts();
+  return await input({
+    message,
+    default: options.default,
+    validate: options.validate,
+  });
 }
 
 async function askSelect(message, choices) {
-  const inquirer = await getInquirer();
-  const { answer } = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'answer',
-      message,
-      choices,
-    },
-  ]);
-  return answer;
+  const { select } = await getInquirerPrompts();
+  // 문자열 배열을 {name, value} 형식으로 변환
+  const formattedChoices = choices.map(choice =>
+    typeof choice === 'string' ? { name: choice, value: choice } : choice
+  );
+  return await select({ message, choices: formattedChoices });
 }
 
 /**
  * 여러 줄 텍스트 입력 — 빈 줄(Enter 두 번)로 입력 종료
  */
 async function askMultiline(message) {
-  const inquirer = await getInquirer();
+  const { input } = await getInquirerPrompts();
   const chalk = await getChalk();
   console.log(chalk.dim(`${message} (빈 줄 입력 시 종료)`));
 
@@ -98,9 +88,7 @@ async function askMultiline(message) {
   let done = false;
 
   while (!done) {
-    const { line } = await inquirer.prompt([
-      { type: 'input', name: 'line', message: '>' },
-    ]);
+    const line = await input({ message: '>' });
     if (line === '') {
       done = true;
     } else {
@@ -112,16 +100,8 @@ async function askMultiline(message) {
 }
 
 async function askConfirm(message) {
-  const inquirer = await getInquirer();
-  const { answer } = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'answer',
-      message,
-      default: true,
-    },
-  ]);
-  return answer;
+  const { confirm } = await getInquirerPrompts();
+  return await confirm({ message, default: true });
 }
 
 // ─── 스피너 (chalk + setInterval) ────────────────────────────────
@@ -153,7 +133,7 @@ function stopSpinner(finalMsg) {
 
 module.exports = {
   getChalk,
-  getInquirer,
+  getInquirerPrompts,
   applyNoColor,
   success,
   error,

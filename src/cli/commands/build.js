@@ -29,6 +29,7 @@ const {
 const {
   QNA_TREE_IDS,
   QNA_TREE_LABELS,
+  QNA_TREE_DESCRIPTIONS,
   LAST_SCAN_PATH,
   DATA_DIR,
 } = require('../../shared/constants');
@@ -130,6 +131,7 @@ async function resolveTreeId(options) {
   const choices = Object.entries(QNA_TREE_LABELS).map(([value, name]) => ({
     name,
     value,
+    description: QNA_TREE_DESCRIPTIONS[value],
   }));
   return await askSelect('어떤 상황에 대한 프롬프트를 만들어 드릴까요?', choices);
 }

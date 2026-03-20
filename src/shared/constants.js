@@ -24,9 +24,19 @@ const QNA_TREE_LABELS = {
   'concept-learn': '개념 학습',
 };
 
+const QNA_TREE_DESCRIPTIONS = {
+  'error-solving': '에러 메시지/스택 트레이스 기반 해결 프롬프트',
+  'feature-impl':  '새로운 기능 구현을 위한 프롬프트',
+  'code-review':   '작성한 코드에 대한 리뷰 요청 프롬프트',
+  'concept-learn': '프로그래밍 개념/기술 학습 프롬프트',
+};
+
+// CONTEXT_FORMATS: PRD 2.0에서 비활성화 (CLI context 명령 제거)
+// src/core/context/ 코드가 내부적으로 참조하므로 export는 유지 (재활용 가능성 보존)
 const CONTEXT_FORMATS = {
   claude:       'CLAUDE.md',
   gemini:       'GEMINI.md',
+  cursorrules:  '.cursorrules',
 };
 
 const API_PORT = parseInt(process.env.PORT || '3000', 10);
@@ -39,6 +49,7 @@ module.exports = {
   LAST_SCAN_PATH,
   QNA_TREE_IDS,
   QNA_TREE_LABELS,
-  CONTEXT_FORMATS,
+  QNA_TREE_DESCRIPTIONS,
+  CONTEXT_FORMATS, // 비활성화 상태이나 내부 참조용으로 보존
   API_PORT,
 };

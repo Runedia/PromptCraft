@@ -15,8 +15,10 @@ async function run() {
   // 명령어 등록
   program.addCommand(require('./commands/scan'));
   program.addCommand(require('./commands/build'));
-  program.addCommand(require('./commands/context'));
+  // context 명령은 PRD 2.0에서 비활성화 (코드는 src/core/context/에 보존)
+  // program.addCommand(require('./commands/context'));
   program.addCommand(require('./commands/history'));
+  program.addCommand(require('./commands/config'));
 
   // serve 명령 (Phase 14 이후 구현)
   program

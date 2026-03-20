@@ -221,8 +221,8 @@ PromptCraft 출력
 |---|---|---|
 | CLI 인터페이스 | Node.js (Commander.js) | 백엔드 |
 | 로컬 API 서버 | Node.js (Express) | 백엔드 |
-| 파일 스캔 / 파싱 | Python | 분석 |
-| 품질 스코어링 | Python (규칙 기반 + 선택적 ML) | 분석 |
+| 파일 스캔 / 파싱 | Node.js | 분석 |
+| 품질 스코어링 | Node.js (규칙 기반 + 선택적 ML) | 분석 |
 | 웹 UI | React | 프론트엔드 |
 | 로컬 데이터 저장 | SQLite | 백엔드 |
 | 분기 질문 흐름 | Node.js + JSON 트리 정의 | 백엔드 |
@@ -235,7 +235,7 @@ PromptCraft 출력
 | 인원 | 담당 영역 |
 |---|---|
 | 1인 | 분기 질의응답 엔진 + 프롬프트 조립 로직 (Node.js) |
-| 1인 | 프로젝트 파일 스캔 + 품질 스코어링 (Python) |
+| 1인 | 프로젝트 파일 스캔 + 품질 스코어링 (Node.js) |
 | 1인 | API 서버 + DB 설계 + CLI (Node.js / SQLite) |
 | 1인 | 웹 UI / UX (React) |
 

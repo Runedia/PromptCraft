@@ -1,0 +1,44 @@
+{
+  "npm": {
+    "manifest": "package.json",
+    "depsFields": ["dependencies", "devDependencies"],
+    "frameworks": {
+      "express": "Express",
+      "react": "React",
+      "react-native": "React Native",
+      "vue": "Vue",
+      "next": "Next.js",
+      "nuxt": "Nuxt.js",
+      "@nestjs/core": "NestJS",
+      "@angular/core": "Angular",
+      "svelte": "Svelte",
+      "vite": "Vite",
+      "webpack": "Webpack",
+      "jest": "Jest",
+      "vitest": "Vitest",
+      "mocha": "Mocha",
+      "electron": "Electron",
+      "tailwindcss": "Tailwind CSS",
+      "prisma": "Prisma",
+      "drizzle-orm": "Drizzle",
+      "typeorm": "TypeORM"
+    }
+  },
+  "pip": {
+    "manifests": ["requirements.txt", "pyproject.toml"],
+    "frameworks": {
+      "fastapi": "FastAPI",
+      "django": "Django",
+      "flask": "Flask",
+      "pytorch": "PyTorch",
+      "torch": "PyTorch",
+      "tensorflow": "TensorFlow",
+      "scikit-learn": "scikit-learn",
+      "pandas": "pandas",
+      "numpy": "NumPy",
+      "streamlit": "Streamlit",
+      "celery": "Celery",
+      "sqlalchemy": "SQLAlchemy"
+    }
+  }
+}

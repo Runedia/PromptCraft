@@ -2,24 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-
-const KNOWN_NPM_FRAMEWORKS = {
-  'express': 'Express',
-  'react': 'React',
-  'vue': 'Vue',
-  'next': 'Next.js',
-  'nuxt': 'Nuxt.js',
-  '@nestjs/core': 'NestJS',
-  'vite': 'Vite',
-  'jest': 'Jest',
-  'vitest': 'Vitest',
-};
-
-const KNOWN_PYTHON_FRAMEWORKS = {
-  'fastapi': 'FastAPI',
-  'django': 'Django',
-  'flask': 'Flask',
-};
+const { getFrameworkRules } = require('./detection-loader');
 
 /**
  * `^`, `~`, `>=`, `<=`, `>`, `<`, `=`, 공백 등 버전 접두사 제거
@@ -34,40 +17,64 @@ function cleanVersion(v) {
  * @returns {{ name: string, version: string|null, source: string }[]}
  */
 function detectFrameworks(targetPath) {
+  const rules = getFrameworkRules();
   const results = [];
 
-  // package.json
-  const pkgPath = path.join(targetPath, 'package.json');
-  if (fs.existsSync(pkgPath)) {
-    try {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-      const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
-      for (const [pkgName, displayName] of Object.entries(KNOWN_NPM_FRAMEWORKS)) {
-        if (allDeps[pkgName] !== undefined) {
-          results.push({ name: displayName, version: cleanVersion(allDeps[pkgName]), source: 'package.json' });
+  // npm 감지 (package.json)
+  if (rules.npm) {
+    const pkgPath = path.join(targetPath, rules.npm.manifest);
+    if (fs.existsSync(pkgPath)) {
+      try {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+        const allDeps = {};
+        for (const field of rules.npm.depsFields) {
+          Object.assign(allDeps, pkg[field] || {});
         }
+        for (const [pkgName, displayName] of Object.entries(rules.npm.frameworks)) {
+          if (allDeps[pkgName] !== undefined) {
+            results.push({ name: displayName, version: cleanVersion(allDeps[pkgName]), source: rules.npm.manifest });
+          }
+        }
+      } catch {
+        // 파싱 실패 무시
       }
-    } catch {
-      // 파싱 실패 무시
     }
   }
 
-  // requirements.txt
-  const reqPath = path.join(targetPath, 'requirements.txt');
-  if (fs.existsSync(reqPath)) {
-    const lines = fs.readFileSync(reqPath, 'utf8').split('\n');
-    for (const line of lines) {
-      const trimmed = line.trim().toLowerCase();
-      if (!trimmed || trimmed.startsWith('#')) continue;
-      const [pkgRaw] = trimmed.split(/[>=<!]/);
-      const pkg = pkgRaw.trim();
-      if (KNOWN_PYTHON_FRAMEWORKS[pkg]) {
-        const versionMatch = line.match(/[>=]=?\s*([\d.]+)/);
-        results.push({
-          name: KNOWN_PYTHON_FRAMEWORKS[pkg],
-          version: versionMatch ? versionMatch[1] : null,
-          source: 'requirements.txt',
-        });
+  // pip 감지 (requirements.txt + pyproject.toml)
+  if (rules.pip) {
+    for (const manifest of rules.pip.manifests) {
+      const manifestPath = path.join(targetPath, manifest);
+      if (!fs.existsSync(manifestPath)) continue;
+
+      if (manifest === 'requirements.txt') {
+        const lines = fs.readFileSync(manifestPath, 'utf8').split('\n');
+        for (const line of lines) {
+          const trimmed = line.trim().toLowerCase();
+          if (!trimmed || trimmed.startsWith('#')) continue;
+          const [pkgRaw] = trimmed.split(/[>=<!]/);
+          const pkg = pkgRaw.trim();
+          if (rules.pip.frameworks[pkg]) {
+            const versionMatch = line.match(/[>=]=?\s*([\d.]+)/);
+            results.push({
+              name: rules.pip.frameworks[pkg],
+              version: versionMatch ? versionMatch[1] : null,
+              source: manifest,
+            });
+          }
+        }
+      } else if (manifest === 'pyproject.toml') {
+        try {
+          const content = fs.readFileSync(manifestPath, 'utf8');
+          for (const [pkgName, displayName] of Object.entries(rules.pip.frameworks)) {
+            const regex = new RegExp(`["']${pkgName}[>=<\\[\\s"']`, 'i');
+            if (regex.test(content)) {
+              results.push({ name: displayName, version: null, source: manifest });
+            }
+          }
+        } catch {
+          // 파싱 실패 무시
+        }
       }
     }
   }

@@ -6,6 +6,8 @@ const Handlebars = require('handlebars');
 const { registerHelpers } = require('../prompt/helpers');
 const { ContextError } = require('../../shared/errors');
 const { CONTEXT_FORMATS } = require('../../shared/constants');
+const { buildCanonicalContext } = require('./canonical-model');
+const { getFormatter } = require('./formatter-registry');
 
 const TEMPLATES_DIR = path.join(__dirname, '../../../data/templates');
 
@@ -19,34 +21,20 @@ function ensureHelpers() {
   }
 }
 
-function loadContextTemplate(format) {
-  if (templateCache.has(format)) {
-    return templateCache.get(format);
+function loadContextTemplate(templateFile) {
+  if (templateCache.has(templateFile)) {
+    return templateCache.get(templateFile);
   }
 
-  const templatePath = path.join(TEMPLATES_DIR, `${format}.hbs`);
+  const templatePath = path.join(TEMPLATES_DIR, templateFile);
   if (!fs.existsSync(templatePath)) {
-    throw new ContextError(`컨텍스트 템플릿을 찾을 수 없습니다: ${format}.hbs`);
+    throw new ContextError(`컨텍스트 템플릿을 찾을 수 없습니다: ${templateFile}`);
   }
 
   const source = fs.readFileSync(templatePath, 'utf8');
   const compiled = Handlebars.compile(source);
-  templateCache.set(format, compiled);
+  templateCache.set(templateFile, compiled);
   return compiled;
-}
-
-function buildTemplateContext(scanResult, userConfig) {
-  const cfg = userConfig || {};
-  return {
-    projectName: cfg.projectName || (scanResult && scanResult.path ? path.basename(scanResult.path) : 'Project'),
-    languages: (scanResult && scanResult.languages) || [],
-    frameworks: (scanResult && scanResult.frameworks) || [],
-    packageManager: (scanResult && scanResult.packageManager) || '',
-    structure: (scanResult && scanResult.structure) || null,
-    codingConventions: cfg.codingConventions || '',
-    constraints: cfg.constraints || '',
-    currentTask: cfg.currentTask || '',
-  };
 }
 
 function diffLines(oldContent, newContent) {
@@ -74,9 +62,11 @@ function generate(format, scanResult, userConfig) {
   ensureHelpers();
 
   try {
-    const compiled = loadContextTemplate(format);
-    const context = buildTemplateContext(scanResult, userConfig);
-    return compiled(context);
+    const formatter = getFormatter(format);
+    const canonical = buildCanonicalContext(scanResult, userConfig);
+    const templateContext = formatter.toTemplateContext(canonical);
+    const compiled = loadContextTemplate(formatter.templateFile);
+    return compiled(templateContext);
   } catch (err) {
     if (err instanceof ContextError) throw err;
     throw new ContextError(`컨텍스트 생성 실패 (${format}): ${err.message}`);
@@ -122,4 +112,25 @@ function generateAll(outputPath, scanResult, userConfig) {
   return results;
 }
 
-module.exports = { generate, preview, write, generateAll };
+/**
+ * 컨텍스트를 생성하고 품질 검증 결과를 함께 반환한다.
+ * @returns {{ content: string, validation: object, secrets: object }}
+ */
+function generateWithValidation(format, scanResult, userConfig) {
+  const content = generate(format, scanResult, userConfig);
+  const { validateContext } = require('./validator');
+  const { detectSecrets } = require('./secret-filter');
+
+  const validation = validateContext(content, format);
+  const secrets = detectSecrets(content);
+
+  if (secrets.found) {
+    validation.warnings.push(
+      `비밀 정보가 감지되었습니다: ${secrets.matches.map(m => m.name).join(', ')}`
+    );
+  }
+
+  return { content, validation, secrets };
+}
+
+module.exports = { generate, preview, write, generateAll, generateWithValidation };

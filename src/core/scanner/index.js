@@ -6,6 +6,7 @@ const { globSync } = require('glob');
 
 const { resolvePath, nowISO } = require('../../shared/utils');
 const { ScanError } = require('../../shared/errors');
+const { loadIgnoreRules, toGlobIgnorePatterns, shouldIgnore } = require('./gitignore');
 const { detectLanguages } = require('./language');
 const { detectFrameworks } = require('./framework');
 const { buildTree } = require('./structure');
@@ -57,10 +58,13 @@ async function scan(inputPath, options = {}) {
     throw new ScanError(`디렉토리가 아닙니다: ${absolutePath}`);
   }
 
-  const languages = detectLanguages(absolutePath);
+  // gitignore 규칙 로딩
+  const ignoreRules = loadIgnoreRules(absolutePath);
+
+  const languages = detectLanguages(absolutePath, ignoreRules);
   const frameworks = detectFrameworks(absolutePath);
   const maxDepth = resolveMaxDepth(languages, options.depth);
-  const structure = buildTree(absolutePath, maxDepth);
+  const structure = buildTree(absolutePath, maxDepth, ignoreRules);
 
   // 패키지 매니저 감지
   let packageManager = null;
@@ -76,11 +80,13 @@ async function scan(inputPath, options = {}) {
   const hasEnv = fs.existsSync(path.join(absolutePath, '.env'));
 
   // 설정 파일 목록 (basename만)
-  const configFiles = globSync(CONFIG_PATTERNS, {
+  let configFilesList = globSync(CONFIG_PATTERNS, {
     cwd: absolutePath,
     nodir: true,
-    ignore: ['**/node_modules/**'],
-  }).map((f) => path.basename(f));
+    ignore: toGlobIgnorePatterns(ignoreRules),
+  });
+  configFilesList = configFilesList.filter(f => !shouldIgnore(ignoreRules, f));
+  const configFiles = configFilesList.map((f) => path.basename(f));
 
   return {
     path: absolutePath,
@@ -90,6 +96,7 @@ async function scan(inputPath, options = {}) {
     packageManager,
     hasEnv,
     configFiles,
+    ignoreSource: ignoreRules.source,
     scannedAt: nowISO(),
   };
 }

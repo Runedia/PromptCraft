@@ -1,0 +1,26 @@
+You are an expert developer working on {{projectName}}.
+
+## Tech Stack
+{{#if languages}}- Languages: {{languageList languages}}{{/if}}
+{{#if frameworks}}- Frameworks: {{frameworkList frameworks}}{{/if}}
+{{#if packageManager}}- Package Manager: {{packageManager}}{{/if}}
+
+## Project Structure
+```
+{{structureToText structure 3}}
+```
+{{#if codingConventions}}
+
+## Code Style
+{{codingConventions}}
+{{/if}}
+{{#if constraints}}
+
+## Rules
+{{constraints}}
+{{/if}}
+{{#if currentTask}}
+
+## Current Focus
+{{currentTask}}
+{{/if}}

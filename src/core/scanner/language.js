@@ -2,6 +2,7 @@
 
 const { globSync } = require('glob');
 const path = require('path');
+const { toGlobIgnorePatterns, shouldIgnore } = require('./gitignore');
 
 const EXTENSION_MAP = {
   '.js': 'JavaScript',
@@ -12,7 +13,7 @@ const EXTENSION_MAP = {
   '.rs': 'Rust',
   '.cpp': 'C++',
   '.cc': 'C++',
-  '.c': 'C++',
+  '.c': 'C',
   '.cs': 'C#',
   '.rb': 'Ruby',
   '.php': 'PHP',
@@ -23,25 +24,26 @@ const EXTENSION_MAP = {
 /**
  * 디렉토리에서 언어별 파일 수를 집계해 상위 5개를 반환한다.
  * @param {string} targetPath 절대 경로
+ * @param {object} [ignoreRules] loadIgnoreRules() 반환값. 미제공 시 기본 제외 목록 사용.
  * @returns {{ name: string, extension: string, count: number, percentage: number }[]}
  */
-function detectLanguages(targetPath) {
-  const files = globSync('**/*.*', {
+function detectLanguages(targetPath, ignoreRules) {
+  const globIgnore = ignoreRules
+    ? toGlobIgnorePatterns(ignoreRules)
+    : [
+        '**/node_modules/**', '**/.git/**', '**/dist/**', '**/build/**',
+        '**/.cache/**', '**/.gradle/**', '**/.idea/**', '**/.vscode/**', '**/.claude/**',
+      ];
+
+  let files = globSync('**/*.*', {
     cwd: targetPath,
     nodir: true,
-    ignore: [
-      '**/node_modules/**', //
-      '**/.git/**',
-      '**/dist/**',
-      '**/build/**',
-      '**/.cache/**',
-      '**/.gradle/**',
-      '**/.idea/**',
-      '**/.vscode/**',
-      '**/.claude/**',
-    ]
-    ,
+    ignore: globIgnore,
   });
+
+  if (ignoreRules) {
+    files = files.filter(f => !shouldIgnore(ignoreRules, f));
+  }
 
   const counts = {};
   for (const file of files) {

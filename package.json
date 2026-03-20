@@ -28,6 +28,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@inquirer/prompts": "^8.3.2",
     "better-sqlite3": "^12.6.2",
     "chalk": "^5.6.2",
     "clipboardy": "^5.3.1",
@@ -36,6 +37,7 @@
     "express": "^5.2.1",
     "glob": "^13.0.6",
     "handlebars": "^4.7.8",
+    "ignore": "^7.0.5",
     "inquirer": "^13.3.0",
     "uuid": "^13.0.0"
   },
