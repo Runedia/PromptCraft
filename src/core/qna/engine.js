@@ -30,7 +30,7 @@ function createSession(treeId) {
   const session = {
     sessionId,
     treeId,
-    currentNodeId: tree.startNodeId,
+    currentNodeId: tree.startNodeId || tree.startNode,
     answers: {},
     completed: false,
   };
@@ -62,7 +62,7 @@ function getCurrentQuestion(sessionId) {
   return {
     nodeId: node.id,
     question: node.question,
-    key: node.key,
+    key: node.answerKey || node.key,
     inputType: node.inputType,
     required: node.required,
     options: node.options || null,
@@ -88,11 +88,13 @@ function submitAnswer(sessionId, value) {
     return { success: false, error: result.error };
   }
 
-  session.answers[node.key] = value;
+  const answerKey = node.answerKey || node.key;
+  session.answers[answerKey] = value;
 
   let nextNodeId = null;
-  if (node.branchOn && node.branchOn[value] !== undefined) {
-    nextNodeId = node.branchOn[value];
+  const branches = node.branches || node.branchOn;
+  if (branches && branches[value] !== undefined) {
+    nextNodeId = branches[value];
   } else {
     nextNodeId = node.next;
   }

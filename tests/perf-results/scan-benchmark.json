@@ -1,0 +1,234 @@
+[
+  {
+    "executedAt": "2026-03-23T06:23:23.705Z",
+    "config": {
+      "depth": 100,
+      "fileCount": 1000,
+      "iterations": 3,
+      "seed": 20260323,
+      "extensions": [
+        "js",
+        "py",
+        "md",
+        "java"
+      ]
+    },
+    "summary": {
+      "count": 3,
+      "minMs": 2398,
+      "maxMs": 2663,
+      "avgMs": 2529.33,
+      "p95Ms": 2663
+    },
+    "samplesMs": [
+      2663,
+      2527,
+      2398
+    ],
+    "phaseSamples": [
+      {
+        "languagesMs": 2576.55,
+        "frameworksMs": 2.61,
+        "structureMs": 69.71,
+        "totalMs": 2661.98
+      },
+      {
+        "languagesMs": 2459.27,
+        "frameworksMs": 1.41,
+        "structureMs": 60.67,
+        "totalMs": 2527.03
+      },
+      {
+        "languagesMs": 2342.87,
+        "frameworksMs": 0.58,
+        "structureMs": 49.99,
+        "totalMs": 2397.33
+      }
+    ]
+  },
+  {
+    "executedAt": "2026-03-27T12:37:44.529Z",
+    "config": {
+      "depth": 100,
+      "fileCount": 1000,
+      "iterations": 5,
+      "seed": 20260323,
+      "extensions": [
+        "js",
+        "py",
+        "md",
+        "java"
+      ]
+    },
+    "summary": {
+      "count": 5,
+      "minMs": 359,
+      "maxMs": 378,
+      "avgMs": 366.4,
+      "p95Ms": 378
+    },
+    "samplesMs": [
+      378,
+      369,
+      366,
+      359,
+      360
+    ],
+    "phaseSamples": [
+      {
+        "languagesMs": 370.52,
+        "frameworksMs": 0.45,
+        "structureMs": 4.78,
+        "totalMs": 378.46
+      },
+      {
+        "languagesMs": 361.47,
+        "frameworksMs": 0.11,
+        "structureMs": 4.81,
+        "totalMs": 368.18
+      },
+      {
+        "languagesMs": 358.59,
+        "frameworksMs": 0.17,
+        "structureMs": 6.7,
+        "totalMs": 366.54
+      },
+      {
+        "languagesMs": 352.51,
+        "frameworksMs": 0.09,
+        "structureMs": 5.34,
+        "totalMs": 359
+      },
+      {
+        "languagesMs": 354.2,
+        "frameworksMs": 0.13,
+        "structureMs": 5.02,
+        "totalMs": 360.21
+      }
+    ]
+  },
+  {
+    "executedAt": "2026-03-27T12:38:12.606Z",
+    "config": {
+      "depth": 100,
+      "fileCount": 1000,
+      "iterations": 5,
+      "seed": 20260323,
+      "extensions": [
+        "js",
+        "py",
+        "md",
+        "java"
+      ]
+    },
+    "summary": {
+      "count": 5,
+      "minMs": 362,
+      "maxMs": 408,
+      "avgMs": 380.6,
+      "p95Ms": 408
+    },
+    "samplesMs": [
+      408,
+      398,
+      362,
+      368,
+      367
+    ],
+    "phaseSamples": [
+      {
+        "languagesMs": 397.91,
+        "frameworksMs": 0.39,
+        "structureMs": 6.06,
+        "totalMs": 407.7
+      },
+      {
+        "languagesMs": 390.4,
+        "frameworksMs": 0.15,
+        "structureMs": 5.36,
+        "totalMs": 397.22
+      },
+      {
+        "languagesMs": 356.33,
+        "frameworksMs": 0.12,
+        "structureMs": 5.53,
+        "totalMs": 362.78
+      },
+      {
+        "languagesMs": 361.25,
+        "frameworksMs": 0.11,
+        "structureMs": 5.09,
+        "totalMs": 367.5
+      },
+      {
+        "languagesMs": 359.21,
+        "frameworksMs": 0.12,
+        "structureMs": 6.43,
+        "totalMs": 366.85
+      }
+    ]
+  },
+  {
+    "executedAt": "2026-03-27T12:45:41.628Z",
+    "config": {
+      "maxDepth": 6,
+      "maxBranch": 4,
+      "scanDepth": 100,
+      "fileCount": 1000,
+      "iterations": 5,
+      "seed": 20260323,
+      "extensions": [
+        "js",
+        "py",
+        "md",
+        "java"
+      ]
+    },
+    "summary": {
+      "count": 5,
+      "minMs": 17,
+      "maxMs": 32,
+      "avgMs": 20.4,
+      "p95Ms": 32
+    },
+    "samplesMs": [
+      32,
+      17,
+      19,
+      17,
+      17
+    ],
+    "phaseSamples": [
+      {
+        "languagesMs": 26.08,
+        "frameworksMs": 0.56,
+        "structureMs": 0.54,
+        "totalMs": 31.52
+      },
+      {
+        "languagesMs": 15,
+        "frameworksMs": 0.09,
+        "structureMs": 0.33,
+        "totalMs": 17.27
+      },
+      {
+        "languagesMs": 15.88,
+        "frameworksMs": 0.12,
+        "structureMs": 0.41,
+        "totalMs": 18.58
+      },
+      {
+        "languagesMs": 14.97,
+        "frameworksMs": 0.1,
+        "structureMs": 0.34,
+        "totalMs": 17.34
+      },
+      {
+        "languagesMs": 14.44,
+        "frameworksMs": 0.24,
+        "structureMs": 0.45,
+        "totalMs": 16.93
+      }
+    ]
+  }
+]

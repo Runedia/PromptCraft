@@ -58,7 +58,22 @@ pnpm test
 
 # 커버리지
 pnpm test:coverage
+
+# scan 성능 벤치마크 (JSON 결과 누적 저장)
+pnpm benchmark:scan
 ```
+
+벤치마크 결과는 `tests/perf-results/scan-benchmark.json` 에 누적 저장됩니다.
+실행 파라미터는 환경 변수로 조정할 수 있습니다.
+
+```bash
+SCAN_PERF_DEPTH=100 SCAN_PERF_FILES=1000 SCAN_PERF_ITERATIONS=5 SCAN_PERF_SEED=20260323 pnpm benchmark:scan
+```
+
+스캐너 개선 검토 메모:
+- 현재는 `glob` + `readdirSync` 조합을 사용합니다.
+- 1차 최적화로 언어 감지 패턴을 `**/*.*` 에서 알려진 확장자 기반 glob으로 축소해 불필요한 파일 순회를 줄였습니다.
+- 추가 후보 라이브러리로 `fast-glob`, `fdir`를 검토할 수 있으며, 실제 채택은 `benchmark:scan` 누적 결과 비교 후 결정하는 것을 권장합니다.
 
 ## 프로젝트 구조
 

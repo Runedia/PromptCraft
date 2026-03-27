@@ -1,33 +1,60 @@
+## 1. 역할 (Role)
+당신은 {{role}}입니다.
+아래의 기술적 개념을 요청된 수준에 완벽히 맞추어 설명하고, 학습자가 단 한 번의 설명을 통해 해당 지식을 온전히 습득할 수 있도록 하십시오.
+
+---
+
+## 2. 학습 대상 주제 및 환경 (Context)
+- **학습할 개념 (Concept)**: **{{concept}}**
+- **학습자 수준 (Proficiency)**: **{{skillLevel}}**
+{{#if (eq preferAnalogy "예")}}- **선호 사항**: 쉬운 비유와 실생활 예제를 적극적으로 활용해 주십시오.{{/if}}
+
 {{#if scanResult}}
-## 프로젝트 컨텍스트
-
-- **스택**: {{languageList scanResult.languages}}
-- **프레임워크**: {{frameworkList scanResult.frameworks}}
-{{#if scanResult.packageManager}}- **패키지 매니저**: {{scanResult.packageManager}}{{/if}}
+- **해당 프로젝트의 Framework(s)**: {{frameworkList scanResult.frameworks}}
+- **해당 프로젝트의 Language(s)**: {{languageList scanResult.languages}}
 {{/if}}
 
-## 상황
+---
 
-개념 학습
+## 3. 학습 목표 (Goal)
+**{{goal}}**
 
-## 학습 개념
+---
 
-{{concept}}
-
-## 숙련도
-
-{{skillLevel}}
-
-{{#if preferAnalogy}}
-> 비유나 실생활 예시를 활용한 설명을 선호합니다.
+## 4. 설명 제약 조건 (Constraints)
+{{#if constraints}}
+{{constraints}}
+{{else}}
+*(특정 제약 조건 없음)*
 {{/if}}
 
-{{#if hasRelatedCode}}
-## 관련 코드
+---
 
-{{{codeBlock relatedCode}}}
+## 5. 출력 지시사항 (Actionable Instructions)
+반드시 **{{skillLevel}}** 수준을 철저하게 반영하여 다음 구조에 맞춰 답변해주십시오:
+
+1. **개념 요약 (TL;DR)** (3문장 이내)
+   - 이 개념의 정의와 가장 중요한 가치(왜 알아야 하는지)를 직관적으로 설명합니다.
+{{#if (eq preferAnalogy "예")}}
+2. **직관적 비유 (Analogy)**
+   - 비전공자나 초보자도 바로 이해할 수 있는 실생활 상황에 빗댄 예시를 하나 제공합니다.
+3. **핵심 동작 원리 (How It Works)**
+   - 작동 순서나 논리를 단계별로 나누어 상세히 해설합니다.
+4. **실행 가능한 코드 예시 (Code Example)**
+   - 개념을 보여주는 아주 명확하고 심플한 예제 코드를 주석과 함께 첨부합니다.
+5. **흔한 오해나 실수 (Common Pitfalls)**
+   - 공부할 때 자주 틀리거나 오해하는 부분들을 짚어줍니다.
+6. **실전 활용 시나리오 (Real-World Usage)**
+   - 현업이나 복잡한 프로젝트에서 이 개념이 실제로 언제, 왜 쓰이는지 실용적인 사례를 듭니다.
+{{else}}
+2. **핵심 동작 원리 (How It Works)**
+   - 논리적이고 깊이 있는 시스템 레벨 혹은 아키텍처 수준의 해석을 단계별로 제공합니다.
+3. **코드 레벨 구현 및 예시 (Implementation Example)**
+   - 최신 기술 스펙이나 모범 사례를 따르는 예제 코드를 주석과 함께 첨부합니다.
+4. **에지 케이스 및 함정 (Edge Cases & Pitfalls)**
+   - 도입 시 흔히 발생하는 안티 패턴, 성능 이슈, 디버깅의 어려움 등을 지적합니다.
+5. **실전 아키텍처 고려사항 (Architecture Considerations)**
+   - 현업 프로덕션 환경에서 어떻게 튜닝하고 통합하는가에 대한 실용적인 가이드를 제공합니다.
 {{/if}}
 
-## 원하는 결과
-
-{{concept}}에 대해 현재 숙련도({{skillLevel}})에 맞게 설명해주세요.{{#if preferAnalogy}} 비유나 실생활 예시를 포함해주세요.{{/if}}
+> **힌트**: 응답 내용은 명료하고 자연스러운 한국어(Korean)로 작성하되, 영문 원어가 자주 사용되는 기술 용어나 식별자는 원어를 병기하거나 영어를 그대로 유지하십시오.

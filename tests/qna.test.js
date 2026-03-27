@@ -1,30 +1,33 @@
 'use strict';
 
-const { startSession, submitAnswer, getAnswers, getCurrentQuestion } = require('../src/core/qna');
+const { startSession, submitAnswer, getAnswers, getCurrentQuestion, getSession } = require('../src/core/qna');
 
 describe('QnA Engine — error-solving 전체 플로우', () => {
-  test('5개 노드 순서대로 답변 후 completed: true', () => {
+  test('6개 노드 순서대로 답변 후 completed: true', () => {
     const { session } = startSession('error-solving');
     const { sessionId } = session;
 
-    expect(getCurrentQuestion(sessionId).key).toBe('language');
-    expect(submitAnswer(sessionId, 'Node.js 20')).toEqual({ success: true, completed: false });
+    expect(getCurrentQuestion(sessionId).key).toBe('role');
+    expect(submitAnswer(sessionId, '시니어 Node.js 개발자')).toEqual({ success: true, completed: false });
 
-    expect(getCurrentQuestion(sessionId).key).toBe('errorMessage');
+    expect(getCurrentQuestion(sessionId).key).toBe('goal');
+    expect(submitAnswer(sessionId, '미들웨어 에러 해결')).toEqual({ success: true, completed: false });
+
+    expect(getCurrentQuestion(sessionId).key).toBe('currentSituation');
+    expect(submitAnswer(sessionId, 'Express 미들웨어에서 에러 발생')).toEqual({ success: true, completed: false });
+
+    expect(getCurrentQuestion(sessionId).key).toBe('errorEvidence');
     expect(submitAnswer(sessionId, 'TypeError: Cannot read properties of undefined')).toEqual({ success: true, completed: false });
 
     expect(getCurrentQuestion(sessionId).key).toBe('triedMethods');
     expect(submitAnswer(sessionId, 'console.log 디버깅, 스택 오버플로우 검색')).toEqual({ success: true, completed: false });
 
-    expect(getCurrentQuestion(sessionId).key).toBe('expectedBehavior');
-    expect(submitAnswer(sessionId, '정상적으로 객체 속성에 접근')).toEqual({ success: true, completed: false });
-
-    expect(getCurrentQuestion(sessionId).key).toBe('codeSnippet');
-    expect(submitAnswer(sessionId, 'const x = obj.prop;')).toEqual({ success: true, completed: true });
+    expect(getCurrentQuestion(sessionId).key).toBe('constraints');
+    expect(submitAnswer(sessionId, '')).toEqual({ success: true, completed: true });
 
     const answers = getAnswers(sessionId);
-    expect(answers.language).toBe('Node.js 20');
-    expect(answers.codeSnippet).toBe('const x = obj.prop;');
+    expect(answers.role).toBe('시니어 Node.js 개발자');
+    expect(answers.errorEvidence).toBe('TypeError: Cannot read properties of undefined');
   });
 });
 
@@ -33,22 +36,22 @@ describe('QnA Engine — feature-impl 분기 경로', () => {
     const { session } = startSession('feature-impl');
     const { sessionId } = session;
 
+    // role
+    submitAnswer(sessionId, '백엔드 개발자');
+    // goal
     submitAnswer(sessionId, '로그인 기능 구현');
+    // current-situation (optional)
+    submitAnswer(sessionId, '');
+
     expect(getCurrentQuestion(sessionId).nodeId).toBe('has-existing-code');
 
     submitAnswer(sessionId, '있음');
     expect(getCurrentQuestion(sessionId).nodeId).toBe('existing-code');
 
     submitAnswer(sessionId, 'function login() {}');
-    expect(getCurrentQuestion(sessionId).nodeId).toBe('reference-code');
-
-    submitAnswer(sessionId, '');
     expect(getCurrentQuestion(sessionId).nodeId).toBe('constraints');
 
-    submitAnswer(sessionId, '');
-    expect(getCurrentQuestion(sessionId).nodeId).toBe('desired-result');
-
-    const result = submitAnswer(sessionId, 'JWT 기반 인증');
+    const result = submitAnswer(sessionId, '');
     expect(result).toEqual({ success: true, completed: true });
 
     const answers = getAnswers(sessionId);
@@ -59,13 +62,19 @@ describe('QnA Engine — feature-impl 분기 경로', () => {
     const { session } = startSession('feature-impl');
     const { sessionId } = session;
 
+    // role
+    submitAnswer(sessionId, '프론트엔드 개발자');
+    // goal
     submitAnswer(sessionId, '회원가입 기능');
+    // current-situation (optional)
+    submitAnswer(sessionId, '');
+
     expect(getCurrentQuestion(sessionId).nodeId).toBe('has-existing-code');
 
     submitAnswer(sessionId, '없음');
-    expect(getCurrentQuestion(sessionId).nodeId).toBe('reference-code');
+    expect(getCurrentQuestion(sessionId).nodeId).toBe('constraints');
 
-    const answers_so_far = require('../src/core/qna').getSession(sessionId).answers;
+    const answers_so_far = getSession(sessionId).answers;
     expect(answers_so_far.existingCode).toBeUndefined();
   });
 });
@@ -95,7 +104,10 @@ describe('QnA Engine — select 유효성 검사', () => {
     const { session } = startSession('feature-impl');
     const { sessionId } = session;
 
+    // role, goal, current-situation을 거쳐 has-existing-code로 이동
+    submitAnswer(sessionId, '개발자');
     submitAnswer(sessionId, '기능 설명');
+    submitAnswer(sessionId, '');
     expect(getCurrentQuestion(sessionId).nodeId).toBe('has-existing-code');
 
     const result = submitAnswer(sessionId, '모름');
@@ -107,8 +119,27 @@ describe('QnA Engine — select 유효성 검사', () => {
     const { session } = startSession('feature-impl');
     const { sessionId } = session;
 
+    submitAnswer(sessionId, '개발자');
     submitAnswer(sessionId, '기능 설명');
+    submitAnswer(sessionId, '');
     const result = submitAnswer(sessionId, '있음');
     expect(result.success).toBe(true);
+  });
+});
+
+describe('QnA Engine — multiline-mention inputType', () => {
+  test('multiline-mention 타입 노드가 유효하다', () => {
+    const { session } = startSession('error-solving');
+    const { sessionId } = session;
+
+    // role 답변
+    submitAnswer(sessionId, '개발자');
+    // goal 답변
+    submitAnswer(sessionId, '에러 해결');
+
+    // current-situation은 multiline-mention 타입
+    const q = getCurrentQuestion(sessionId);
+    expect(q.inputType).toBe('multiline-mention');
+    expect(q.key).toBe('currentSituation');
   });
 });

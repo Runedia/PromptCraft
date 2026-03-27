@@ -20,6 +20,8 @@ const EXTENSION_MAP = {
   '.swift': 'Swift',
   '.kt': 'Kotlin',
 };
+const KNOWN_EXTENSIONS = Object.keys(EXTENSION_MAP).map((ext) => ext.slice(1));
+const LANGUAGE_GLOB = `**/*.{${KNOWN_EXTENSIONS.join(',')}}`;
 
 /**
  * 디렉토리에서 언어별 파일 수를 집계해 상위 5개를 반환한다.
@@ -35,7 +37,7 @@ function detectLanguages(targetPath, ignoreRules) {
         '**/.cache/**', '**/.gradle/**', '**/.idea/**', '**/.vscode/**', '**/.claude/**',
       ];
 
-  let files = globSync('**/*.*', {
+  let files = globSync(LANGUAGE_GLOB, {
     cwd: targetPath,
     nodir: true,
     ignore: globIgnore,

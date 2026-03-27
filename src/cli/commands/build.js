@@ -17,6 +17,7 @@ const {
   askText,
   askSelect,
   askMultiline,
+  askMentionMultiline,
   askConfirm,
   success,
   error,
@@ -86,22 +87,29 @@ async function resolveScanResult(options) {
     }
   }
 
-  // 옵션 미지정: last-scan.json 재사용 여부 확인
+  // 옵션 미지정: 캐시 유무에 따라 단일 select로 선택지 제시
+  let cached = null;
   if (fs.existsSync(LAST_SCAN_PATH)) {
     try {
-      const cached = JSON.parse(fs.readFileSync(LAST_SCAN_PATH, 'utf8'));
-      const reuse = await askConfirm(
-        `이전 스캔 결과를 사용하시겠습니까? (${cached.path}, ${cached.scannedAt})`
-      );
-      if (reuse) return cached;
+      cached = JSON.parse(fs.readFileSync(LAST_SCAN_PATH, 'utf8'));
     } catch (_) {
-      // 캐시 파싱 실패 시 무시
+      // 파싱 실패 시 캐시 없는 것처럼 처리
     }
   }
 
-  const doScan = await askConfirm('프로젝트 스캔을 실행하시겠습니까?');
-  if (!doScan) return null;
+  if (cached) {
+    const scanDate = new Date(cached.scannedAt).toLocaleString('ko-KR', {
+      month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
+    });
+    const choice = await askSelect('어떤 스캔 방식을 사용하시겠습니까?', [
+      { name: '새로운 프로젝트 스캔 실행', value: 'scan' },
+      { name: `이전 스캔 결과 사용 (${cached.path} | ${scanDate})`, value: 'reuse' }
+    ]);
+    if (choice === 'reuse') return cached;
+    // choice === 'scan' → 아래 공통 스캔 실행으로 fall-through
+  }
 
+  // 공통 스캔 실행
   await startSpinner('프로젝트 스캔 중: .');
   try {
     const result = await scan('.');
@@ -158,7 +166,7 @@ function loadTemplateAnswers(templateName) {
  * Q&A 루프: 완료될 때까지 질문을 반복한다.
  * templateAnswers가 있으면 해당 키는 건너뛴다.
  */
-async function runQnALoop(sessionId, templateAnswers) {
+async function runQnALoop(sessionId, templateAnswers, projectRoot) {
   let step = 0;
 
   while (true) {
@@ -186,6 +194,9 @@ async function runQnALoop(sessionId, templateAnswers) {
           break;
         case 'multiline':
           answer = await askMultiline(question.question);
+          break;
+        case 'multiline-mention':
+          answer = await askMentionMultiline(question.question, projectRoot);
           break;
         default: // 'text'
           answer = await askText(question.question, {
@@ -241,7 +252,8 @@ const cmd = new Command('build')
 
       await section(`Q&A 시작 — ${QNA_TREE_LABELS[treeId]}`);
 
-      await runQnALoop(session.sessionId, templateAnswers);
+      const projectRoot = scanResult?.path || process.cwd();
+      await runQnALoop(session.sessionId, templateAnswers, projectRoot);
 
       // 5. 답변 수집
       const answers = getAnswers(session.sessionId);

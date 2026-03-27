@@ -1,39 +1,56 @@
 {
   "id": "code-review",
-  "title": "코드 리뷰",
-  "startNodeId": "review-code",
+  "name": "코드 리뷰",
+  "description": "코드 리뷰를 요청하기 위한 질문 트리",
+  "startNode": "role",
   "nodes": {
+    "role": {
+      "id": "role",
+      "question": "당신의 역할 또는 전문성을 알려주세요.",
+      "inputType": "text",
+      "required": true,
+      "answerKey": "role",
+      "next": "goal"
+    },
+    "goal": {
+      "id": "goal",
+      "question": "이 코드 리뷰의 목적을 설명하세요.",
+      "inputType": "text",
+      "required": true,
+      "answerKey": "goal",
+      "next": "review-code"
+    },
     "review-code": {
       "id": "review-code",
-      "question": "리뷰받고 싶은 코드를 입력해주세요.",
-      "key": "reviewCode",
-      "inputType": "multiline",
+      "question": "리뷰할 코드를 붙여넣으세요. @파일경로 로 첨부할 수 있습니다.",
+      "inputType": "multiline-mention",
       "required": true,
+      "answerKey": "reviewCode",
       "next": "review-focus"
     },
     "review-focus": {
       "id": "review-focus",
-      "question": "리뷰 포커스를 선택해주세요.",
-      "key": "reviewFocus",
+      "question": "리뷰 중점을 선택하세요.",
       "inputType": "select",
-      "options": ["성능", "보안", "가독성", "전체"],
       "required": true,
+      "options": ["성능", "보안", "가독성", "전체"],
+      "answerKey": "reviewFocus",
       "next": "concern-area"
     },
     "concern-area": {
       "id": "concern-area",
-      "question": "특별히 신경 쓰이는 부분이 있나요? (선택)",
-      "key": "concernArea",
+      "question": "(선택) 특별히 신경 쓰이는 부분이 있다면 설명하세요.",
       "inputType": "text",
       "required": false,
-      "next": "code-context"
+      "answerKey": "concernArea",
+      "next": "constraints"
     },
-    "code-context": {
-      "id": "code-context",
-      "question": "코드의 맥락이나 배경을 설명해주세요. (선택, 예: 어떤 서비스의 일부인지)",
-      "key": "codeContext",
-      "inputType": "text",
+    "constraints": {
+      "id": "constraints",
+      "question": "(선택) 제약 조건이 있다면 작성하세요.",
+      "inputType": "multiline",
       "required": false,
+      "answerKey": "constraints",
       "next": null
     }
   }

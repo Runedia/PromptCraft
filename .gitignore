@@ -39,7 +39,7 @@ Thumbs.db
 CLAUDE.md
 .omc
 .serena
-tasks
+tasks*/
 
 # 테스트 커버리지
 coverage/

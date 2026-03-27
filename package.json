@@ -13,7 +13,8 @@
     "serve": "node bin/promptcraft.js serve",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "benchmark:scan": "node tests/scan-benchmark-runner.js"
   },
   "packageManager": "pnpm@10.30.3",
   "engines": {
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "jest": "^30.2.0",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "supertest": "^7.0.0"
   }
 }

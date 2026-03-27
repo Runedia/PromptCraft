@@ -1,46 +1,55 @@
 {
   "id": "error-solving",
-  "title": "에러 해결",
-  "startNodeId": "lang-version",
+  "name": "에러 해결",
+  "description": "에러나 버그를 해결하기 위한 질문 트리",
+  "startNode": "role",
   "nodes": {
-    "lang-version": {
-      "id": "lang-version",
-      "question": "사용 중인 언어와 버전을 알려주세요. (예: Node.js 20, Python 3.11)",
-      "key": "language",
+    "role": {
+      "id": "role",
+      "question": "당신의 역할 또는 전문성을 알려주세요. (예: 시니어 Node.js 개발자, Python 초보 학생)",
       "inputType": "text",
       "required": true,
-      "next": "error-message"
+      "answerKey": "role",
+      "next": "goal"
     },
-    "error-message": {
-      "id": "error-message",
-      "question": "발생한 에러 메시지를 입력해주세요.",
-      "key": "errorMessage",
-      "inputType": "multiline",
+    "goal": {
+      "id": "goal",
+      "question": "해결하려는 문제나 목표를 한 문장으로 설명하세요.",
+      "inputType": "text",
       "required": true,
+      "answerKey": "goal",
+      "next": "current-situation"
+    },
+    "current-situation": {
+      "id": "current-situation",
+      "question": "현재 상황을 설명하세요. @파일경로 로 관련 파일을 첨부할 수 있습니다.",
+      "inputType": "multiline-mention",
+      "required": true,
+      "answerKey": "currentSituation",
+      "next": "error-evidence"
+    },
+    "error-evidence": {
+      "id": "error-evidence",
+      "question": "에러 메시지나 스택 트레이스를 붙여넣으세요. @파일경로 로 로그 파일을 첨부할 수 있습니다.",
+      "inputType": "multiline-mention",
+      "required": true,
+      "answerKey": "errorEvidence",
       "next": "tried-methods"
     },
     "tried-methods": {
       "id": "tried-methods",
-      "question": "이미 시도해본 방법들을 설명해주세요.",
-      "key": "triedMethods",
-      "inputType": "multiline",
-      "required": true,
-      "next": "expected-behavior"
-    },
-    "expected-behavior": {
-      "id": "expected-behavior",
-      "question": "원래 기대하던 동작은 무엇인가요?",
-      "key": "expectedBehavior",
-      "inputType": "text",
-      "required": true,
-      "next": "code-snippet"
-    },
-    "code-snippet": {
-      "id": "code-snippet",
-      "question": "관련 코드 스니펫이 있다면 입력해주세요. (선택)",
-      "key": "codeSnippet",
+      "question": "(선택) 이미 시도해본 방법이 있다면 설명하세요.",
       "inputType": "multiline",
       "required": false,
+      "answerKey": "triedMethods",
+      "next": "constraints"
+    },
+    "constraints": {
+      "id": "constraints",
+      "question": "(선택) 제약 조건이 있다면 작성하세요. (예: 특정 라이브러리 사용 금지, 함수형 스타일 유지)",
+      "inputType": "multiline",
+      "required": false,
+      "answerKey": "constraints",
       "next": null
     }
   }

@@ -41,6 +41,10 @@ function resolveMaxDepth(languages, explicitDepth) {
   return DEFAULT_MAX_DEPTH;
 }
 
+function nowMs() {
+  return Number(process.hrtime.bigint()) / 1e6;
+}
+
 /**
  * 디렉토리를 분석해 ScanResult를 반환한다.
  * @param {string} inputPath
@@ -49,6 +53,7 @@ function resolveMaxDepth(languages, explicitDepth) {
  * @returns {Promise<object>} ScanResult
  */
 async function scan(inputPath, options = {}) {
+  const scanStart = nowMs();
   const absolutePath = resolvePath(inputPath);
 
   if (!fs.existsSync(absolutePath)) {
@@ -61,10 +66,19 @@ async function scan(inputPath, options = {}) {
   // gitignore 규칙 로딩
   const ignoreRules = loadIgnoreRules(absolutePath);
 
+  const languagesStart = nowMs();
   const languages = detectLanguages(absolutePath, ignoreRules);
+  const languagesMs = nowMs() - languagesStart;
+
+  const frameworksStart = nowMs();
   const frameworks = detectFrameworks(absolutePath);
+  const frameworksMs = nowMs() - frameworksStart;
+
   const maxDepth = resolveMaxDepth(languages, options.depth);
+
+  const structureStart = nowMs();
   const structure = buildTree(absolutePath, maxDepth, ignoreRules);
+  const structureMs = nowMs() - structureStart;
 
   // 패키지 매니저 감지
   let packageManager = null;
@@ -88,7 +102,7 @@ async function scan(inputPath, options = {}) {
   configFilesList = configFilesList.filter(f => !shouldIgnore(ignoreRules, f));
   const configFiles = configFilesList.map((f) => path.basename(f));
 
-  return {
+  const result = {
     path: absolutePath,
     languages,
     frameworks,
@@ -99,6 +113,17 @@ async function scan(inputPath, options = {}) {
     ignoreSource: ignoreRules.source,
     scannedAt: nowISO(),
   };
+
+  if (options.metrics === true) {
+    result.timings = {
+      languagesMs: Math.round(languagesMs * 100) / 100,
+      frameworksMs: Math.round(frameworksMs * 100) / 100,
+      structureMs: Math.round(structureMs * 100) / 100,
+      totalMs: Math.round((nowMs() - scanStart) * 100) / 100,
+    };
+  }
+
+  return result;
 }
 
 module.exports = { scan };

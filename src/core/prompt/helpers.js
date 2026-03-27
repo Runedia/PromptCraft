@@ -49,6 +49,20 @@ function registerHelpers() {
   });
 
   Handlebars.registerHelper('now', () => new Date().toISOString().slice(0, 10));
+
+  Handlebars.registerHelper('keyPaths', function (structure) {
+    if (!structure || !structure.children || !Array.isArray(structure.children)) {
+      return '';
+    }
+    return structure.children
+      .slice(0, 8)
+      .map(child => '/' + child.name)
+      .join(', ');
+  });
+
+  Handlebars.registerHelper('eq', function (a, b) {
+    return a === b;
+  });
 }
 
 module.exports = { registerHelpers };
