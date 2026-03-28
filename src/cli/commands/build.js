@@ -5,23 +5,18 @@ const { Command } = require('commander');
 
 const {
   startSession,
-  getCurrentQuestion,
-  submitAnswer,
-  getAnswers,
   destroySession,
 } = require('../../core/qna/index');
+const { renderInkApp } = require('../ui/ink/index');
 const { buildPrompt } = require('../../core/prompt/index');
 const db = require('../../core/db/index');
 const { scan } = require('../../core/scanner/index');
 const {
   askText,
   askSelect,
-  askMultiline,
-  askMentionMultiline,
   askConfirm,
   success,
   error,
-  info,
   warn,
   section,
   startSpinner,
@@ -162,62 +157,6 @@ function loadTemplateAnswers(templateName) {
   }
 }
 
-/**
- * Q&A 루프: 완료될 때까지 질문을 반복한다.
- * templateAnswers가 있으면 해당 키는 건너뛴다.
- */
-async function runQnALoop(sessionId, templateAnswers, projectRoot) {
-  let step = 0;
-
-  while (true) {
-    let question;
-    try {
-      question = getCurrentQuestion(sessionId);
-    } catch (err) {
-      // 세션 완료로 인해 getCurrentQuestion이 던지는 경우
-      break;
-    }
-
-    step += 1;
-    await info(`[질문 ${step}] ${question.question}`);
-
-    let answer;
-
-    // 템플릿 답변이 있으면 재사용
-    if (templateAnswers[question.key] !== undefined) {
-      answer = templateAnswers[question.key];
-      await info(`  (템플릿 값 사용: ${answer})`);
-    } else {
-      switch (question.inputType) {
-        case 'select':
-          answer = await askSelect(question.question, question.options);
-          break;
-        case 'multiline':
-          answer = await askMultiline(question.question);
-          break;
-        case 'multiline-mention':
-          answer = await askMentionMultiline(question.question, projectRoot);
-          break;
-        default: // 'text'
-          answer = await askText(question.question, {
-            validate: question.required
-              ? (v) => (v.trim() ? true : '필수 항목입니다.')
-              : undefined,
-          });
-      }
-    }
-
-    const result = submitAnswer(sessionId, answer);
-
-    if (!result.success) {
-      await warn(`입력 오류: ${result.error}`);
-      step -= 1; // 재시도
-      continue;
-    }
-
-    if (result.completed) break;
-  }
-}
 
 const cmd = new Command('build')
   .description('Q&A 대화를 통해 프롬프트를 생성합니다')
@@ -246,17 +185,31 @@ const cmd = new Command('build')
       // 3. 템플릿 로드
       const templateAnswers = loadTemplateAnswers(options.template);
 
-      // 4. Q&A 세션 시작
+      // 4. Q&A 세션 시작 — Ink UI
       const { session } = startSession(treeId);
       _activeSessionId = session.sessionId;
 
-      await section(`Q&A 시작 — ${QNA_TREE_LABELS[treeId]}`);
-
       const projectRoot = scanResult?.path || process.cwd();
-      await runQnALoop(session.sessionId, templateAnswers, projectRoot);
 
-      // 5. 답변 수집
-      const answers = getAnswers(session.sessionId);
+      let answers;
+      try {
+        answers = await renderInkApp({
+          treeId,
+          sessionId:       session.sessionId,
+          projectRoot,
+          templateAnswers,
+        });
+      } catch (inkErr) {
+        if (inkErr.message === 'CANCELLED') {
+          await warn('\n작업이 취소되었습니다.');
+          destroySession(session.sessionId);
+          _activeSessionId = null;
+          process.exit(0);
+        }
+        throw inkErr;
+      }
+
+      // 5. 답변 완료 (answers는 renderInkApp에서 직접 반환)
 
       // 6. 프롬프트 생성
       const prompt = buildPrompt(treeId, answers, scanResult);

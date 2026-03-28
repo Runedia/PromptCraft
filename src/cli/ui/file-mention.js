@@ -17,6 +17,21 @@ const BINARY_EXTENSIONS = new Set([
 const MAX_FILE_SIZE = 100 * 1024; // 100KB
 const MAX_LINES = 200;
 
+// 확장자 → 언어 힌트 (fenced code block용)
+const LANG_MAP = {
+  '.js': 'js', '.mjs': 'js', '.cjs': 'js',
+  '.ts': 'ts', '.tsx': 'tsx', '.jsx': 'jsx',
+  '.py': 'python', '.rb': 'ruby', '.go': 'go',
+  '.java': 'java', '.kt': 'kotlin', '.cs': 'csharp',
+  '.cpp': 'cpp', '.c': 'c', '.h': 'c',
+  '.rs': 'rust', '.swift': 'swift',
+  '.json': 'json', '.yaml': 'yaml', '.yml': 'yaml',
+  '.toml': 'toml', '.xml': 'xml', '.html': 'html',
+  '.css': 'css', '.scss': 'scss', '.less': 'less',
+  '.sh': 'bash', '.bash': 'bash', '.zsh': 'bash',
+  '.md': 'markdown', '.sql': 'sql',
+};
+
 /**
  * 단일 멘션 파일 읽기
  * @param {string} relPath - 상대 경로
@@ -61,12 +76,14 @@ function readMentionedFile(relPath, projectRoot) {
     const content = fs.readFileSync(absPath, 'utf8');
     const lines = content.split('\n');
 
+    const lang = LANG_MAP[ext] || '';
+
     if (stat.size > MAX_FILE_SIZE || lines.length > MAX_LINES) {
       const truncated = lines.slice(0, MAX_LINES).join('\n');
-      return `[파일: ${relPath}]\n${truncated}\n[파일 잘림: ${lines.length}줄 중 ${MAX_LINES}줄]`;
+      return `\`\`\`${lang}\n// 📎 ${relPath} (${MAX_LINES}/${lines.length}줄, 잘림)\n${truncated}\n\`\`\``;
     }
 
-    return `[파일: ${relPath}]\n${content}`;
+    return `\`\`\`${lang}\n// 📎 ${relPath}\n${content}\n\`\`\``;
   } catch (err) {
     return `[읽기 오류: ${relPath}]`;
   }
@@ -120,7 +137,8 @@ async function autocompleteFilePath(partial, projectRoot) {
  */
 function autocompleteFilePathSync(partial, projectRoot) {
   try {
-    const IGNORE_DIRS = new Set(['node_modules', '.git', 'dist', '.next', 'build']);
+    const IGNORE_NAMES = new Set(['node_modules', '.git', 'dist', '.next', 'build', '.pnpm']);
+    const MAX_RESULTS = 50; // gemini-cli와 동일한 상한
     const normalizedRoot = path.resolve(projectRoot);
 
     // Windows 경로 구분자 정규화
@@ -128,8 +146,9 @@ function autocompleteFilePathSync(partial, projectRoot) {
 
     // "src/cli/com" → dir="src/cli", prefix="com"
     const lastSlash = normalizedPartial.lastIndexOf('/');
-    const dir = lastSlash === -1 ? '' : normalizedPartial.slice(0, lastSlash);
+    const dir    = lastSlash === -1 ? '' : normalizedPartial.slice(0, lastSlash);
     const prefix = lastSlash === -1 ? normalizedPartial : normalizedPartial.slice(lastSlash + 1);
+    const prefixLower = prefix.toLowerCase();
 
     const absDir = path.resolve(normalizedRoot, dir);
 
@@ -143,18 +162,28 @@ function autocompleteFilePathSync(partial, projectRoot) {
       return [];
     }
 
-    const matches = [];
+    const dirs  = [];
+    const files = [];
+
     for (const entry of entries) {
-      if (IGNORE_DIRS.has(entry.name)) continue;
-      if (prefix && !entry.name.startsWith(prefix)) continue;
+      // 무시 목록
+      if (IGNORE_NAMES.has(entry.name)) continue;
+      // prefix 필터 (대소문자 무시)
+      if (prefix && !entry.name.toLowerCase().startsWith(prefixLower)) continue;
 
       const relPath = dir ? `${dir}/${entry.name}` : entry.name;
-      // 디렉토리면 '/' 접미사 추가하여 연속 탐색 유도
-      matches.push(entry.isDirectory() ? `${relPath}/` : relPath);
-      if (matches.length >= 20) break;
+      if (entry.isDirectory()) {
+        dirs.push(`${relPath}/`);
+      } else {
+        files.push(relPath);
+      }
     }
 
-    return matches;
+    // 디렉토리 우선, 각 그룹 내 알파벳 정렬 (gemini-cli 동일)
+    dirs.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    files.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+    return [...dirs, ...files].slice(0, MAX_RESULTS);
   } catch {
     return [];
   }

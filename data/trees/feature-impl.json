@@ -30,22 +30,9 @@
     },
     "has-existing-code": {
       "id": "has-existing-code",
-      "question": "참고할 기존 코드가 있나요?",
-      "inputType": "select",
-      "required": true,
-      "options": ["있음", "없음"],
-      "answerKey": "hasExistingCode",
-      "next": null,
-      "branches": {
-        "있음": "existing-code",
-        "없음": "constraints"
-      }
-    },
-    "existing-code": {
-      "id": "existing-code",
-      "question": "참고할 기존 코드를 붙여넣으세요. @파일경로 로 첨부할 수 있습니다.",
+      "question": "(선택) 수정하거나 참고할 파일을 첨부하세요. @파일경로 로 첨부, 없으면 빈 줄로 건너뜁니다.",
       "inputType": "multiline-mention",
-      "required": true,
+      "required": false,
       "answerKey": "existingCode",
       "next": "constraints"
     },

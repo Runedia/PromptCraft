@@ -23,7 +23,7 @@ describe('file-mention', () => {
       fs.writeFileSync(filePath, 'console.log("hello")');
       const result = readMentionedFile('test.js', tmpDir);
       expect(result).toContain('console.log("hello")');
-      expect(result).toContain('[파일: test.js]');
+      expect(result).toContain('📎 test.js');
     });
 
     test('존재하지 않는 파일', () => {
@@ -52,8 +52,8 @@ describe('file-mention', () => {
       const lines = Array.from({ length: 300 }, (_, i) => `line ${i + 1}`);
       fs.writeFileSync(path.join(tmpDir, 'big.txt'), lines.join('\n'));
       const result = readMentionedFile('big.txt', tmpDir);
-      expect(result).toContain('[파일 잘림:');
-      expect(result).toContain('200줄');
+      expect(result).toContain('200/');   // "200/300줄, 잘림"
+      expect(result).toContain('잘림');
     });
   });
 
