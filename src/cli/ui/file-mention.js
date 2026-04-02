@@ -100,9 +100,34 @@ function parseMentions(text, projectRoot) {
 
   // @경로 패턴: @ 뒤에 경로 문자 (알파벳, 숫자, ., /, \, -, _)
   return text.replace(/@([\w./\\\-]+)/g, (match, relPath) => {
-    // Windows 경로 구분자 정규화
     const normalizedPath = relPath.replace(/\\/g, '/');
-    return readMentionedFile(normalizedPath, projectRoot);
+    const absPath = path.resolve(projectRoot, normalizedPath);
+    const normalizedRoot = path.resolve(projectRoot);
+
+    if (!absPath.startsWith(normalizedRoot + path.sep) && absPath !== normalizedRoot) {
+      return `[경로 탈출 시도: ${normalizedPath}]`;
+    }
+
+    const basename = path.basename(absPath);
+    if (basename === '.env' || basename.startsWith('.env.')) {
+      return `[보안: .env 파일은 멘션 불가]`;
+    }
+
+    const ext = path.extname(absPath).toLowerCase();
+    if (BINARY_EXTENSIONS.has(ext)) {
+      return `[이진 파일: ${normalizedPath} — 링크 생략]`;
+    }
+
+    try {
+      fs.accessSync(absPath, fs.constants.R_OK);
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        return `[파일 없음: ${normalizedPath}]`;
+      }
+      return `[접근 불가: ${normalizedPath}]`;
+    }
+
+    return `[${normalizedPath}](${absPath})`;
   });
 }
 

@@ -4,12 +4,17 @@ const React = require('react');
 const { useFileComplete } = require('../hooks/useFileComplete');
 const { parseMentions }   = require('../../file-mention');
 const FileDropdown        = require('./FileDropdown');
+const { removeLastGrapheme } = require('../utils/text');
 
-function MentionInput({ projectRoot, onSubmit, inkComponents }) {
+function MentionInput({ projectRoot, onSubmit, initialValue, inkComponents }) {
   const { Box, Text, useInput } = inkComponents;
 
-  const [lines, setLines]         = React.useState([]);
-  const [curLine, setCurLine]     = React.useState('');
+  const initialLines = React.useMemo(() => {
+    if (typeof initialValue !== 'string' || initialValue.length === 0) return [];
+    return initialValue.split('\n');
+  }, [initialValue]);
+  const [lines, setLines]         = React.useState(initialLines.slice(0, -1));
+  const [curLine, setCurLine]     = React.useState(initialLines.length > 0 ? initialLines[initialLines.length - 1] : '');
   const [inMention, setInMention] = React.useState(false);
   const [done, setDone]           = React.useState(false);
   const fc = useFileComplete(projectRoot);
@@ -92,7 +97,7 @@ function MentionInput({ projectRoot, onSubmit, inkComponents }) {
     // ── Backspace ──────────────────────────────────────────────────
     if (key.backspace || key.delete) {
       if (curLine.length > 0) {
-        const newLine = curLine.slice(0, -1);
+        const newLine = removeLastGrapheme(curLine);
         setCurLine(newLine);
         const partial = extractPartial(newLine);
         if (partial !== null) {

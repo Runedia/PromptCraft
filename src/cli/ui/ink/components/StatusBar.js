@@ -9,15 +9,16 @@ const HINTS = {
   'text':              'Enter로 확인',
 };
 
-function StatusBar({ question, inkComponents }) {
+function StatusBar({ question, undoAvailable, inkComponents }) {
   const { Box, Text } = inkComponents;
   if (!question) return null;
 
   const hint = HINTS[question.inputType] || 'Enter로 확인';
+  const undoHint = undoAvailable ? '  |  Esc 이전 질문(입력 유지)' : '';
 
   return React.createElement(Box, { marginTop: 1, paddingX: 2 },
     React.createElement(Text, { dimColor: true }, '힌트: '),
-    React.createElement(Text, { dimColor: true, italic: true }, hint)
+    React.createElement(Text, { dimColor: true, italic: true }, hint + undoHint)
   );
 }
 

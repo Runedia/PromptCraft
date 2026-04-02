@@ -8,12 +8,13 @@ function ProgressList({ history, inkComponents }) {
 
   return React.createElement(Box, { flexDirection: 'column', marginBottom: 1 },
     ...history.map((item, i) => {
-      const shortQ = item.question.length > 28
-        ? item.question.slice(0, 28) + '…'
+      const shortQ = item.question.length > 40
+        ? item.question.slice(0, 40) + '…'
         : item.question;
-      const shortA = item.answer.length > 32
-        ? item.answer.slice(0, 32).replace(/\n/g, ' ') + '…'
-        : item.answer.replace(/\n/g, ' ');
+      const displayA = item.answer.replace(/\n/g, ' ↵ ');
+      const shortA = displayA.length > 50
+        ? displayA.slice(0, 50) + '…'
+        : displayA;
 
       return React.createElement(Box, { key: `history-${i}` },
         React.createElement(Text, { color: 'green' }, '  ✓ '),

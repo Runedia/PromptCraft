@@ -35,38 +35,38 @@ describe('buildPrompt — error-solving 새 섹션 포맷', () => {
     constraints: '',
   };
 
-  test('## Role 섹션이 렌더링된다', () => {
+  test('Role 섹션이 렌더링된다', () => {
     const result = buildPrompt('error-solving', answers, mockScanResult);
-    expect(result).toContain('## Role');
+    expect(result).toContain('역할 (Role)');
     expect(result).toContain('시니어 JavaScript 개발자');
   });
 
-  test('## Stack & Environment 섹션이 렌더링된다', () => {
+  test('프로젝트 환경 섹션이 렌더링된다', () => {
     const result = buildPrompt('error-solving', answers, mockScanResult);
-    expect(result).toContain('## Stack & Environment');
+    expect(result).toContain('프로젝트 환경 (Context & Environment)');
   });
 
-  test('## Goal 섹션이 렌더링된다', () => {
+  test('Goal 섹션이 렌더링된다', () => {
     const result = buildPrompt('error-solving', answers, mockScanResult);
-    expect(result).toContain('## Goal');
+    expect(result).toContain('목표 (Goal)');
     expect(result).toContain('배열 순회 에러 해결');
   });
 
-  test('## Current Situation 섹션이 렌더링된다', () => {
+  test('Current Situation 섹션이 렌더링된다', () => {
     const result = buildPrompt('error-solving', answers, mockScanResult);
-    expect(result).toContain('## Current Situation');
+    expect(result).toContain('상황 설명 (Context)');
     expect(result).toContain('data.map 호출 시 undefined 에러 발생');
   });
 
-  test('## Error / Evidence 섹션이 렌더링된다', () => {
+  test('Error / Evidence 섹션이 렌더링된다', () => {
     const result = buildPrompt('error-solving', answers, mockScanResult);
-    expect(result).toContain('## Error / Evidence');
+    expect(result).toContain('오류 내용 및 증거 (Error Log)');
     expect(result).toContain("TypeError: Cannot read properties of undefined (reading 'map')");
   });
 
-  test('## Constraints 섹션이 렌더링된다', () => {
+  test('Constraints 섹션이 렌더링된다', () => {
     const result = buildPrompt('error-solving', answers, mockScanResult);
-    expect(result).toContain('## Constraints');
+    expect(result).toContain('제약 조건 (Constraints)');
   });
 
   test('프레임워크 목록이 major.x 형식으로 렌더링된다', () => {
@@ -95,6 +95,30 @@ describe('buildPrompt — scanResult null', () => {
   test('scanResult가 null이면 스캔 정보 없음이 표시된다', () => {
     const result = buildPrompt('error-solving', answers, null);
     expect(result).toContain('스캔 정보 없음');
+  });
+});
+
+describe('buildPrompt — keyPaths helper', () => {
+  const answers = {
+    role: '개발자',
+    goal: '경로 표시 확인',
+    currentSituation: '상황',
+    errorEvidence: '에러',
+    constraints: '',
+  };
+
+  test('구조 children에 문자열이 섞여도 Key Paths에 undefined가 포함되지 않는다', () => {
+    const result = buildPrompt('error-solving', answers, {
+      languages: [{ name: 'JavaScript', percentage: 100 }],
+      frameworks: [],
+      structure: {
+        name: 'root',
+        children: ['README.md', { name: 'src', children: [] }, { name: 'tests', children: [] }],
+      },
+    });
+    expect(result).not.toContain('undefined');
+    expect(result).toContain('/src');
+    expect(result).toContain('/tests');
   });
 });
 

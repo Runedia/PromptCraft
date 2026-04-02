@@ -5,8 +5,9 @@ const TextInput      = require('./TextInput');
 const MultilineInput = require('./MultilineInput');
 const MentionInput   = require('./MentionInput');
 const SelectInput    = require('./SelectInput');
+const ProgressBar    = require('./ProgressBar');
 
-function QuestionBox({ question, projectRoot, submit, submitError, stepNum, totalSteps, inkComponents }) {
+function QuestionBox({ question, projectRoot, submit, submitError, prefillValue, stepNum, totalSteps, inkComponents }) {
   const { Box, Text } = inkComponents;
   if (!question) return null;
 
@@ -14,31 +15,35 @@ function QuestionBox({ question, projectRoot, submit, submitError, stepNum, tota
   switch (question.inputType) {
     case 'select':
       inputEl = React.createElement(SelectInput, {
-        options: question.options, onSubmit: submit, inkComponents,
+        options: question.options, onSubmit: submit, initialValue: prefillValue, inkComponents,
       });
       break;
     case 'multiline':
       inputEl = React.createElement(MultilineInput, {
-        onSubmit: submit, inkComponents,
+        onSubmit: submit, initialValue: prefillValue, inkComponents,
       });
       break;
     case 'multiline-mention':
       inputEl = React.createElement(MentionInput, {
-        projectRoot, onSubmit: submit, inkComponents,
+        projectRoot, onSubmit: submit, initialValue: prefillValue, inkComponents,
       });
       break;
     default:
       inputEl = React.createElement(TextInput, {
-        required: question.required, onSubmit: submit, inkComponents,
+        required: question.required, onSubmit: submit, initialValue: prefillValue, inkComponents,
       });
   }
 
-  const stepLabel = totalSteps ? `[${stepNum}/${totalSteps}]` : `[${stepNum}]`;
-
   return React.createElement(Box, { flexDirection: 'column', marginBottom: 1 },
+    // 진행 바
+    totalSteps
+      ? React.createElement(Box, { marginLeft: 2, marginBottom: 0 },
+          React.createElement(ProgressBar, { current: stepNum, total: totalSteps, inkComponents })
+        )
+      : null,
     // 질문 헤더
     React.createElement(Box, { marginBottom: 0 },
-      React.createElement(Text, { color: 'yellow', bold: true }, `  ${stepLabel} `),
+      React.createElement(Text, { color: 'yellow', bold: true }, `  [${stepNum}${totalSteps ? '/' + totalSteps : ''}] `),
       React.createElement(Text, { bold: true }, question.question)
     ),
     // 구분선

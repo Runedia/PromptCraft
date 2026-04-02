@@ -70,7 +70,7 @@ export default function QuestionCard({ question, onSubmit, disabled }) {
       {(question.inputType === 'multiline' || question.inputType === 'multiline-mention') && (
         <form onSubmit={handleSubmit} className="space-y-3">
           {question.inputType === 'multiline-mention' && (
-            <p className="text-xs text-gray-400">파일 내용을 직접 붙여넣기 하거나 내용을 입력하세요.</p>
+            <p className="text-xs text-gray-400">@파일경로 형식으로 입력하면 프롬프트에 파일 링크로 포함됩니다.</p>
           )}
           <textarea
             value={value}

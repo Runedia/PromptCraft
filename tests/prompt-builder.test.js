@@ -44,7 +44,7 @@ describe('전체 빌드 시나리오', () => {
 
   test('## Stack & Environment 섹션이 렌더링된다', () => {
     const result = buildFromAnswers('error-solving', answers, mockScanResult);
-    expect(result).toContain('## Stack & Environment');
+    expect(result).toContain('프로젝트 환경 (Context & Environment)');
   });
 });
 
@@ -85,6 +85,21 @@ describe('scanResult null 처리', () => {
   test('scanResult null이면 스캔 정보 없음이 표시된다', () => {
     const result = buildFromAnswers('feature-impl', answers, null);
     expect(result).toContain('스캔 정보 없음');
+  });
+
+  test('currentSituation 비어도 바닥부터 새로 구현 문구가 나오지 않는다', () => {
+    const result = buildFromAnswers('feature-impl', {
+      role: '개발자',
+      goal: '기능 구현',
+      currentSituation: '',
+      constraints: '',
+    }, {
+      languages: [{ name: 'JavaScript', percentage: 100 }],
+      frameworks: [],
+      structure: { name: 'root', children: [{ name: 'src', children: [] }] },
+    });
+    expect(result).not.toContain('바닥부터 새로 구현하십시오');
+    expect(result).toContain('상세 상황이 제공되지 않았습니다');
   });
 });
 

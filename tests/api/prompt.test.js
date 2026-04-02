@@ -34,11 +34,10 @@ describe('POST /api/prompt/build', () => {
       .send({ sessionId });
 
     expect(res.status).toBe(200);
-    expect(res.body.prompt).toContain('## Role');
-    expect(res.body.prompt).toContain('## Goal');
-    expect(res.body.prompt).toContain('## Current Situation');
-    expect(res.body.prompt).toContain('## Error / Evidence');
-    expect(res.body.prompt).toContain('## Constraints');
+    expect(res.body.prompt).toContain('역할 (Role)');
+    expect(res.body.prompt).toContain('목표 (Goal)');
+    expect(res.body.prompt).toContain('상황 및 증거 (Current Situation & Error Evidence)');
+    expect(res.body.prompt).toContain('제약 조건 (Constraints)');
     expect(res.body.tokenEstimate).toBeGreaterThan(0);
   });
 });

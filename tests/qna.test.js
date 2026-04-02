@@ -32,7 +32,7 @@ describe('QnA Engine — error-solving 전체 플로우', () => {
 });
 
 describe('QnA Engine — feature-impl 분기 경로', () => {
-  test('"있음" 선택 → existing-code 노드를 거침', () => {
+  test('feature-impl은 has-existing-code에서 existingCode를 직접 받는다', () => {
     const { session } = startSession('feature-impl');
     const { sessionId } = session;
 
@@ -45,9 +45,6 @@ describe('QnA Engine — feature-impl 분기 경로', () => {
 
     expect(getCurrentQuestion(sessionId).nodeId).toBe('has-existing-code');
 
-    submitAnswer(sessionId, '있음');
-    expect(getCurrentQuestion(sessionId).nodeId).toBe('existing-code');
-
     submitAnswer(sessionId, 'function login() {}');
     expect(getCurrentQuestion(sessionId).nodeId).toBe('constraints');
 
@@ -58,7 +55,7 @@ describe('QnA Engine — feature-impl 분기 경로', () => {
     expect(answers.existingCode).toBe('function login() {}');
   });
 
-  test('"없음" 선택 → existing-code 건너뜀', () => {
+  test('existingCode를 비우면 그대로 다음 질문으로 진행한다', () => {
     const { session } = startSession('feature-impl');
     const { sessionId } = session;
 
@@ -71,11 +68,11 @@ describe('QnA Engine — feature-impl 분기 경로', () => {
 
     expect(getCurrentQuestion(sessionId).nodeId).toBe('has-existing-code');
 
-    submitAnswer(sessionId, '없음');
+    submitAnswer(sessionId, '');
     expect(getCurrentQuestion(sessionId).nodeId).toBe('constraints');
 
     const answers_so_far = getSession(sessionId).answers;
-    expect(answers_so_far.existingCode).toBeUndefined();
+    expect(answers_so_far.existingCode).toBe('');
   });
 });
 
@@ -101,14 +98,14 @@ describe('QnA Engine — 필수 입력 누락', () => {
 
 describe('QnA Engine — select 유효성 검사', () => {
   test('options 외 값 제출 → { success: false, error }', () => {
-    const { session } = startSession('feature-impl');
+    const { session } = startSession('concept-learn');
     const { sessionId } = session;
 
-    // role, goal, current-situation을 거쳐 has-existing-code로 이동
+    // role, goal, concept을 거쳐 skill-level(select)로 이동
     submitAnswer(sessionId, '개발자');
-    submitAnswer(sessionId, '기능 설명');
-    submitAnswer(sessionId, '');
-    expect(getCurrentQuestion(sessionId).nodeId).toBe('has-existing-code');
+    submitAnswer(sessionId, '개념 학습');
+    submitAnswer(sessionId, '이벤트 루프');
+    expect(getCurrentQuestion(sessionId).nodeId).toBe('skill-level');
 
     const result = submitAnswer(sessionId, '모름');
     expect(result.success).toBe(false);
@@ -116,13 +113,13 @@ describe('QnA Engine — select 유효성 검사', () => {
   });
 
   test('올바른 옵션 제출 → success: true', () => {
-    const { session } = startSession('feature-impl');
+    const { session } = startSession('concept-learn');
     const { sessionId } = session;
 
     submitAnswer(sessionId, '개발자');
-    submitAnswer(sessionId, '기능 설명');
-    submitAnswer(sessionId, '');
-    const result = submitAnswer(sessionId, '있음');
+    submitAnswer(sessionId, '개념 학습');
+    submitAnswer(sessionId, '이벤트 루프');
+    const result = submitAnswer(sessionId, '완전초보');
     expect(result.success).toBe(true);
   });
 });

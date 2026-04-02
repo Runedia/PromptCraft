@@ -55,6 +55,7 @@ function registerHelpers() {
       return '';
     }
     return structure.children
+      .filter(child => child && typeof child === 'object' && typeof child.name === 'string' && child.name.trim() !== '')
       .slice(0, 8)
       .map(child => '/' + child.name)
       .join(', ');

@@ -1,10 +1,11 @@
 'use strict';
 
 const React = require('react');
+const { removeLastGrapheme } = require('../utils/text');
 
-function TextInput({ required, onSubmit, inkComponents }) {
+function TextInput({ required, onSubmit, initialValue, inkComponents }) {
   const { Box, Text, useInput } = inkComponents;
-  const [value, setValue]   = React.useState('');
+  const [value, setValue]   = React.useState(initialValue || '');
   const [error, setError]   = React.useState('');
   const [done, setDone]     = React.useState(false);
 
@@ -20,7 +21,7 @@ function TextInput({ required, onSubmit, inkComponents }) {
       return;
     }
     if (key.backspace || key.delete) {
-      setValue(v => v.slice(0, -1));
+      setValue(v => removeLastGrapheme(v));
       setError('');
       return;
     }

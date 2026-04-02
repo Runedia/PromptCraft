@@ -58,17 +58,25 @@ describe('file-mention', () => {
   });
 
   describe('parseMentions', () => {
-    test('@경로를 파일 내용으로 치환', () => {
+    test('@경로를 markdown 링크로 치환', () => {
       fs.writeFileSync(path.join(tmpDir, 'foo.js'), 'const x = 1;');
       const text = '이 코드를 봐주세요: @foo.js';
       const result = parseMentions(text, tmpDir);
-      expect(result).toContain('const x = 1;');
+      expect(result).toContain('[foo.js](');
+      expect(result).toContain(path.join(tmpDir, 'foo.js'));
     });
 
     test('존재하지 않는 파일 멘션 처리', () => {
       const text = '@notexist.js 에서 에러가 발생해요';
       const result = parseMentions(text, tmpDir);
       expect(result).toContain('[파일 없음:');
+    });
+
+    test('.env 파일 멘션은 차단된다', () => {
+      fs.writeFileSync(path.join(tmpDir, '.env'), 'SECRET=abc');
+      const text = '@.env 확인';
+      const result = parseMentions(text, tmpDir);
+      expect(result).toContain('[보안: .env 파일은 멘션 불가]');
     });
 
     test('@없는 일반 텍스트는 그대로', () => {

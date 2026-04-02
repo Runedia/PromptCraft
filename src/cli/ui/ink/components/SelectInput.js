@@ -2,14 +2,17 @@
 
 const React = require('react');
 
-function SelectInput({ options, onSubmit, inkComponents }) {
+function SelectInput({ options, onSubmit, initialValue, inkComponents }) {
   const { Box, Text, useInput } = inkComponents;
-  const [idx, setIdx]   = React.useState(0);
-  const [done, setDone] = React.useState(false);
 
   const items = (options || []).map(o =>
     typeof o === 'string' ? { name: o, value: o } : o
   );
+  const [idx, setIdx]   = React.useState(() => {
+    const found = items.findIndex(item => item.value === initialValue);
+    return found >= 0 ? found : 0;
+  });
+  const [done, setDone] = React.useState(false);
 
   useInput((input, key) => {
     if (done) return;

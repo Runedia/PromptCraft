@@ -1,88 +1,49 @@
 'use strict';
 
 const React = require('react');
-const { useQnASession }  = require('./hooks/useQnASession');
-const Header             = require('./components/Header');
-const ProgressList       = require('./components/ProgressList');
-const QuestionBox        = require('./components/QuestionBox');
-const StatusBar          = require('./components/StatusBar');
+const { useWizard }      = require('./hooks/useWizard');
+const TreeSelectScreen   = require('./screens/TreeSelectScreen');
+const ScanScreen         = require('./screens/ScanScreen');
+const QnAScreen          = require('./screens/QnAScreen');
+const ResultScreen       = require('./screens/ResultScreen');
 
-// Q&A 트리의 총 노드 수를 미리 계산하기 위한 헬퍼
-// 대략적인 추정값 (정확하지 않아도 됨)
-function estimateTotalSteps(treeId) {
-  const STEP_COUNTS = {
-    'error-solving': 6,
-    'feature-impl':  5,
-    'code-review':   5,
-    'concept-learn': 5,
-  };
-  return STEP_COUNTS[treeId] || 5;
-}
-
-function App({ treeId, sessionId, projectRoot, templateAnswers, onComplete, onCancel, inkComponents }) {
-  const { Box, Text, useInput, useApp } = inkComponents;
+/**
+ * App — 스크린 라우터
+ *
+ * options 객체는 renderInkApp이 구성해 전달한다.
+ * inkComponents는 bridge.js를 통해 로드된 Ink 모듈이다.
+ */
+function App({ options, inkComponents }) {
+  const { useInput, useApp } = inkComponents;
   const { exit } = useApp();
 
-  const {
-    question, completed, answers, history, submit, submitError,
-  } = useQnASession(sessionId);
+  const wizard = useWizard(options);
 
-  const totalSteps = estimateTotalSteps(treeId);
-  const stepNum    = history.length + 1;
-
-  // 완료 감지
+  // useApp().exit 함수를 wizard에 등록 (Ctrl+C 처리용)
   React.useEffect(() => {
-    if (completed) {
-      onComplete(answers);
-    }
-  }, [completed]);
-
-  // 템플릿 답변 자동 제출
-  React.useEffect(() => {
-    if (!question || !templateAnswers) return;
-    const val = templateAnswers[question.key];
-    if (val !== undefined) {
-      submit(val);
-    }
-  }, [question?.key]);
+    wizard.registerExit(exit);
+  }, []);
 
   // Ctrl+C 전역 처리
   useInput((input, key) => {
     if (key.ctrl && input === 'c') {
       exit();
-      onCancel();
+      if (options.onCancel) options.onCancel();
     }
   });
 
-  if (completed) {
-    return React.createElement(Box, { padding: 1 },
-      React.createElement(Text, { color: 'green', bold: true }, '  ✓ 완료! 프롬프트를 생성합니다...')
-    );
+  switch (wizard.screen) {
+    case 'TREE_SELECT':
+      return React.createElement(TreeSelectScreen, { wizard, options, inkComponents });
+    case 'SCAN':
+      return React.createElement(ScanScreen, { wizard, options, inkComponents });
+    case 'QNA':
+      return React.createElement(QnAScreen, { wizard, options, inkComponents });
+    case 'RESULT':
+      return React.createElement(ResultScreen, { wizard, options, inkComponents });
+    default:
+      return null;
   }
-
-  return React.createElement(Box, {
-    flexDirection: 'column',
-    borderStyle: 'round',
-    borderColor: 'cyan',
-    paddingX: 1,
-    paddingY: 0,
-  },
-    React.createElement(Header, { treeId, inkComponents }),
-    React.createElement(ProgressList, { history, inkComponents }),
-    question
-      ? React.createElement(QuestionBox, {
-          key: question.nodeId,
-          question,
-          projectRoot,
-          submit,
-          submitError,
-          stepNum,
-          totalSteps,
-          inkComponents,
-        })
-      : null,
-    React.createElement(StatusBar, { question, inkComponents })
-  );
 }
 
 module.exports = App;
