@@ -58,9 +58,11 @@ $RECYCLE.BIN/
 .github/
 tasks/
 CLAUDE.md
+AGENTS.md
 
 # 테스트 및 커버리지
 coverage/
+tests/perf-results/
 
 # 임시 및 기타 파일
 tmp/

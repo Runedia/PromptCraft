@@ -1,0 +1,129 @@
+import React from 'react';
+import MentionInput from './MentionInput.js';
+import MultilineInput from './MultilineInput.js';
+import ProgressBar from './ProgressBar.js';
+import SelectInput from './SelectInput.js';
+import SelectOrTextInput from './SelectOrTextInput.js';
+import TextInput from './TextInput.js';
+
+function QuestionBox({
+  question,
+  projectRoot,
+  submit,
+  submitError,
+  prefillValue,
+  stepNum,
+  totalSteps,
+  inkComponents,
+}) {
+  const { Box, Text } = inkComponents;
+  if (!question) return null;
+
+  let inputEl: React.ReactElement | null;
+  switch (question.inputType) {
+    case 'select':
+      inputEl = React.createElement(SelectInput, {
+        options: question.options,
+        onSubmit: submit,
+        initialValue: prefillValue,
+        inkComponents,
+      });
+      break;
+    case 'select-or-text':
+      inputEl = React.createElement(SelectOrTextInput, {
+        options: question.options,
+        onSubmit: submit,
+        initialValue: prefillValue,
+        required: question.required,
+        inkComponents,
+      });
+      break;
+    case 'multiline':
+      inputEl = React.createElement(MultilineInput, {
+        onSubmit: submit,
+        initialValue: prefillValue,
+        inkComponents,
+      });
+      break;
+    case 'multiline-mention':
+      inputEl = React.createElement(MentionInput, {
+        projectRoot,
+        onSubmit: submit,
+        initialValue: prefillValue,
+        inkComponents,
+      });
+      break;
+    default:
+      inputEl = React.createElement(TextInput, {
+        required: question.required,
+        onSubmit: submit,
+        initialValue: prefillValue,
+        inkComponents,
+      });
+  }
+
+  return React.createElement(
+    Box,
+    { flexDirection: 'column', marginBottom: 1 },
+    // 진행 바
+    totalSteps
+      ? React.createElement(
+          Box,
+          { marginLeft: 2, marginBottom: 0 },
+          React.createElement(ProgressBar, { current: stepNum, total: totalSteps, inkComponents })
+        )
+      : null,
+    // 질문 헤더
+    React.createElement(
+      Box,
+      { marginBottom: 0 },
+      React.createElement(
+        Text,
+        { color: 'yellow', bold: true },
+        `  [${stepNum}${totalSteps ? `/${totalSteps}` : ''}] `
+      ),
+      React.createElement(Text, { bold: true }, question.question)
+    ),
+    // 구분선
+    React.createElement(
+      Box,
+      { marginLeft: 2, marginBottom: 0 },
+      React.createElement(Text, { dimColor: true }, '─'.repeat(48))
+    ),
+    question.hint
+      ? React.createElement(
+          Box,
+          { marginLeft: 2, marginBottom: 0 },
+          React.createElement(Text, { dimColor: true }, `💡 ${question.hint}`)
+        )
+      : null,
+    Array.isArray(question.examples) && question.examples.length > 0
+      ? React.createElement(
+          Box,
+          { marginLeft: 2, marginBottom: 0, flexDirection: 'column' },
+          React.createElement(Text, { dimColor: true }, '예시:'),
+          ...question.examples
+            .slice(0, 2)
+            .map((item, idx) =>
+              React.createElement(
+                Box,
+                { key: `example-${idx}` },
+                React.createElement(Text, { dimColor: true }, `  • ${item}`)
+              )
+            )
+        )
+      : null,
+    // 입력 영역
+    React.createElement(Box, { marginLeft: 2 }, inputEl),
+    // 에러
+    submitError
+      ? React.createElement(
+          Box,
+          { marginLeft: 2 },
+          React.createElement(Text, { color: 'red' }, `  ${submitError}`)
+        )
+      : null
+  );
+}
+
+export default QuestionBox;

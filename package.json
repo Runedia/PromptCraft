@@ -2,18 +2,23 @@
   "name": "promptcraft",
   "version": "0.1.0",
   "description": "로컬 설치형 코딩 프롬프트 빌더",
-  "type": "commonjs",
-  "main": "src/index.js",
+  "type": "module",
+  "main": "dist/bin/promptcraft.mjs",
   "bin": {
-    "promptcraft": "./bin/promptcraft.js"
+    "promptcraft": "./dist/bin/promptcraft.mjs"
   },
   "scripts": {
-    "start": "node bin/promptcraft.js",
-    "dev": "nodemon bin/promptcraft.js",
+    "build": "node scripts/clean-dist.mjs && tsc -p tsconfig.json && node scripts/copy-data.mjs",
+    "start": "pnpm build && node dist/bin/promptcraft.mjs",
+    "start:src": "pnpm build && node dist/bin/promptcraft.mjs",
+    "dev": "nodemon --watch src --watch bin --exec \"pnpm build && node dist/bin/promptcraft.mjs\"",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "benchmark:scan": "node tests/scan-benchmark-runner.js"
+    "benchmark:scan": "node tests/scan-benchmark-runner.js",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --write ."
   },
   "packageManager": "pnpm@10.30.3",
   "engines": {
@@ -27,6 +32,12 @@
   ],
   "author": "",
   "license": "MIT",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "better-sqlite3"
+    ]
+  },
   "dependencies": {
     "@inquirer/prompts": "^8.3.2",
     "better-sqlite3": "^12.6.2",
@@ -42,7 +53,15 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.10",
+    "@swc/core": "^1.13.20",
+    "@swc/jest": "^0.2.39",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.5.2",
+    "@types/react": "^19.2.14",
     "jest": "^30.2.0",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "typescript": "^5.9.3"
   }
 }

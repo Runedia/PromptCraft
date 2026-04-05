@@ -1,9 +1,45 @@
-'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const Module = require('node:module');
+const { transformSync } = require('@swc/core');
 
-const fs = require('fs');
-const path = require('path');
+const originalResolveFilename = Module._resolveFilename;
+Module._resolveFilename = function resolveWithTsFallback(request, parent, isMain, options) {
+  try {
+    return originalResolveFilename.call(this, request, parent, isMain, options);
+  } catch (err) {
+    if (typeof request === 'string' && request.endsWith('.js')) {
+      return originalResolveFilename.call(
+        this,
+        `${request.slice(0, -3)}.ts`,
+        parent,
+        isMain,
+        options
+      );
+    }
+    throw err;
+  }
+};
 
-const { scan } = require('../src/core/scanner');
+require.extensions['.ts'] = function compileTs(module, filename) {
+  const source = fs.readFileSync(filename, 'utf8');
+  const output = transformSync(source, {
+    filename,
+    jsc: {
+      target: 'es2022',
+      parser: {
+        syntax: 'typescript',
+        dynamicImport: true,
+      },
+    },
+    module: {
+      type: 'commonjs',
+    },
+  });
+  module._compile(output.code, filename);
+};
+
+const { scan } = require('../src/core/scanner/index.ts');
 const { createScanPerfFixture, ensureDir, removeDir } = require('./scan-perf-utils');
 
 const DEFAULT_ITERATIONS = 5;
