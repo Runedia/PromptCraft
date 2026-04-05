@@ -28,12 +28,20 @@ function SelectInput({ options, onSubmit, initialValue, inkComponents }) {
   return React.createElement(Box, { flexDirection: 'column' },
     ...items.map((item, i) => {
       const isActive = i === idx;
+      const label = item.label || item.name || item.value;
       return React.createElement(Box, { key: `select-${item.value}` },
-        React.createElement(Text, {
-          color: isActive ? 'cyanBright' : 'gray',
-          bold:  isActive,
-        },
-          `  ${isActive ? '❯ ' : '  '}${item.name}`
+        React.createElement(Box, { flexDirection: 'column' },
+          React.createElement(Text, {
+            color: isActive ? 'cyanBright' : 'gray',
+            bold:  isActive,
+          },
+            `  ${isActive ? '❯ ' : '  '}${label}`
+          ),
+          item.description
+            ? React.createElement(Box, { marginLeft: 4 },
+                React.createElement(Text, { dimColor: true }, item.description)
+              )
+            : null
         )
       );
     })

@@ -17,6 +17,18 @@
 ---
 
 ## 3. 현재 상황 (Current Situation & Context)
+{{#if (eq implScope "new")}}
+*(신규 구현 — 기존 코드 종속성 없음)*
+{{#if techPreference}}
+- **선호 기술/패턴**: {{techPreference}}
+{{/if}}
+{{else}}
+{{#if (eq implScope "modify")}}
+### 수정 대상 코드
+{{{codeBlock targetCode}}}
+### 수정 범위 및 유지 조건
+{{modificationScope}}
+{{else}}
 {{#if currentSituation}}
 {{currentSituation}}
 {{else}}
@@ -27,6 +39,8 @@
 ### 기존 참고 코드 (Base Code)
 다음 코드를 기반으로 확장 또는 수정하십시오:
 {{{codeBlock existingCode}}}
+{{/if}}
+{{/if}}
 {{/if}}
 
 ---

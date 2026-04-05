@@ -6,6 +6,7 @@ const HINTS = {
   'multiline-mention': '@경로 + Tab 자동완성  |  ↑↓ 탐색  |  빈 줄로 완료',
   'multiline':         'Shift+Enter 줄바꿈  |  빈 줄로 완료',
   'select':            '↑↓ 선택  |  Enter 확인',
+  'select-or-text':    '↑↓ 선택  |  Enter 확인  |  직접 입력 전환 가능',
   'text':              'Enter로 확인',
 };
 

@@ -22,8 +22,8 @@ function countSteps(treeId) {
       if (!node) return 0;
       const next = new Set(visited);
       next.add(nodeId);
-      if (node.branches && node.branches.length > 0) {
-        return 1 + Math.max(...node.branches.map(b => dfs(b.next, new Set(next))));
+      if (node.branches && typeof node.branches === 'object') {
+        return 1 + Math.max(...Object.values(node.branches).map((nextId) => dfs(nextId, new Set(next))));
       }
       return 1 + dfs(node.next, new Set(next));
     }
@@ -43,7 +43,7 @@ function QnAScreen({ wizard, options, inkComponents }) {
 
   // mount 시 세션 생성
   React.useEffect(() => {
-    const { session } = startSession(wizard.treeId);
+    const { session } = startSession(wizard.treeId, { scanResult: wizard.scanResult, presetId: wizard.presetId });
     setSessionId(session.sessionId);
     return () => {
       // cleanup: 세션이 아직 살아있으면 파기
@@ -61,13 +61,14 @@ function QnAScreen({ wizard, options, inkComponents }) {
     sessionId: sessionId || '__placeholder__',
     treeId: wizard.treeId,
     onSessionReset,
+    sessionOptions: { scanResult: wizard.scanResult },
   });
 
   const stepNum = history.length + 1;
   const projectRoot = wizard.scanResult?.path || process.cwd();
 
   // 템플릿 답변 자동 제출
-  const templateAnswers = options.templateAnswers || {};
+  const templateAnswers = { ...(wizard.prefill || {}), ...(options.templateAnswers || {}) };
   React.useEffect(() => {
     if (!question || !sessionId) return;
     const val = templateAnswers[question.key];

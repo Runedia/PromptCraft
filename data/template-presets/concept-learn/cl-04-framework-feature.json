@@ -1,0 +1,17 @@
+{
+  "id": "cl-04-framework-feature",
+  "treeId": "concept-learn",
+  "name": "프레임워크 기능 학습",
+  "description": "특정 프레임워크 기능의 작동 원리와 활용법 학습",
+  "examples": [
+    {
+      "label": "React Suspense 이해",
+      "prefill": {
+        "skillLevel": "advanced",
+        "outputPref": "comparison",
+        "goal": "Suspense와 기존 로딩 처리 방식의 차이를 이해",
+        "concept": "React Suspense"
+      }
+    }
+  ]
+}

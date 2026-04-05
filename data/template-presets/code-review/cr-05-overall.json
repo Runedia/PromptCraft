@@ -1,0 +1,16 @@
+{
+  "id": "cr-05-overall",
+  "treeId": "code-review",
+  "name": "전체 종합 리뷰",
+  "description": "성능/보안/가독성/구조를 균형 있게 종합 점검",
+  "examples": [
+    {
+      "label": "릴리즈 전 종합 점검",
+      "prefill": {
+        "reviewFocus": "overall",
+        "goal": "배포 전 고위험 이슈를 빠르게 식별",
+        "concernArea": "잠재적 장애 포인트와 기술부채 우선순위"
+      }
+    }
+  ]
+}

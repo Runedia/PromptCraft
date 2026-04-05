@@ -20,20 +20,6 @@ async function run() {
   program.addCommand(require('./commands/history'));
   program.addCommand(require('./commands/config'));
 
-  // serve 명령
-  program
-    .command('serve')
-    .description('API 서버 시작')
-    .option('-p, --port <port>', '포트 번호', '3001')
-    .action((opts) => {
-      const port = parseInt(opts.port, 10);
-      const { createApp } = require('../api/server');
-      const app = createApp();
-      app.listen(port, () => {
-        console.log(`PromptCraft API server running on http://localhost:${port}`);
-      });
-    });
-
   // 알 수 없는 명령어 처리
   program.on('command:*', () => {
     console.error(`알 수 없는 명령어: ${program.args.join(' ')}`);

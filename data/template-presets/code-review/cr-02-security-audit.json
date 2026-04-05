@@ -1,0 +1,16 @@
+{
+  "id": "cr-02-security-audit",
+  "treeId": "code-review",
+  "name": "보안 감사",
+  "description": "인증/인가, 입력 검증, 데이터 노출 위험을 집중 점검",
+  "examples": [
+    {
+      "label": "관리자 API 접근 제어",
+      "prefill": {
+        "reviewFocus": "security",
+        "goal": "관리자 전용 API의 권한 우회 가능성 점검",
+        "securityContext": "JWT 기반 인증, API는 외부 인터넷에 노출됨"
+      }
+    }
+  ]
+}

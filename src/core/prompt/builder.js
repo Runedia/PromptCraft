@@ -6,6 +6,7 @@ const Handlebars = require('handlebars');
 const { registerHelpers } = require('./helpers');
 const { BuildError } = require('../../shared/errors');
 const { QNA_TREE_LABELS } = require('../../shared/constants');
+const { listPresets, loadPreset } = require('./presets');
 
 const TEMPLATES_DIR = path.join(__dirname, '../../../data/templates');
 
@@ -80,4 +81,12 @@ function estimateTokenCount(prompt) {
   return Math.ceil(prompt.length / 4);
 }
 
-module.exports = { loadTemplate, buildPrompt, buildFromAnswers, getAvailableTemplates, estimateTokenCount };
+module.exports = {
+  loadTemplate,
+  buildPrompt,
+  buildFromAnswers,
+  getAvailableTemplates,
+  estimateTokenCount,
+  listPresets,
+  loadPreset,
+};

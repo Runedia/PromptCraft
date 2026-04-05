@@ -1,0 +1,17 @@
+{
+  "id": "cl-01-beginner-concept",
+  "treeId": "concept-learn",
+  "name": "입문 개념 학습",
+  "description": "처음 접하는 개념을 기초부터 학습",
+  "examples": [
+    {
+      "label": "이벤트 루프 입문",
+      "prefill": {
+        "skillLevel": "beginner",
+        "outputPref": "explanation",
+        "goal": "이벤트 루프를 비유와 함께 이해",
+        "concept": "JavaScript 이벤트 루프"
+      }
+    }
+  ]
+}

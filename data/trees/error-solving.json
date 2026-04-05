@@ -6,8 +6,10 @@
   "nodes": {
     "role": {
       "id": "role",
-      "question": "당신의 역할 또는 전문성을 알려주세요. (예: 시니어 Node.js 개발자, Python 초보 학생)",
-      "inputType": "text",
+      "question": "역할 또는 전문성을 선택하거나 직접 입력하세요.",
+      "hint": "스캔한 프로젝트 스택을 기반으로 추천 역할을 제시합니다. '직접 입력'을 선택하면 자유롭게 작성할 수 있습니다.",
+      "inputType": "select-or-text",
+      "optionsSource": "scan.suggestedRoles",
       "required": true,
       "answerKey": "role",
       "next": "goal"
@@ -15,6 +17,12 @@
     "goal": {
       "id": "goal",
       "question": "해결하려는 문제나 목표를 한 문장으로 설명하세요.",
+      "hint": "원인 분석의 목표를 명확히 적으면 해결 방향이 구체화됩니다.",
+      "placeholder": "예: 간헐적으로 발생하는 500 에러의 근본 원인을 찾고 재발 방지",
+      "examples": [
+        "배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정",
+        "빌드 실패를 재현하고 최소 수정으로 배포 가능 상태 복구"
+      ],
       "inputType": "text",
       "required": true,
       "answerKey": "goal",
@@ -23,22 +31,90 @@
     "current-situation": {
       "id": "current-situation",
       "question": "현재 상황을 설명하세요. @파일경로 로 관련 파일을 첨부할 수 있습니다.",
+      "hint": "발생 조건, 재현 단계, 관련 코드 위치를 포함하면 정확도가 높아집니다.",
+      "placeholder": "예: 배포 환경에서만 로그인 직후 500 에러가 발생하고, 로컬에서는 재현되지 않음",
+      "examples": [
+        "프로세스 재시작 후 첫 요청만 실패하고 이후에는 정상 동작",
+        "특정 사용자 데이터에서만 파싱 에러가 발생"
+      ],
       "inputType": "multiline-mention",
       "required": true,
       "answerKey": "currentSituation",
-      "next": "error-evidence"
+      "next": "error-type"
+    },
+    "error-type": {
+      "id": "error-type",
+      "question": "문제 유형을 선택하세요.",
+      "hint": "유형에 따라 다음 질문이 달라집니다.",
+      "inputType": "select",
+      "required": true,
+      "options": [
+        { "value": "runtime", "label": "런타임 에러", "description": "실행 중 예외, 크래시, 비정상 종료" },
+        { "value": "build", "label": "빌드/컴파일 에러", "description": "tsc, webpack, gradle 등 빌드 실패" },
+        { "value": "network", "label": "네트워크/API 에러", "description": "요청/응답 이상, 타임아웃, 4xx/5xx" },
+        { "value": "perf", "label": "성능 이슈", "description": "느림, 높은 메모리 사용, 병목 구간" }
+      ],
+      "answerKey": "errorType",
+      "branches": {
+        "runtime": "error-evidence",
+        "build": "build-log",
+        "network": "request-log",
+        "perf": "profiling-data"
+      }
     },
     "error-evidence": {
       "id": "error-evidence",
       "question": "에러 메시지나 스택 트레이스를 붙여넣으세요. @파일경로 로 로그 파일을 첨부할 수 있습니다.",
+      "hint": "전체 스택과 발생 라인을 함께 제공하면 원인 파악이 빨라집니다.",
+      "examples": [
+        "TypeError: Cannot read properties of undefined at src/service/user.js:42:17",
+        "UnhandledPromiseRejection: Error: connect ECONNREFUSED 127.0.0.1:5432"
+      ],
       "inputType": "multiline-mention",
       "required": true,
       "answerKey": "errorEvidence",
       "next": "tried-methods"
     },
+    "build-log": {
+      "id": "build-log",
+      "question": "빌드/컴파일 에러 로그를 붙여넣으세요. @파일경로 로 로그 파일을 첨부할 수 있습니다.",
+      "hint": "첫 번째 에러와 연쇄 에러를 함께 포함해 주세요.",
+      "inputType": "multiline-mention",
+      "required": true,
+      "answerKey": "buildLog",
+      "next": "tried-methods"
+    },
+    "request-log": {
+      "id": "request-log",
+      "question": "문제가 되는 요청/응답 스니펫을 붙여넣으세요. @파일경로 로 첨부할 수 있습니다.",
+      "hint": "HTTP 메서드, URL, 상태코드, 응답 본문 일부를 포함하세요.",
+      "inputType": "multiline-mention",
+      "required": true,
+      "answerKey": "requestLog",
+      "next": "tried-methods"
+    },
+    "profiling-data": {
+      "id": "profiling-data",
+      "question": "성능 측정 데이터(프로파일링 결과, 지표)를 입력하세요.",
+      "hint": "응답 시간, CPU/메모리 사용량, 병목 함수 정보를 포함하면 좋습니다.",
+      "inputType": "multiline",
+      "required": true,
+      "answerKey": "profilingData",
+      "next": "baseline-metric"
+    },
+    "baseline-metric": {
+      "id": "baseline-metric",
+      "question": "(선택) 기대 성능 기준치를 입력하세요.",
+      "hint": "예: API p95 300ms 이하, 메모리 512MB 이하",
+      "inputType": "text",
+      "required": false,
+      "answerKey": "baselineMetric",
+      "next": "constraints"
+    },
     "tried-methods": {
       "id": "tried-methods",
       "question": "(선택) 이미 시도해본 방법이 있다면 설명하세요.",
+      "hint": "이미 실패한 접근을 알려주면 중복 제안을 줄일 수 있습니다.",
       "inputType": "multiline",
       "required": false,
       "answerKey": "triedMethods",
@@ -47,6 +123,7 @@
     "constraints": {
       "id": "constraints",
       "question": "(선택) 제약 조건이 있다면 작성하세요. (예: 특정 라이브러리 사용 금지, 함수형 스타일 유지)",
+      "hint": "반드시 지켜야 하는 기술/운영 제약을 적어주세요.",
       "inputType": "multiline",
       "required": false,
       "answerKey": "constraints",

@@ -1,0 +1,17 @@
+{
+  "id": "es-02-build-compile",
+  "treeId": "error-solving",
+  "name": "빌드/컴파일 에러",
+  "description": "tsc, webpack, gradle 등 빌드 단계 실패 문제",
+  "examples": [
+    {
+      "label": "TypeScript 타입 오류",
+      "prefill": {
+        "errorType": "build",
+        "goal": "CI 빌드 실패 원인을 제거하고 배포를 재개",
+        "currentSituation": "로컬은 통과하지만 CI에서만 tsc 빌드가 실패합니다.",
+        "buildLog": "TS2345: Argument of type 'undefined' is not assignable to parameter of type 'string'."
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "cl-05-debugging-technique",
+  "treeId": "concept-learn",
+  "name": "디버깅 기법 학습",
+  "description": "문제 재현, 가설 검증, 원인 축소 기법을 학습",
+  "examples": [
+    {
+      "label": "체계적 디버깅 프로세스",
+      "prefill": {
+        "skillLevel": "beginner",
+        "outputPref": "explanation",
+        "goal": "재현 가능한 디버깅 루틴을 익히기",
+        "concept": "디버깅 접근법"
+      }
+    }
+  ]
+}

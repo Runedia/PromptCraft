@@ -1,0 +1,17 @@
+{
+  "id": "fi-03-auth-integration",
+  "treeId": "feature-impl",
+  "name": "인증 연동",
+  "description": "기존 로그인/세션/토큰 흐름에 인증 기능을 추가하거나 개선",
+  "examples": [
+    {
+      "label": "JWT 갱신 로직 추가",
+      "prefill": {
+        "implScope": "modify",
+        "goal": "만료 임박 JWT를 자동 갱신하도록 인증 로직 개선",
+        "targetCode": "@src/api/auth.js",
+        "modificationScope": "기존 로그인 API 계약은 유지하고 refresh 토큰 검증만 추가"
+      }
+    }
+  ]
+}

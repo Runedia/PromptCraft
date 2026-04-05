@@ -1,0 +1,17 @@
+{
+  "id": "fi-04-refactor-existing",
+  "treeId": "feature-impl",
+  "name": "기존 코드 리팩터링",
+  "description": "기능은 유지하면서 구조/가독성/확장성을 개선",
+  "examples": [
+    {
+      "label": "서비스 레이어 분리",
+      "prefill": {
+        "implScope": "modify",
+        "goal": "비대해진 controller 로직을 service 계층으로 분리",
+        "targetCode": "@src/api/routes/order.js",
+        "modificationScope": "라우트 경로와 응답 형식은 그대로 유지"
+      }
+    }
+  ]
+}

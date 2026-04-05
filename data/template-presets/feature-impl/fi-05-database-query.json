@@ -1,0 +1,16 @@
+{
+  "id": "fi-05-database-query",
+  "treeId": "feature-impl",
+  "name": "DB 쿼리 기능 추가",
+  "description": "조회/집계/페이징 등 데이터 액세스 기능 구현",
+  "examples": [
+    {
+      "label": "기간별 통계 조회",
+      "prefill": {
+        "implScope": "new",
+        "goal": "기간별 매출 집계 조회 API 추가",
+        "techPreference": "SQL 인덱스 친화 쿼리 + repository 패턴"
+      }
+    }
+  ]
+}

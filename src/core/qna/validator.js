@@ -7,9 +7,18 @@ function validate(node, value) {
   if (node.inputType === 'multiline-mention') {
     return { valid: true };
   }
+  if (node.inputType === 'select-or-text') {
+    return { valid: true };
+  }
   if (node.inputType === 'select' && value && node.options) {
-    if (!node.options.includes(value)) {
-      return { valid: false, error: `유효하지 않은 옵션입니다. 선택 가능: ${node.options.join(', ')}` };
+    const allowedValues = (node.options || []).map((item) => {
+      if (typeof item === 'string') return item;
+      if (item && typeof item === 'object') return item.value;
+      return null;
+    }).filter(Boolean);
+
+    if (!allowedValues.includes(value)) {
+      return { valid: false, error: `유효하지 않은 옵션입니다. 선택 가능: ${allowedValues.join(', ')}` };
     }
   }
   return { valid: true };

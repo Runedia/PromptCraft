@@ -37,14 +37,8 @@ promptcraft scan [path]
 # 프롬프트 빌드 (인터랙티브 Q&A)
 promptcraft build
 
-# 컨텍스트 파일 생성 (CLAUDE.md, GEMINI.md)
-promptcraft context [path]
-
 # 히스토리 조회
 promptcraft history
-
-# Web UI 시작 (localhost:3000)
-promptcraft serve
 ```
 
 ## 개발
@@ -93,11 +87,9 @@ promptcraft/
 ├── data/
 │   ├── trees/             # Q&A 분기 트리 JSON
 │   └── templates/         # Handlebars 템플릿
-├── web/                   # React Web UI
 └── tasks/                 # 개발 계획
 ```
 
 ## 데이터 저장 위치
 
 - DB, 설정: `~/.promptcraft/`
-- Web UI: `http://localhost:3000`

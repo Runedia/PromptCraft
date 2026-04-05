@@ -1,0 +1,18 @@
+{
+  "id": "es-04-memory-performance",
+  "treeId": "error-solving",
+  "name": "메모리/성능 문제",
+  "description": "지연, 높은 CPU/메모리 사용, 병목 구간 분석",
+  "examples": [
+    {
+      "label": "응답 지연 급증",
+      "prefill": {
+        "errorType": "perf",
+        "goal": "검색 API 응답 지연 원인 분석 및 p95 개선",
+        "currentSituation": "사용자 증가 후 p95 응답 시간이 2.4초까지 상승했습니다.",
+        "profilingData": "CPU flamegraph에서 normalizeResult 함수가 41% 점유",
+        "baselineMetric": "p95 300ms 이하"
+      }
+    }
+  ]
+}

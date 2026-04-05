@@ -1,0 +1,16 @@
+{
+  "id": "fi-02-ui-component",
+  "treeId": "feature-impl",
+  "name": "UI 컴포넌트 구현",
+  "description": "화면 컴포넌트 신규 추가 및 상태/이벤트 핸들링 구현",
+  "examples": [
+    {
+      "label": "검색 필터 패널",
+      "prefill": {
+        "implScope": "new",
+        "goal": "검색 필터 패널 컴포넌트와 상태 동기화 구현",
+        "techPreference": "React hooks + controlled component 패턴"
+      }
+    }
+  ]
+}

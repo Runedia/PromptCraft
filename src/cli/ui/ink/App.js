@@ -3,6 +3,7 @@
 const React = require('react');
 const { useWizard }      = require('./hooks/useWizard');
 const TreeSelectScreen   = require('./screens/TreeSelectScreen');
+const PresetSelectScreen = require('./screens/PresetSelectScreen');
 const ScanScreen         = require('./screens/ScanScreen');
 const QnAScreen          = require('./screens/QnAScreen');
 const ResultScreen       = require('./screens/ResultScreen');
@@ -35,6 +36,8 @@ function App({ options, inkComponents }) {
   switch (wizard.screen) {
     case 'TREE_SELECT':
       return React.createElement(TreeSelectScreen, { wizard, options, inkComponents });
+    case 'PRESET_SELECT':
+      return React.createElement(PresetSelectScreen, { wizard, options, inkComponents });
     case 'SCAN':
       return React.createElement(ScanScreen, { wizard, options, inkComponents });
     case 'QNA':

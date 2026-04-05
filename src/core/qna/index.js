@@ -2,8 +2,8 @@
 
 const engine = require('./engine');
 
-function startSession(treeId) {
-  const session = engine.createSession(treeId);
+function startSession(treeId, options = {}) {
+  const session = engine.createSession(treeId, options);
   const question = engine.getCurrentQuestion(session.sessionId);
   return { session, question };
 }

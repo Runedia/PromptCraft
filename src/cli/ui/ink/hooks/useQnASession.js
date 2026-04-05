@@ -11,8 +11,9 @@ const { startSession } = require('../../../../core/qna/index');
  * @param {string}   params.sessionId      - 현재 세션 ID
  * @param {string}   params.treeId         - Q&A 트리 ID (undo 시 재생성에 필요)
  * @param {function} params.onSessionReset - undo 후 새 sessionId를 부모에 전달하는 콜백
+ * @param {object}   [params.sessionOptions] - 세션 생성 옵션 (예: scanResult)
  */
-function useQnASession({ sessionId, treeId, onSessionReset }) {
+function useQnASession({ sessionId, treeId, onSessionReset, sessionOptions }) {
   // sessionId를 ref로도 유지해 stale closure 방지
   const sessionIdRef = React.useRef(sessionId);
   React.useEffect(() => {
@@ -97,7 +98,7 @@ function useQnASession({ sessionId, treeId, onSessionReset }) {
       try { destroySession(sid); } catch (_) {}
 
       // 2. 새 세션 생성
-      const { session: newSession } = startSession(treeId);
+      const { session: newSession } = startSession(treeId, sessionOptions || {});
       const newSid = newSession.sessionId;
 
       // 3. 마지막 항목 제외하고 동기 replay
@@ -137,7 +138,7 @@ function useQnASession({ sessionId, treeId, onSessionReset }) {
 
       return remaining;
     });
-  }, [treeId, onSessionReset]);
+  }, [treeId, onSessionReset, sessionOptions]);
 
   return { question, completed, answers, history, submit, submitError, undo, undoStack, inputSeed, prefill };
 }

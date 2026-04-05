@@ -1,0 +1,17 @@
+{
+  "id": "cl-03-algorithm",
+  "treeId": "concept-learn",
+  "name": "알고리즘 학습",
+  "description": "알고리즘 원리와 구현을 코드 중심으로 학습",
+  "examples": [
+    {
+      "label": "이진 탐색 코드 중심 학습",
+      "prefill": {
+        "skillLevel": "intermediate",
+        "outputPref": "code-first",
+        "goal": "이진 탐색 구현과 복잡도 이해",
+        "concept": "Binary Search"
+      }
+    }
+  ]
+}

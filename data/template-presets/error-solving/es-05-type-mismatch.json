@@ -1,0 +1,17 @@
+{
+  "id": "es-05-type-mismatch",
+  "treeId": "error-solving",
+  "name": "타입 불일치",
+  "description": "런타임/빌드에서 타입 해석 차이로 발생하는 오류",
+  "examples": [
+    {
+      "label": "null 처리 누락",
+      "prefill": {
+        "errorType": "runtime",
+        "goal": "nullable 필드 처리 누락으로 인한 예외 제거",
+        "currentSituation": "외부 API 응답에 null이 섞일 때만 서비스가 중단됩니다.",
+        "errorEvidence": "TypeError: Cannot read properties of null (reading 'id')"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "es-01-runtime-exception",
+  "treeId": "error-solving",
+  "name": "런타임 예외/크래시",
+  "description": "실행 중 예외가 발생하거나 프로세스가 비정상 종료되는 문제",
+  "examples": [
+    {
+      "label": "Node.js 서버 OOM 크래시",
+      "prefill": {
+        "errorType": "runtime",
+        "goal": "프로덕션 서버 메모리 초과 종료 원인 파악 및 수정",
+        "currentSituation": "6~8시간 주기로 힙 OOM으로 서버가 종료됩니다.",
+        "errorEvidence": "FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory"
+      }
+    }
+  ]
+}

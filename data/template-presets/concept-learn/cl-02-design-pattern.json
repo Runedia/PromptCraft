@@ -1,0 +1,17 @@
+{
+  "id": "cl-02-design-pattern",
+  "treeId": "concept-learn",
+  "name": "디자인 패턴 학습",
+  "description": "대표 디자인 패턴의 의도와 적용 시점을 학습",
+  "examples": [
+    {
+      "label": "전략 패턴 비교 학습",
+      "prefill": {
+        "skillLevel": "intermediate",
+        "outputPref": "comparison",
+        "goal": "전략/템플릿 메서드 패턴 차이를 이해",
+        "concept": "Strategy Pattern"
+      }
+    }
+  ]
+}

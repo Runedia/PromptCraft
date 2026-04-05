@@ -9,6 +9,7 @@ const VERSION = '0.1.0';
 const DATA_DIR = path.join(os.homedir(), `.${APP_NAME}`);
 const DB_PATH = path.join(DATA_DIR, `${APP_NAME}.db`);
 const LAST_SCAN_PATH = path.join(DATA_DIR, 'last-scan.json');
+const PRESET_DIR = path.join(__dirname, '../../data/template-presets');
 
 const QNA_TREE_IDS = {
   ERROR_SOLVING: 'error-solving',
@@ -39,17 +40,15 @@ const CONTEXT_FORMATS = {
   cursorrules:  '.cursorrules',
 };
 
-const API_PORT = parseInt(process.env.PORT || '3000', 10);
-
 module.exports = {
   APP_NAME,
   VERSION,
   DATA_DIR,
   DB_PATH,
   LAST_SCAN_PATH,
+  PRESET_DIR,
   QNA_TREE_IDS,
   QNA_TREE_LABELS,
   QNA_TREE_DESCRIPTIONS,
   CONTEXT_FORMATS, // 비활성화 상태이나 내부 참조용으로 보존
-  API_PORT,
 };

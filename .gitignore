@@ -1,50 +1,70 @@
-# 의존성
+# 의존성 및 패키지 매니저
 node_modules/
-web/node_modules/
+.pnpm-store/
 
-# 빌드 산출물
-web/dist/
-web/build/
+# 빌드 및 출력
+dist/
+build/
+bin-debug/
+bin-release/
+out/
 
-# 데이터베이스
-*.db
-*.db-shm
-*.db-wal
-
-# 환경 변수
+# 환경 설정 및 비밀문서
 .env
 .env.local
 .env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
 
-# 로그
+# 데이터베이스 및 저장소
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite-journal
+
+# 로그 및 디버깅
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 pnpm-debug.log*
-.pnpm-store/
+lerna-debug.log*
+.pnpm-debug.log*
 
-# 에디터
+# 에디터 및 IDE
 .vscode/
+!.vscode/extensions.json
 .idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
+*.swp
+*~
 
-# OS
+# 운영체제 메타데이터
 .DS_Store
 Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
 
-# AI
-.claude
+# AI 및 LLM 지원 도구
+.claude/
+.omc/
+.serena/
+.github/
+tasks/
 CLAUDE.md
-.omc
-.serena
-tasks*/
 
-# 테스트 커버리지
+# 테스트 및 커버리지
 coverage/
 
-# 임시 파일
+# 임시 및 기타 파일
 tmp/
 temp/
-.ignore
+.ignore/
+*.bak
+*.tmp

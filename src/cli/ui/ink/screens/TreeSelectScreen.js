@@ -22,7 +22,7 @@ function TreeSelectScreen({ wizard, options, inkComponents }) {
   // initialTreeId가 있으면 이 화면을 건너뜀
   React.useEffect(() => {
     if (options.initialTreeId) {
-      wizard.goToScan(options.initialTreeId);
+      wizard.goToPreset(options.initialTreeId);
     }
   }, []);
 
@@ -32,7 +32,7 @@ function TreeSelectScreen({ wizard, options, inkComponents }) {
     if (key.downArrow) setIdx(i => Math.min(TREE_ITEMS.length - 1, i + 1));
     if (key.return) {
       setDone(true);
-      wizard.goToScan(TREE_ITEMS[idx].value);
+      wizard.goToPreset(TREE_ITEMS[idx].value);
     }
   });
 

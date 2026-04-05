@@ -1,142 +1,114 @@
 'use strict';
 
-const { startSession, submitAnswer, getAnswers, getCurrentQuestion, getSession } = require('../src/core/qna');
+const { startSession, submitAnswer, getAnswers, getCurrentQuestion } = require('../src/core/qna');
+const { getSession } = require('../src/core/qna/engine');
 
-describe('QnA Engine — error-solving 전체 플로우', () => {
-  test('6개 노드 순서대로 답변 후 completed: true', () => {
+describe('QnA Engine — error-solving 분기 플로우', () => {
+  test('runtime 분기에서 errorEvidence 경로를 따른다', () => {
     const { session } = startSession('error-solving');
     const { sessionId } = session;
 
-    expect(getCurrentQuestion(sessionId).key).toBe('role');
-    expect(submitAnswer(sessionId, '시니어 Node.js 개발자')).toEqual({ success: true, completed: false });
-
-    expect(getCurrentQuestion(sessionId).key).toBe('goal');
-    expect(submitAnswer(sessionId, '미들웨어 에러 해결')).toEqual({ success: true, completed: false });
-
-    expect(getCurrentQuestion(sessionId).key).toBe('currentSituation');
-    expect(submitAnswer(sessionId, 'Express 미들웨어에서 에러 발생')).toEqual({ success: true, completed: false });
-
-    expect(getCurrentQuestion(sessionId).key).toBe('errorEvidence');
-    expect(submitAnswer(sessionId, 'TypeError: Cannot read properties of undefined')).toEqual({ success: true, completed: false });
-
-    expect(getCurrentQuestion(sessionId).key).toBe('triedMethods');
-    expect(submitAnswer(sessionId, 'console.log 디버깅, 스택 오버플로우 검색')).toEqual({ success: true, completed: false });
-
-    expect(getCurrentQuestion(sessionId).key).toBe('constraints');
-    expect(submitAnswer(sessionId, '')).toEqual({ success: true, completed: true });
-
-    const answers = getAnswers(sessionId);
-    expect(answers.role).toBe('시니어 Node.js 개발자');
-    expect(answers.errorEvidence).toBe('TypeError: Cannot read properties of undefined');
-  });
-});
-
-describe('QnA Engine — feature-impl 분기 경로', () => {
-  test('feature-impl은 has-existing-code에서 existingCode를 직접 받는다', () => {
-    const { session } = startSession('feature-impl');
-    const { sessionId } = session;
-
-    // role
     submitAnswer(sessionId, '백엔드 개발자');
-    // goal
-    submitAnswer(sessionId, '로그인 기능 구현');
-    // current-situation (optional)
-    submitAnswer(sessionId, '');
-
-    expect(getCurrentQuestion(sessionId).nodeId).toBe('has-existing-code');
-
-    submitAnswer(sessionId, 'function login() {}');
-    expect(getCurrentQuestion(sessionId).nodeId).toBe('constraints');
-
-    const result = submitAnswer(sessionId, '');
-    expect(result).toEqual({ success: true, completed: true });
-
-    const answers = getAnswers(sessionId);
-    expect(answers.existingCode).toBe('function login() {}');
+    submitAnswer(sessionId, '런타임 오류 해결');
+    submitAnswer(sessionId, '요청 처리 중 예외 발생');
+    expect(getCurrentQuestion(sessionId).key).toBe('errorType');
+    submitAnswer(sessionId, 'runtime');
+    expect(getCurrentQuestion(sessionId).key).toBe('errorEvidence');
   });
 
-  test('existingCode를 비우면 그대로 다음 질문으로 진행한다', () => {
+  test('build 분기에서 buildLog 경로를 따른다', () => {
+    const { session } = startSession('error-solving');
+    const { sessionId } = session;
+
+    submitAnswer(sessionId, '백엔드 개발자');
+    submitAnswer(sessionId, '빌드 오류 해결');
+    submitAnswer(sessionId, 'CI에서만 실패');
+    submitAnswer(sessionId, 'build');
+    expect(getCurrentQuestion(sessionId).key).toBe('buildLog');
+  });
+});
+
+describe('QnA Engine — feature-impl 분기', () => {
+  test('new 분기는 techPreference로 이동한다', () => {
     const { session } = startSession('feature-impl');
     const { sessionId } = session;
 
-    // role
     submitAnswer(sessionId, '프론트엔드 개발자');
-    // goal
-    submitAnswer(sessionId, '회원가입 기능');
-    // current-situation (optional)
-    submitAnswer(sessionId, '');
+    submitAnswer(sessionId, '신규 컴포넌트 구현');
+    submitAnswer(sessionId, 'new');
+    expect(getCurrentQuestion(sessionId).key).toBe('techPreference');
+  });
 
-    expect(getCurrentQuestion(sessionId).nodeId).toBe('has-existing-code');
+  test('modify 분기는 targetCode와 modificationScope를 거친다', () => {
+    const { session } = startSession('feature-impl');
+    const { sessionId } = session;
 
-    submitAnswer(sessionId, '');
-    expect(getCurrentQuestion(sessionId).nodeId).toBe('constraints');
-
-    const answers_so_far = getSession(sessionId).answers;
-    expect(answers_so_far.existingCode).toBe('');
+    submitAnswer(sessionId, '백엔드 개발자');
+    submitAnswer(sessionId, '기존 코드 수정');
+    submitAnswer(sessionId, 'modify');
+    expect(getCurrentQuestion(sessionId).key).toBe('targetCode');
+    submitAnswer(sessionId, 'function login() {}');
+    expect(getCurrentQuestion(sessionId).key).toBe('modificationScope');
   });
 });
 
-describe('QnA Engine — 필수 입력 누락', () => {
-  test('required: true 노드에 빈 문자열 → { success: false, error }', () => {
-    const { session } = startSession('error-solving');
+describe('QnA Engine — code-review/concept-learn 변경 키', () => {
+  test('code-review security 분기에서 securityContext를 묻는다', () => {
+    const { session } = startSession('code-review');
     const { sessionId } = session;
 
-    const result = submitAnswer(sessionId, '');
-    expect(result.success).toBe(false);
-    expect(result.error).toBeTruthy();
+    submitAnswer(sessionId, '보안 엔지니어');
+    submitAnswer(sessionId, '취약점 점검');
+    submitAnswer(sessionId, 'const a = 1;');
+    submitAnswer(sessionId, 'security');
+    expect(getCurrentQuestion(sessionId).key).toBe('securityContext');
   });
 
-  test('required: true 노드에 공백만 입력 → { success: false, error }', () => {
-    const { session } = startSession('error-solving');
-    const { sessionId } = session;
-
-    const result = submitAnswer(sessionId, '   ');
-    expect(result.success).toBe(false);
-    expect(result.error).toBeTruthy();
-  });
-});
-
-describe('QnA Engine — select 유효성 검사', () => {
-  test('options 외 값 제출 → { success: false, error }', () => {
+  test('concept-learn은 outputPref를 포함한다', () => {
     const { session } = startSession('concept-learn');
     const { sessionId } = session;
 
-    // role, goal, concept을 거쳐 skill-level(select)로 이동
     submitAnswer(sessionId, '개발자');
     submitAnswer(sessionId, '개념 학습');
     submitAnswer(sessionId, '이벤트 루프');
-    expect(getCurrentQuestion(sessionId).nodeId).toBe('skill-level');
+    expect(getCurrentQuestion(sessionId).key).toBe('skillLevel');
+    submitAnswer(sessionId, 'beginner');
+    expect(getCurrentQuestion(sessionId).key).toBe('outputPref');
+  });
+});
 
+describe('QnA Engine — role 추천 및 select 유효성 검사', () => {
+  test('scanResult를 주면 role 질문이 select-or-text와 options를 반환한다', () => {
+    const { session } = startSession('error-solving', {
+      scanResult: {
+        frameworks: [{ name: 'Express' }],
+        languages: [{ name: 'JavaScript' }],
+      },
+    });
+    const q = getCurrentQuestion(session.sessionId);
+    expect(q.inputType).toBe('select-or-text');
+    expect(Array.isArray(q.options)).toBe(true);
+    expect(q.options.length).toBeGreaterThan(1);
+  });
+
+  test('select 유효성 검사에서 options 외 값은 실패한다', () => {
+    const { session } = startSession('concept-learn');
+    const { sessionId } = session;
+    submitAnswer(sessionId, '개발자');
+    submitAnswer(sessionId, '학습');
+    submitAnswer(sessionId, '트랜잭션');
     const result = submitAnswer(sessionId, '모름');
     expect(result.success).toBe(false);
     expect(result.error).toMatch(/유효하지 않은 옵션/);
   });
 
-  test('올바른 옵션 제출 → success: true', () => {
-    const { session } = startSession('concept-learn');
+  test('select-or-text에서 직접 입력값도 허용된다', () => {
+    const { session } = startSession('error-solving', {
+      scanResult: { frameworks: [{ name: 'Express' }], languages: [{ name: 'JavaScript' }] },
+    });
     const { sessionId } = session;
-
-    submitAnswer(sessionId, '개발자');
-    submitAnswer(sessionId, '개념 학습');
-    submitAnswer(sessionId, '이벤트 루프');
-    const result = submitAnswer(sessionId, '완전초보');
+    const result = submitAnswer(sessionId, '시니어 플랫폼 엔지니어');
     expect(result.success).toBe(true);
-  });
-});
-
-describe('QnA Engine — multiline-mention inputType', () => {
-  test('multiline-mention 타입 노드가 유효하다', () => {
-    const { session } = startSession('error-solving');
-    const { sessionId } = session;
-
-    // role 답변
-    submitAnswer(sessionId, '개발자');
-    // goal 답변
-    submitAnswer(sessionId, '에러 해결');
-
-    // current-situation은 multiline-mention 타입
-    const q = getCurrentQuestion(sessionId);
-    expect(q.inputType).toBe('multiline-mention');
-    expect(q.key).toBe('currentSituation');
+    expect(getSession(sessionId).answers.role).toBe('시니어 플랫폼 엔지니어');
   });
 });

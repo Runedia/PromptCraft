@@ -1,0 +1,16 @@
+{
+  "id": "cr-03-readability",
+  "treeId": "code-review",
+  "name": "가독성/유지보수 리뷰",
+  "description": "네이밍, 모듈화, 중복 제거, 테스트 용이성 중심 점검",
+  "examples": [
+    {
+      "label": "서비스 파일 구조 개선",
+      "prefill": {
+        "reviewFocus": "readability",
+        "goal": "장기 유지보수에 적합한 코드 구조 점검",
+        "concernArea": "함수가 너무 길고 의존성이 복잡함"
+      }
+    }
+  ]
+}

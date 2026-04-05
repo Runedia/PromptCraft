@@ -31,10 +31,41 @@
 {{triedMethods}}
 {{/if}}
 
+{{#if (eq errorType "runtime")}}
+### 에러 로그 (Runtime Error)
+"""
+{{{errorEvidence}}}
+"""
+{{/if}}
+
+{{#if (eq errorType "build")}}
+### 빌드 에러 로그
+"""
+{{{buildLog}}}
+"""
+{{/if}}
+
+{{#if (eq errorType "network")}}
+### 요청/응답 스니펫
+"""
+{{{requestLog}}}
+"""
+{{/if}}
+
+{{#if (eq errorType "perf")}}
+### 성능 측정 데이터
+{{{profilingData}}}
+{{#if baselineMetric}}
+- **기대 기준치**: {{baselineMetric}}
+{{/if}}
+{{/if}}
+
+{{#unless errorType}}
 ### 오류 내용 및 증거 (Error Log)
 """
 {{{errorEvidence}}}
 """
+{{/unless}}
 
 ---
 

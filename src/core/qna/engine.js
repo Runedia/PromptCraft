@@ -5,11 +5,20 @@ const path = require('path');
 const { randomUUID } = require('crypto');
 const { validate } = require('./validator');
 const { QnAError } = require('../../shared/errors');
+const { suggestRoles } = require('./role-suggester');
 
 const TREES_DIR = path.join(__dirname, '../../../data/trees');
 
 const treeCache = new Map();
 const sessions = new Map();
+
+function resolveNodeOptions(node, session) {
+  if (!node) return null;
+  if (node.optionsSource === 'scan.suggestedRoles') {
+    return suggestRoles(session && session.scanResult ? session.scanResult : null);
+  }
+  return node.options || null;
+}
 
 function loadTree(treeId) {
   if (treeCache.has(treeId)) {
@@ -24,7 +33,7 @@ function loadTree(treeId) {
   return tree;
 }
 
-function createSession(treeId) {
+function createSession(treeId, options = {}) {
   const tree = loadTree(treeId);
   const sessionId = randomUUID();
   const session = {
@@ -33,6 +42,7 @@ function createSession(treeId) {
     currentNodeId: tree.startNodeId || tree.startNode,
     answers: {},
     completed: false,
+    scanResult: options.scanResult || null,
   };
   sessions.set(sessionId, session);
   return { ...session };
@@ -59,13 +69,18 @@ function getCurrentQuestion(sessionId) {
   if (!node) {
     throw new QnAError(`노드를 찾을 수 없습니다: ${session.currentNodeId}`);
   }
+  const options = resolveNodeOptions(node, session);
+
   return {
     nodeId: node.id,
     question: node.question,
     key: node.answerKey || node.key,
     inputType: node.inputType,
     required: node.required,
-    options: node.options || null,
+    options,
+    hint: node.hint || null,
+    placeholder: node.placeholder || null,
+    examples: Array.isArray(node.examples) ? node.examples : null,
   };
 }
 
@@ -83,7 +98,10 @@ function submitAnswer(sessionId, value) {
     throw new QnAError(`노드를 찾을 수 없습니다: ${session.currentNodeId}`);
   }
 
-  const result = validate(node, value);
+  const result = validate({
+    ...node,
+    options: resolveNodeOptions(node, session),
+  }, value);
   if (!result.valid) {
     return { success: false, error: result.error };
   }

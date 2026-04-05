@@ -10,7 +10,6 @@
   "scripts": {
     "start": "node bin/promptcraft.js",
     "dev": "nodemon bin/promptcraft.js",
-    "serve": "node bin/promptcraft.js serve",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -34,8 +33,6 @@
     "chalk": "^5.6.2",
     "clipboardy": "^5.3.1",
     "commander": "^14.0.3",
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
     "glob": "^13.0.6",
     "handlebars": "^4.7.8",
     "ignore": "^7.0.5",
@@ -46,7 +43,6 @@
   },
   "devDependencies": {
     "jest": "^30.2.0",
-    "nodemon": "^3.1.14",
-    "supertest": "^7.0.0"
+    "nodemon": "^3.1.14"
   }
 }

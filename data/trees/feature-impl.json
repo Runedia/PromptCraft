@@ -6,8 +6,10 @@
   "nodes": {
     "role": {
       "id": "role",
-      "question": "당신의 역할 또는 전문성을 알려주세요.",
-      "inputType": "text",
+      "question": "역할 또는 전문성을 선택하거나 직접 입력하세요.",
+      "hint": "스캔한 프로젝트 스택을 기반으로 추천 역할을 제시합니다. '직접 입력'을 선택하면 자유롭게 작성할 수 있습니다.",
+      "inputType": "select-or-text",
+      "optionsSource": "scan.suggestedRoles",
       "required": true,
       "answerKey": "role",
       "next": "goal"
@@ -15,30 +17,63 @@
     "goal": {
       "id": "goal",
       "question": "구현하려는 기능을 구체적으로 설명하세요.",
+      "hint": "사용자 가치와 완료 기준을 함께 적으면 구현 품질이 좋아집니다.",
+      "examples": [
+        "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환",
+        "관리자 대시보드에 최근 7일 통계 위젯을 추가"
+      ],
       "inputType": "text",
       "required": true,
       "answerKey": "goal",
-      "next": "current-situation"
+      "next": "impl-scope"
     },
-    "current-situation": {
-      "id": "current-situation",
-      "question": "(선택) 기존 코드 구조나 현재 상황을 설명하세요. @파일경로 로 파일을 첨부할 수 있습니다.",
-      "inputType": "multiline-mention",
-      "required": false,
-      "answerKey": "currentSituation",
-      "next": "has-existing-code"
+    "impl-scope": {
+      "id": "impl-scope",
+      "question": "구현 범위를 선택하세요.",
+      "hint": "신규 구현인지 기존 코드 수정인지 선택하면 질문이 최적화됩니다.",
+      "inputType": "select",
+      "required": true,
+      "options": [
+        { "value": "new", "label": "신규 구현", "description": "새 기능을 바닥부터 추가" },
+        { "value": "modify", "label": "기존 코드 수정", "description": "현재 코드 기반으로 변경/확장" }
+      ],
+      "answerKey": "implScope",
+      "branches": {
+        "new": "tech-preference",
+        "modify": "target-code"
+      }
     },
-    "has-existing-code": {
-      "id": "has-existing-code",
-      "question": "(선택) 수정하거나 참고할 파일을 첨부하세요. @파일경로 로 첨부, 없으면 빈 줄로 건너뜁니다.",
-      "inputType": "multiline-mention",
+    "tech-preference": {
+      "id": "tech-preference",
+      "question": "(선택) 선호하는 라이브러리/패턴이 있나요?",
+      "hint": "예: clean architecture, react-query, prisma, repository pattern",
+      "inputType": "text",
       "required": false,
-      "answerKey": "existingCode",
+      "answerKey": "techPreference",
+      "next": "constraints"
+    },
+    "target-code": {
+      "id": "target-code",
+      "question": "수정할 대상 코드나 파일을 첨부하세요. @파일경로 로 첨부할 수 있습니다.",
+      "hint": "핵심 함수/모듈만 첨부해도 됩니다.",
+      "inputType": "multiline-mention",
+      "required": true,
+      "answerKey": "targetCode",
+      "next": "modification-scope"
+    },
+    "modification-scope": {
+      "id": "modification-scope",
+      "question": "수정 범위와 반드시 유지해야 할 동작을 설명하세요.",
+      "hint": "호환성, 성능, API 계약 등 유지 조건을 명시하세요.",
+      "inputType": "text",
+      "required": true,
+      "answerKey": "modificationScope",
       "next": "constraints"
     },
     "constraints": {
       "id": "constraints",
       "question": "(선택) 제약 조건이 있다면 작성하세요.",
+      "hint": "배포 일정, 테스트 정책, 의존성 제한 등을 포함할 수 있습니다.",
       "inputType": "multiline",
       "required": false,
       "answerKey": "constraints",

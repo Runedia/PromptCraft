@@ -1,0 +1,17 @@
+{
+  "id": "es-03-network-api",
+  "treeId": "error-solving",
+  "name": "네트워크/API 에러",
+  "description": "요청/응답 이상, 타임아웃, 인증 실패 등 네트워크 문제",
+  "examples": [
+    {
+      "label": "간헐적 502 에러",
+      "prefill": {
+        "errorType": "network",
+        "goal": "API 게이트웨이 502 에러의 원인을 파악하고 안정화",
+        "currentSituation": "피크 시간대에만 결제 API 호출 실패가 발생합니다.",
+        "requestLog": "POST /api/payments 502 (Gateway Timeout) responseTime=30001ms"
+      }
+    }
+  ]
+}

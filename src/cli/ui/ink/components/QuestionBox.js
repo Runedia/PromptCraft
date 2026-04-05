@@ -5,6 +5,7 @@ const TextInput      = require('./TextInput');
 const MultilineInput = require('./MultilineInput');
 const MentionInput   = require('./MentionInput');
 const SelectInput    = require('./SelectInput');
+const SelectOrTextInput = require('./SelectOrTextInput');
 const ProgressBar    = require('./ProgressBar');
 
 function QuestionBox({ question, projectRoot, submit, submitError, prefillValue, stepNum, totalSteps, inkComponents }) {
@@ -16,6 +17,15 @@ function QuestionBox({ question, projectRoot, submit, submitError, prefillValue,
     case 'select':
       inputEl = React.createElement(SelectInput, {
         options: question.options, onSubmit: submit, initialValue: prefillValue, inkComponents,
+      });
+      break;
+    case 'select-or-text':
+      inputEl = React.createElement(SelectOrTextInput, {
+        options: question.options,
+        onSubmit: submit,
+        initialValue: prefillValue,
+        required: question.required,
+        inkComponents,
       });
       break;
     case 'multiline':
@@ -50,6 +60,21 @@ function QuestionBox({ question, projectRoot, submit, submitError, prefillValue,
     React.createElement(Box, { marginLeft: 2, marginBottom: 0 },
       React.createElement(Text, { dimColor: true }, '─'.repeat(48))
     ),
+    question.hint
+      ? React.createElement(Box, { marginLeft: 2, marginBottom: 0 },
+          React.createElement(Text, { dimColor: true }, `💡 ${question.hint}`)
+        )
+      : null,
+    Array.isArray(question.examples) && question.examples.length > 0
+      ? React.createElement(Box, { marginLeft: 2, marginBottom: 0, flexDirection: 'column' },
+          React.createElement(Text, { dimColor: true }, '예시:'),
+          ...question.examples.slice(0, 2).map((item, idx) =>
+            React.createElement(Box, { key: `example-${idx}` },
+              React.createElement(Text, { dimColor: true }, `  • ${item}`)
+            )
+          )
+        )
+      : null,
     // 입력 영역
     React.createElement(Box, { marginLeft: 2 }, inputEl),
     // 에러

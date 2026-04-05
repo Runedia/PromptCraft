@@ -1,0 +1,16 @@
+{
+  "id": "cr-04-architecture",
+  "treeId": "code-review",
+  "name": "아키텍처/구조 리뷰",
+  "description": "레이어 경계, 의존성 방향, 확장성 관점에서 점검",
+  "examples": [
+    {
+      "label": "레이어 분리 점검",
+      "prefill": {
+        "reviewFocus": "architecture",
+        "goal": "Core와 API 레이어 경계 위반 여부 점검",
+        "concernArea": "라우트 파일에 비즈니스 로직이 섞였는지 확인"
+      }
+    }
+  ]
+}
