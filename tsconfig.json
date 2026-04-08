@@ -23,6 +23,8 @@
   "exclude": [
     "dist",
     "node_modules",
-    "tests/fixtures/**/*"
+    "tests/fixtures/**/*",
+    "src/web/**/*",
+    "vite.config.ts"
   ]
 }

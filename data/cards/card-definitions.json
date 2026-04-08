@@ -1,0 +1,255 @@
+{
+  "role": {
+    "label": "역할",
+    "required": true,
+    "inputType": "select-or-text",
+    "template": "## Role\n{{value}}",
+    "hint": "AI에게 부여할 전문가 역할을 선택하거나 직접 입력하세요.",
+    "examples": ["TypeScript 개발자", "백엔드 엔지니어", "풀스택 개발자", "DevOps 엔지니어", "프론트엔드 개발자", "React 개발자", "보안 엔지니어", "시니어 개발자"]
+  },
+  "goal": {
+    "label": "목표",
+    "required": true,
+    "inputType": "text",
+    "template": "## Goal\n{{value}}",
+    "hint": "달성하려는 목표를 한 문장으로 작성하세요.",
+    "examples": [
+      "배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정",
+      "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환"
+    ]
+  },
+  "stack-environment": {
+    "label": "스택 & 환경",
+    "required": false,
+    "inputType": "multiline",
+    "template": "## Stack & Environment\n{{value}}",
+    "hint": "프레임워크, 언어, 패키지 매니저 등 환경 정보. 스캔 시 자동 채워집니다.",
+    "scanSuggested": true
+  },
+  "error-evidence": {
+    "label": "에러 증거",
+    "required": false,
+    "inputType": "multiline-mention",
+    "template": "## Error Evidence\n{{value}}",
+    "hint": "다음 3요소를 포함하세요: (1) 에러 메시지 원문 (2) 파일:라인 위치 (3) 재현 조건. @파일경로로 파일 참조 가능.",
+    "examples": [
+      "TypeError: Cannot read properties of undefined at src/service/user.js:42:17",
+      "UnhandledPromiseRejection: Error: connect ECONNREFUSED 127.0.0.1:5432"
+    ]
+  },
+  "tried-methods": {
+    "label": "시도한 방법",
+    "required": false,
+    "inputType": "multiline",
+    "template": "## Tried Methods\n{{value}}",
+    "hint": "이미 시도해본 방법을 나열하세요. 중복 제안을 줄일 수 있습니다."
+  },
+  "current-situation": {
+    "label": "현재 상황",
+    "required": false,
+    "inputType": "multiline-mention",
+    "template": "## Current Situation\n{{value}}",
+    "hint": "발생 조건, 재현 단계, 관련 코드 위치를 포함하면 정확도가 높아집니다.",
+    "examples": [
+      "프로세스 재시작 후 첫 요청만 실패하고 이후에는 정상 동작",
+      "특정 사용자 데이터에서만 파싱 에러가 발생"
+    ]
+  },
+  "constraints": {
+    "label": "제약 조건",
+    "required": false,
+    "inputType": "multiline",
+    "template": "## Constraints\n{{value}}",
+    "hint": "반드시 지켜야 하는 기술/운영 제약을 적어주세요. '~하지 말 것'보다 '~해야 한다'로 표현하면 효과적입니다.",
+    "examples": [
+      "- 기존 API 응답 형식 유지 (하위 호환)\n- 함수형 스타일 사용\n- 외부 라이브러리 추가 금지",
+      "- 응답 시간 200ms 이내\n- TypeScript strict 모드 준수\n- 기존 테스트 깨지지 않아야 함"
+    ]
+  },
+  "build-log": {
+    "label": "빌드 로그",
+    "required": false,
+    "inputType": "multiline-mention",
+    "template": "## Build Log\n{{value}}",
+    "hint": "빌드/컴파일 에러 로그를 붙여넣으세요. 첫 번째 에러와 연쇄 에러를 함께 포함해 주세요."
+  },
+  "request-log": {
+    "label": "요청/응답 로그",
+    "required": false,
+    "inputType": "multiline-mention",
+    "template": "## Request Log\n{{value}}",
+    "hint": "HTTP 메서드, URL, 상태코드, 응답 본문 일부를 포함하세요."
+  },
+  "profiling-data": {
+    "label": "프로파일링 데이터",
+    "required": false,
+    "inputType": "multiline",
+    "template": "## Profiling Data\n{{value}}",
+    "hint": "응답 시간, CPU/메모리 사용량, 병목 함수 정보를 포함하면 좋습니다."
+  },
+  "baseline-metric": {
+    "label": "기준 성능 지표",
+    "required": false,
+    "inputType": "text",
+    "template": "## Baseline Metric\n{{value}}",
+    "hint": "예: API p95 300ms 이하, 메모리 512MB 이하"
+  },
+  "impl-scope": {
+    "label": "구현 범위",
+    "required": false,
+    "inputType": "select-or-text",
+    "template": "## Implementation Scope\n{{value}}",
+    "hint": "신규 구현인지 기존 코드 수정인지 선택하거나 직접 작성하세요.",
+    "options": [
+      { "value": "신규 구현 — 새 기능을 바닥부터 추가", "label": "신규 구현" },
+      { "value": "기존 코드 수정/확장 — 현재 코드 기반으로 변경", "label": "기존 코드 수정" }
+    ]
+  },
+  "target-code": {
+    "label": "대상 코드",
+    "required": false,
+    "inputType": "multiline-mention",
+    "template": "## Target Code\n{{value}}",
+    "hint": "수정할 대상 코드나 파일을 붙여넣으세요. @파일경로로 첨부 가능."
+  },
+  "tech-preference": {
+    "label": "기술 선호",
+    "required": false,
+    "inputType": "text",
+    "template": "## Tech Preference\n{{value}}",
+    "hint": "선호하는 라이브러리/패턴이 있다면 입력하세요. (예: clean architecture, react-query, prisma)"
+  },
+  "modification-scope": {
+    "label": "수정 범위",
+    "required": false,
+    "inputType": "text",
+    "template": "## Modification Scope\n{{value}}",
+    "hint": "수정 범위와 반드시 유지해야 할 동작을 설명하세요. (호환성, 성능, API 계약 등)"
+  },
+  "review-code": {
+    "label": "리뷰 대상 코드",
+    "required": false,
+    "inputType": "multiline-mention",
+    "template": "## Review Code\n{{value}}",
+    "hint": "리뷰할 코드를 붙여넣으세요. @파일경로로 첨부 가능."
+  },
+  "review-focus": {
+    "label": "리뷰 중점",
+    "required": false,
+    "inputType": "select-or-text",
+    "template": "## Review Focus\n{{value}}",
+    "hint": "리뷰 중점을 선택하거나 직접 작성하세요.",
+    "options": [
+      { "value": "성능 최적화 — 병목 지점, 시간/메모리 복잡도, 캐시 전략", "label": "성능 최적화" },
+      { "value": "보안 취약점 — 인증/인가, 인젝션, 민감 정보 노출", "label": "보안 취약점" },
+      { "value": "가독성/유지보수 — 네이밍, 모듈화, 주석, 중복 코드", "label": "가독성/유지보수" },
+      { "value": "아키텍처/구조 — 레이어 분리, 의존성, 확장성", "label": "아키텍처/구조" },
+      { "value": "전체 종합 리뷰 — 여러 관점을 균형 있게 점검", "label": "전체 종합 리뷰" },
+      { "value": "테스트 커버리지 — 테스트 누락, 엣지 케이스, 모킹 전략", "label": "테스트 커버리지" },
+      { "value": "에러 핸들링 — 예외 처리, 에러 전파, 사용자 피드백", "label": "에러 핸들링" },
+      { "value": "타입 안전성 — 타입 정의, 제네릭, 타입 가드, any 사용", "label": "타입 안전성" }
+    ]
+  },
+  "security-context": {
+    "label": "보안 맥락",
+    "required": false,
+    "inputType": "text",
+    "template": "## Security Context\n{{value}}",
+    "hint": "인증 방식, 외부 노출 여부 등 보안 맥락을 설명하세요."
+  },
+  "concern-area": {
+    "label": "우려 영역",
+    "required": false,
+    "inputType": "text",
+    "template": "## Concern Area\n{{value}}",
+    "hint": "특별히 신경 쓰이는 부분을 설명하세요. (예: DB 쿼리 최적화, 인증 우회 가능성)"
+  },
+  "concept": {
+    "label": "학습 개념",
+    "required": false,
+    "inputType": "text",
+    "template": "## Concept\n{{value}}",
+    "hint": "배우고 싶은 개념이나 기술을 구체적으로 알려주세요.",
+    "examples": [
+      "JavaScript 이벤트 루프와 마이크로태스크 큐",
+      "트랜잭션 격리 수준과 동시성 문제"
+    ]
+  },
+  "skill-level": {
+    "label": "현재 수준",
+    "required": false,
+    "inputType": "select-or-text",
+    "template": "## Skill Level\n{{value}}",
+    "hint": "해당 분야의 현재 수준을 선택하세요.",
+    "options": [
+      { "value": "입문 — 처음 접하는 개념, 기초부터 필요", "label": "입문" },
+      { "value": "중급 — 기본은 알고 있고 실전 응용이 필요", "label": "중급" },
+      { "value": "심화 — 원리와 트레이드오프까지 깊게 이해하고 싶음", "label": "심화" }
+    ]
+  },
+  "output-pref": {
+    "label": "설명 방식",
+    "required": false,
+    "inputType": "select-or-text",
+    "template": "## Output Preference\n{{value}}",
+    "hint": "원하는 설명 방식을 선택하세요.",
+    "options": [
+      { "value": "개념 중심 설명 — 원리, 비유, 실생활 예시 중심", "label": "개념 중심 설명" },
+      { "value": "코드 중심 설명 — 실행 가능한 예제 코드부터 설명", "label": "코드 중심 설명" },
+      { "value": "비교/대조 설명 — 유사 개념과의 차이점 중심", "label": "비교/대조 설명" }
+    ]
+  },
+  "expected-behavior": {
+    "label": "기대 동작",
+    "required": false,
+    "inputType": "multiline",
+    "template": "## Expected Behavior\n{{value}}",
+    "hint": "정상 동작 시 예상 결과를 작성하세요. '기대 vs 실제' 대비가 디버깅 정확도를 높입니다.",
+    "examples": [
+      "로그인 API 호출 시 200 OK와 JWT 토큰 반환",
+      "빌드 완료 후 dist/ 폴더에 번들 파일 생성"
+    ]
+  },
+  "acceptance-criteria": {
+    "label": "수락 기준",
+    "required": false,
+    "inputType": "multiline",
+    "template": "## Acceptance Criteria\n{{value}}",
+    "hint": "구현 완료를 판단할 수 있는 구체적 기준을 나열하세요.",
+    "examples": [
+      "- 이메일 형식 검증 실패 시 400 에러 반환\n- 중복 이메일 가입 시 409 에러 반환\n- 성공 시 JWT 토큰과 사용자 정보 반환",
+      "- 이미지 리사이징 후 S3 업로드 완료\n- 업로드 진행률 UI 표시\n- 5MB 초과 파일 거부"
+    ]
+  },
+  "output-format": {
+    "label": "응답 형식",
+    "required": false,
+    "inputType": "select-or-text",
+    "template": "## Output Format\n{{value}}",
+    "hint": "AI 응답의 구조를 지정하세요. 형식을 명시하면 답변 품질이 크게 향상됩니다.",
+    "options": [
+      { "value": "완전한 코드 + 변경 부분 주석 표시", "label": "전체 코드" },
+      { "value": "diff 형식 — 변경 전후만 표시", "label": "diff 형식" },
+      { "value": "단계별 설명 + 각 단계의 코드 스니펫", "label": "단계별 설명" },
+      { "value": "요약표 + 상세 분석", "label": "표 + 분석" }
+    ]
+  },
+  "example-io": {
+    "label": "입출력 예시",
+    "required": false,
+    "inputType": "multiline",
+    "template": "## Example Input/Output\n{{value}}",
+    "hint": "기대하는 입력과 출력의 구체적 예시를 제공하세요. Few-shot 예시는 AI 정확도를 크게 높입니다.",
+    "examples": [
+      "입력: POST /api/login { email: \"user@test.com\", password: \"1234\" }\n출력: { token: \"eyJ...\", user: { id: 1, email: \"user@test.com\" } }",
+      "입력: [3, 1, 4, 1, 5]\n출력: [1, 1, 3, 4, 5] (오름차순 정렬)"
+    ]
+  },
+  "related-code": {
+    "label": "관련 코드",
+    "required": false,
+    "inputType": "multiline-mention",
+    "template": "## Related Code\n{{value}}",
+    "hint": "직접 수정하지는 않지만 참조해야 할 의존 코드를 첨부하세요. @파일경로 사용 가능."
+  }
+}

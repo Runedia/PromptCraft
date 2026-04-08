@@ -1,6 +1,3 @@
-import readline from 'node:readline';
-import { autocompleteFilePathSync, parseMentions } from './file-mention.js';
-
 // chalk, @inquirer/prompts는 ESM-only이므로 동적 import 사용
 let _chalk = null;
 let _inquirerPrompts = null;
@@ -138,69 +135,9 @@ function stopSpinner(finalMsg?: string) {
   }
 }
 
-/**
- * @멘션 지원 멀티라인 입력
- * Inquirer를 우회하고 Node.js readline 직접 사용
- * @param {string} message - 표시할 질문
- * @param {string} projectRoot - 프로젝트 루트 경로
- * @returns {Promise<string>}
- */
-async function askMentionMultiline(message, projectRoot) {
-  const chalk = await getChalk();
-
-  console.log(chalk.bold(message));
-  console.log(chalk.dim('  @경로로 파일 첨부 가능 | 빈 줄 입력으로 완료'));
-
-  const lines = [];
-
-  return new Promise((resolve) => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-      terminal: true,
-      completer: (line) => {
-        const atIndex = line.lastIndexOf('@');
-        if (atIndex !== -1) {
-          const partial = line.slice(atIndex + 1);
-          const completions = autocompleteFilePathSync(partial, projectRoot);
-          if (completions.length === 0) return [[], line];
-          const prefix = line.slice(0, atIndex + 1); // "@" 포함 이전 부분
-          return [completions.map((c) => `${prefix}${c}`), line];
-        }
-        return [[], line];
-      },
-    });
-
-    rl.on('line', async (line) => {
-      if (line === '') {
-        rl.close();
-        const rawText = lines.join('\n');
-        const processed = parseMentions(rawText, projectRoot);
-        resolve(processed);
-      } else {
-        lines.push(line);
-      }
-    });
-
-    rl.on('close', () => {
-      if (lines.length > 0) {
-        const rawText = lines.join('\n');
-        const processed = parseMentions(rawText, projectRoot);
-        resolve(processed);
-      }
-    });
-
-    rl.on('SIGINT', () => {
-      rl.close();
-      resolve(lines.join('\n'));
-    });
-  });
-}
-
 export {
   applyNoColor,
   askConfirm,
-  askMentionMultiline,
   askMultiline,
   askSelect,
   askText,

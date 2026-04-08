@@ -24,10 +24,16 @@ function set(key: string, value: string): void {
   }
 }
 
+function getAll(): Record<string, string> {
+  const db = getConnection();
+  const rows = db.prepare(`SELECT key, value FROM config`).all() as { key: string; value: string }[];
+  return Object.fromEntries(rows.map((r) => [r.key, r.value]));
+}
+
 function deleteByKey(key: string): number {
   const db = getConnection();
   const result = db.prepare(`DELETE FROM config WHERE key = ?`).run(key);
   return result.changes;
 }
 
-export { deleteByKey as delete, get, set };
+export { deleteByKey as delete, get, getAll, set };

@@ -5,7 +5,7 @@ const { ScanError } = require('../src/shared/errors');
 const FIXTURE = path.join(__dirname, 'fixtures', 'sample-project');
 
 describe('scanner', () => {
-  let result: Awaited<ReturnType<typeof import('../src/core/scanner').scan>>;
+  let result: Awaited<ReturnType<typeof import('../src/core/scanner/index.js').scan>>;
 
   beforeAll(async () => {
     result = await scan(FIXTURE);

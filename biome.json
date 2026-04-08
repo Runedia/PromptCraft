@@ -29,5 +29,10 @@
       "quoteStyle": "single",
       "trailingCommas": "es5"
     }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
   }
 }

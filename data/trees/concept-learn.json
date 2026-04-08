@@ -1,74 +1,44 @@
 {
   "id": "concept-learn",
-  "name": "개념 학습",
-  "description": "프로그래밍 개념을 학습하기 위한 질문 트리",
-  "startNode": "role",
-  "nodes": {
-    "role": {
-      "id": "role",
-      "question": "역할 또는 전문성을 선택하거나 직접 입력하세요.",
-      "hint": "스캔한 프로젝트 스택을 기반으로 추천 역할을 제시합니다. '직접 입력'을 선택하면 자유롭게 작성할 수 있습니다.",
-      "inputType": "select-or-text",
-      "optionsSource": "scan.suggestedRoles",
-      "required": true,
-      "answerKey": "role",
-      "next": "goal"
-    },
+  "label": "개념 학습",
+  "description": "기술 개념 이해 및 적용",
+  "icon": "🟡",
+  "defaultActiveCards": [
+    "role",
+    "goal",
+    "concept",
+    "skill-level",
+    "output-pref"
+  ],
+  "cardPool": [
+    "constraints",
+    "example-io",
+    "related-code",
+    "output-format"
+  ],
+  "cardOverrides": {
     "goal": {
-      "id": "goal",
-      "question": "학습하려는 목적이나 배경을 설명하세요.",
       "hint": "왜 배우는지(실무 적용/면접 준비 등)를 적어주면 답변 품질이 향상됩니다.",
-      "inputType": "text",
-      "required": true,
-      "answerKey": "goal",
-      "next": "concept"
-    },
-    "concept": {
-      "id": "concept",
-      "question": "배우고 싶은 개념이나 기술을 구체적으로 알려주세요.",
       "examples": [
-        "JavaScript 이벤트 루프와 마이크로태스크 큐",
-        "트랜잭션 격리 수준과 동시성 문제"
-      ],
-      "inputType": "text",
-      "required": true,
-      "answerKey": "concept",
-      "next": "skill-level"
+        "실무 프로젝트에 바로 적용할 수 있는 수준으로 이해",
+        "다음 주 기술 면접 준비",
+        "팀 내 코드 리뷰 시 해당 개념 기반 피드백 제공 가능 수준",
+        "사이드 프로젝트에서 직접 구현해볼 수 있는 실전 지식 습득"
+      ]
     },
-    "skill-level": {
-      "id": "skill-level",
-      "question": "해당 분야의 현재 수준을 선택하세요.",
-      "inputType": "select",
-      "required": true,
-      "options": [
-        { "value": "beginner", "label": "입문", "description": "처음 접하는 개념, 기초부터 필요" },
-        { "value": "intermediate", "label": "중급", "description": "기본은 알고 있고 실전 응용이 필요" },
-        { "value": "advanced", "label": "심화", "description": "원리와 트레이드오프까지 깊게 이해하고 싶음" }
-      ],
-      "answerKey": "skillLevel",
-      "next": "output-pref"
-    },
-    "output-pref": {
-      "id": "output-pref",
-      "question": "원하는 설명 방식을 선택하세요.",
-      "inputType": "select",
-      "required": true,
-      "options": [
-        { "value": "explanation", "label": "개념 중심 설명", "description": "원리, 비유, 실생활 예시 중심" },
-        { "value": "code-first", "label": "코드 중심 설명", "description": "실행 가능한 예제 코드부터 설명" },
-        { "value": "comparison", "label": "비교/대조 설명", "description": "유사 개념과의 차이점 중심" }
-      ],
-      "answerKey": "outputPref",
-      "next": "constraints"
+    "role": {
+      "examples": ["시니어 멘토", "기술 강사", "풀스택 개발자", "백엔드 엔지니어", "소프트웨어 아키텍트"]
     },
     "constraints": {
-      "id": "constraints",
-      "question": "(선택) 특별한 요구사항이 있다면 작성하세요.",
-      "hint": "예: 수식 최소화, 실무 예시 중심, 코드 길이 제한",
-      "inputType": "multiline",
-      "required": false,
-      "answerKey": "constraints",
-      "next": null
+      "hint": "예: 수식 최소화, 실무 예시 중심, 코드 길이 제한"
+    },
+    "output-format": {
+      "options": [
+        { "value": "개념 설명 → 코드 예제 → 실전 적용 순서", "label": "개념 → 코드 → 실전" },
+        { "value": "비유/시각적 설명 + 핵심 요약 카드", "label": "비유 + 요약" },
+        { "value": "Q&A 형식 — 자주 묻는 질문 기반", "label": "Q&A 형식" },
+        { "value": "치트시트 — 핵심만 빠르게 참조 가능한 형태", "label": "치트시트" }
+      ]
     }
   }
 }

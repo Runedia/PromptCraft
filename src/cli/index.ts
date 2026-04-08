@@ -1,9 +1,8 @@
 import { Command } from 'commander';
 import { VERSION } from '../shared/constants.js';
-import buildCommand from './commands/build.js';
 import configCommand from './commands/config.js';
 import historyCommand from './commands/history.js';
-import scanCommand from './commands/scan.js';
+import { serveCommand } from './commands/serve.js';
 
 async function run() {
   const program = new Command();
@@ -15,8 +14,7 @@ async function run() {
     .option('--no-color', 'chalk 색상 비활성화');
 
   // 명령어 등록
-  program.addCommand(scanCommand);
-  program.addCommand(buildCommand);
+  program.addCommand(serveCommand);
   program.addCommand(historyCommand);
   program.addCommand(configCommand);
 
