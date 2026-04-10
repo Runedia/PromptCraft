@@ -25,17 +25,9 @@ function save(data: HistorySaveInput): number | bigint {
   }
 }
 
-function findAll({
-  limit = 20,
-  offset = 0,
-}: {
-  limit?: number;
-  offset?: number;
-} = {}): HistoryRecord[] {
+function findAll({ limit = 20, offset = 0 }: { limit?: number; offset?: number } = {}): HistoryRecord[] {
   const db = getConnection();
-  const rows = db
-    .prepare(`SELECT * FROM history ORDER BY id DESC LIMIT ? OFFSET ?`)
-    .all(limit, offset) as HistoryRow[];
+  const rows = db.prepare(`SELECT * FROM history ORDER BY id DESC LIMIT ? OFFSET ?`).all(limit, offset) as HistoryRow[];
   return rows.map(_parse);
 }
 

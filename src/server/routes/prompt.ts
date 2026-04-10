@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { buildPrompt } from '../../core/builder/promptBuilder.js';
 import { estimateTokens } from '../../core/builder/tokenEstimator.js';
-import { initialize, history } from '../../core/db/index.js';
+import { history, initialize } from '../../core/db/index.js';
 import type { SectionCard } from '../../core/types/card.js';
 
 const router = Router();

@@ -11,11 +11,7 @@ interface TextInputProps {
 export function TextInput({ value, hint, examples, onChange, placeholder }: TextInputProps) {
   return (
     <div>
-      <Input
-        value={value}
-        placeholder={placeholder ?? hint}
-        onChange={(e) => onChange(e.target.value)}
-      />
+      <Input value={value} placeholder={placeholder ?? hint} onChange={(e) => onChange(e.target.value)} />
       {examples && examples.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
           {examples.slice(0, 2).map((ex) => (

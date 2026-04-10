@@ -40,10 +40,7 @@ function detectFrameworks(targetPath: string): ScanFramework[] {
     const pkgPath = path.join(targetPath, rules.npm.manifest);
     if (fs.existsSync(pkgPath)) {
       try {
-        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as Record<
-          string,
-          Record<string, string> | undefined
-        >;
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as Record<string, Record<string, string> | undefined>;
         const allDeps: Record<string, string> = {};
         for (const field of rules.npm.depsFields) {
           Object.assign(allDeps, pkg[field] || {});

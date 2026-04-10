@@ -1,7 +1,7 @@
-import { Router } from 'express';
 import fs from 'node:fs/promises';
-import path from 'node:path';
 import os from 'node:os';
+import path from 'node:path';
+import { Router } from 'express';
 import { scan } from '../../core/scanner/index.js';
 
 const router = Router();

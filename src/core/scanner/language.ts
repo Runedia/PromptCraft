@@ -31,17 +31,7 @@ const LANGUAGE_GLOB = `**/*.{${KNOWN_EXTENSIONS.join(',')}}`;
 function detectLanguages(targetPath: string, ignoreRules?: IgnoreRules): ScanLanguage[] {
   const globIgnore = ignoreRules
     ? toGlobIgnorePatterns(ignoreRules)
-    : [
-        '**/node_modules/**',
-        '**/.git/**',
-        '**/dist/**',
-        '**/build/**',
-        '**/.cache/**',
-        '**/.gradle/**',
-        '**/.idea/**',
-        '**/.vscode/**',
-        '**/.claude/**',
-      ];
+    : ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/build/**', '**/.cache/**', '**/.gradle/**', '**/.idea/**', '**/.vscode/**', '**/.claude/**'];
 
   let files = globSync(LANGUAGE_GLOB, {
     cwd: targetPath,

@@ -17,10 +17,7 @@ const getExport = <T extends AnyFn>(moduleValue: unknown, key: string): T | null
 };
 
 const run = async () => {
-  const [dbModule, cliModule] = await Promise.all([
-    import('../src/core/db/index.js'),
-    import('../src/cli/index.js'),
-  ]);
+  const [dbModule, cliModule] = await Promise.all([import('../src/core/db/index.js'), import('../src/cli/index.js')]);
 
   const initialize = getExport(dbModule, 'initialize');
   const runCli = getExport(cliModule, 'run');

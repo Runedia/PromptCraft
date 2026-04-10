@@ -1,4 +1,4 @@
-import type { SectionCard, CardSession, TreeConfig, CardDefinition, SelectOption } from '../types/card.js';
+import type { CardDefinition, CardSession, SectionCard, SelectOption, TreeConfig } from '../types/card.js';
 import type { ScanResult } from '../types.js';
 
 /**
@@ -28,10 +28,7 @@ export function createCardSession(
       value = formatScanToStackEnv(scanResult);
     }
 
-    const options: SelectOption[] | undefined =
-      id === 'role' && scanResult
-        ? buildRoleOptions(scanResult)
-        : def.options;
+    const options: SelectOption[] | undefined = id === 'role' && scanResult ? buildRoleOptions(scanResult) : def.options;
 
     return {
       id,
@@ -55,25 +52,18 @@ export function createCardSession(
 /** 카드 활성화: 카드 풀 → active 영역 */
 export function activateCard(cards: SectionCard[], cardId: string): SectionCard[] {
   const maxOrder = Math.max(...cards.filter((c) => c.active).map((c) => c.order), 0);
-  return cards.map((c) =>
-    c.id === cardId ? { ...c, active: true, order: maxOrder + 1 } : c
-  );
+  return cards.map((c) => (c.id === cardId ? { ...c, active: true, order: maxOrder + 1 } : c));
 }
 
 /** 카드 비활성화: active 영역 → 카드 풀. 필수 카드는 보호. */
 export function deactivateCard(cards: SectionCard[], cardId: string): SectionCard[] {
   const card = cards.find((c) => c.id === cardId);
   if (card?.required) return cards;
-  return cards.map((c) =>
-    c.id === cardId ? { ...c, active: false, order: 0 } : c
-  );
+  return cards.map((c) => (c.id === cardId ? { ...c, active: false, order: 0 } : c));
 }
 
 /** 순서 변경: 드래그 앤 드롭 결과 적용 */
-export function reorderCards(
-  cards: SectionCard[],
-  orderedActiveIds: string[]
-): SectionCard[] {
+export function reorderCards(cards: SectionCard[], orderedActiveIds: string[]): SectionCard[] {
   return cards.map((c) => {
     const newOrder = orderedActiveIds.indexOf(c.id);
     return newOrder !== -1 ? { ...c, order: newOrder + 1 } : c;
@@ -81,11 +71,7 @@ export function reorderCards(
 }
 
 /** 카드 값 업데이트 */
-export function updateCardValue(
-  cards: SectionCard[],
-  cardId: string,
-  value: string
-): SectionCard[] {
+export function updateCardValue(cards: SectionCard[], cardId: string, value: string): SectionCard[] {
   return cards.map((c) => (c.id === cardId ? { ...c, value } : c));
 }
 
@@ -112,12 +98,10 @@ function buildRoleOptions(scan: ScanResult): SelectOption[] {
   ];
 
   // 스캔 결과 기반 동적 옵션 생성
-  const scanBased: SelectOption[] = scan.frameworks
-    .slice(0, 3)
-    .map((f) => ({
-      value: `${f.name} 개발자`,
-      label: `${f.name} 개발자`,
-    }));
+  const scanBased: SelectOption[] = scan.frameworks.slice(0, 3).map((f) => ({
+    value: `${f.name} 개발자`,
+    label: `${f.name} 개발자`,
+  }));
 
   // 중복 제거
   const seen = new Set(baseOptions.map((o) => o.value));

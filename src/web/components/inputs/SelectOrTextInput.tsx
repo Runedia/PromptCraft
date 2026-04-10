@@ -1,13 +1,7 @@
 import { useState } from 'react';
-import type { SelectOption } from '../../../core/types/card.js';
 import { Input } from '@/components/ui/input.js';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
+import type { SelectOption } from '../../../core/types/card.js';
 
 interface SelectOrTextInputProps {
   value: string;
@@ -17,9 +11,7 @@ interface SelectOrTextInputProps {
 }
 
 export function SelectOrTextInput({ value, options, hint, onChange }: SelectOrTextInputProps) {
-  const [isCustom, setIsCustom] = useState(
-    !!value && !options?.some((o) => o.value === value)
-  );
+  const [isCustom, setIsCustom] = useState(!!value && !options?.some((o) => o.value === value));
 
   const handleValueChange = (val: string) => {
     if (val === '__custom__') {
@@ -34,16 +26,14 @@ export function SelectOrTextInput({ value, options, hint, onChange }: SelectOrTe
   if (isCustom) {
     return (
       <div className="flex flex-col gap-2">
-        <Input
-          value={value}
-          placeholder={hint}
-          onChange={(e) => onChange(e.target.value)}
-          autoFocus
-        />
+        <Input value={value} placeholder={hint} onChange={(e) => onChange(e.target.value)} autoFocus />
         <button
           type="button"
           className="text-xs text-muted-foreground hover:text-foreground text-left transition-colors"
-          onClick={() => { setIsCustom(false); onChange(''); }}
+          onClick={() => {
+            setIsCustom(false);
+            onChange('');
+          }}
         >
           ← 목록에서 선택
         </button>

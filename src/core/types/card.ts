@@ -1,11 +1,6 @@
 import type { ScanResult } from '../types.js';
 
-export type InputType =
-  | 'text'
-  | 'multiline'
-  | 'select'
-  | 'select-or-text'
-  | 'multiline-mention';
+export type InputType = 'text' | 'multiline' | 'select' | 'select-or-text' | 'multiline-mention';
 
 export interface SelectOption {
   value: string;

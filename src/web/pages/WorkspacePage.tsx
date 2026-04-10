@@ -1,26 +1,14 @@
-import { useEffect, useState, useCallback } from 'react';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { closestCenter, DndContext, type DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Scan } from 'lucide-react';
-import { useCardStore } from '../store/cardStore.js';
-import { useCardSession } from '../hooks/useCardSession.js';
-import { useScan } from '../hooks/useScan.js';
-import { SectionCard } from '../components/SectionCard/SectionCard.js';
+import { useCallback, useEffect, useState } from 'react';
+import type { CardDefinition, TreeConfig } from '../../core/types/card.js';
 import { CardPool } from '../components/CardPool/CardPool.js';
 import { PromptPreview } from '../components/PromptPreview/PromptPreview.js';
-import type { TreeConfig, CardDefinition } from '../../core/types/card.js';
+import { SectionCard } from '../components/SectionCard/SectionCard.js';
+import { useCardSession } from '../hooks/useCardSession.js';
+import { useScan } from '../hooks/useScan.js';
+import { useCardStore } from '../store/cardStore.js';
 
 interface WorkspacePageProps {
   treeId: string;
@@ -40,10 +28,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   const [pendingRestore, setPendingRestore] = useState<ReturnType<typeof getSavedSession>>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally run once when treeId changes
   useEffect(() => {
@@ -110,7 +95,11 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
       {/* 이전 작업 복원 다이얼로그 */}
       {showRestorePrompt && (
         <div role="presentation" className="fixed inset-0 bg-black/60 flex items-center justify-center z-[200]">
-          <div role="dialog" aria-modal="true" className="bg-bg-secondary border border-border rounded-2xl p-8 flex flex-col gap-4 items-center max-w-sm w-full mx-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="bg-bg-secondary border border-border rounded-2xl p-8 flex flex-col gap-4 items-center max-w-sm w-full mx-4"
+          >
             <div className="text-center">
               <p className="text-text-primary font-semibold mb-1">이전 작업을 이어서 할까요?</p>
               <p className="text-xs text-text-muted">저장된 세션이 있습니다.</p>
@@ -213,9 +202,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         <PromptPreview onSave={() => setShowSaveModal(true)} />
       </div>
 
-      {showSaveModal && (
-        <SaveTemplateModal treeId={treeId} onClose={() => setShowSaveModal(false)} />
-      )}
+      {showSaveModal && <SaveTemplateModal treeId={treeId} onClose={() => setShowSaveModal(false)} />}
     </div>
   );
 }

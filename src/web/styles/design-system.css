@@ -1,52 +1,56 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
   /* Backgrounds */
-  --color-bg-primary:    #0F172A;
-  --color-bg-secondary:  #1E293B;
-  --color-bg-tertiary:   #334155;
-  --color-bg-hover:      #253348;
+  --color-bg-primary: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-bg-tertiary: #334155;
+  --color-bg-hover: #253348;
 
   /* Borders */
-  --color-border:        #475569;
+  --color-border: #475569;
   --color-border-subtle: #334155;
 
   /* Text */
-  --color-text-primary:   #F8FAFC;
-  --color-text-secondary: #94A3B8;
-  --color-text-muted:     #64748B;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
 
   /* Accents */
-  --color-accent-primary: #3B82F6;
-  --color-accent-success: #22C55E;
-  --color-accent-warning: #F59E0B;
-  --color-accent-danger:  #EF4444;
+  --color-accent-primary: #3b82f6;
+  --color-accent-success: #22c55e;
+  --color-accent-warning: #f59e0b;
+  --color-accent-danger: #ef4444;
 
   /* Card states */
-  --color-card-active:  #1E293B;
-  --color-card-drag:    #1E3A5F;
+  --color-card-active: #1e293b;
+  --color-card-drag: #1e3a5f;
 
   /* Fonts */
-  --font-ui:   'Fira Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-code: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+  --font-ui: "Fira Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: "Fira Code", "Cascadia Code", "JetBrains Mono", monospace;
 
   /* Shadows (used via arbitrary values) */
-  --shadow-card:       0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
-  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.4);
-  --shadow-drag:       0 8px 24px rgba(0,0,0,0.5);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-drag: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 /* ── Base resets ─────────────────────────────── */
 /* @layer base 안에 넣어야 Tailwind utilities(@layer utilities)가 올바르게 override 가능 */
 @layer base {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
   }
 
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: 100%;
     background-color: var(--color-bg-primary);
     color: var(--color-text-primary);
@@ -62,7 +66,9 @@
     font-family: inherit;
   }
 
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     font-family: inherit;
   }
 
@@ -76,51 +82,51 @@
 /* shadcn 컴포넌트가 참조하는 --background, --primary 등을 정의 */
 @layer base {
   :root {
-    --background:            #0F172A;
-    --foreground:            #F8FAFC;
-    --card:                  #1E293B;
-    --card-foreground:       #F8FAFC;
-    --popover:               #1E293B;
-    --popover-foreground:    #F8FAFC;
-    --primary:               #3B82F6;
-    --primary-foreground:    #FFFFFF;
-    --secondary:             #1E293B;
-    --secondary-foreground:  #94A3B8;
-    --muted:                 #334155;
-    --muted-foreground:      #64748B;
-    --accent:                #253348;
-    --accent-foreground:     #F8FAFC;
-    --destructive:           #EF4444;
-    --destructive-foreground:#FFFFFF;
-    --input:                 #475569;
-    --ring:                  #3B82F6;
-    --radius:                0.5rem;
+    --background: #0f172a;
+    --foreground: #f8fafc;
+    --card: #1e293b;
+    --card-foreground: #f8fafc;
+    --popover: #1e293b;
+    --popover-foreground: #f8fafc;
+    --primary: #3b82f6;
+    --primary-foreground: #ffffff;
+    --secondary: #1e293b;
+    --secondary-foreground: #94a3b8;
+    --muted: #334155;
+    --muted-foreground: #64748b;
+    --accent: #253348;
+    --accent-foreground: #f8fafc;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --input: #475569;
+    --ring: #3b82f6;
+    --radius: 0.5rem;
   }
 }
 
 @theme inline {
-  --color-background:             var(--background);
-  --color-foreground:             var(--foreground);
-  --color-card:                   var(--card);
-  --color-card-foreground:        var(--card-foreground);
-  --color-popover:                var(--popover);
-  --color-popover-foreground:     var(--popover-foreground);
-  --color-primary:                var(--primary);
-  --color-primary-foreground:     var(--primary-foreground);
-  --color-secondary:              var(--secondary);
-  --color-secondary-foreground:   var(--secondary-foreground);
-  --color-muted:                  var(--muted);
-  --color-muted-foreground:       var(--muted-foreground);
-  --color-accent:                 var(--accent);
-  --color-accent-foreground:      var(--accent-foreground);
-  --color-destructive:            var(--destructive);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  --color-input:                  var(--input);
-  --color-ring:                   var(--ring);
-  --radius-sm:   calc(var(--radius) - 4px);
-  --radius-md:   calc(var(--radius) - 2px);
-  --radius-lg:   var(--radius);
-  --radius-xl:   calc(var(--radius) + 4px);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 /* ── Select dropdown arrow ───────────────────── */
@@ -136,7 +142,9 @@
 
 /* ── Markdown preview content ────────────────── */
 /* Scoped styles for ReactMarkdown output */
-.prose-preview p { margin-bottom: 0.75rem; }
+.prose-preview p {
+  margin-bottom: 0.75rem;
+}
 .prose-preview h2 {
   font-size: 1.25rem;
   font-weight: 700;
@@ -145,8 +153,13 @@
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--color-border-subtle);
 }
-.prose-preview h2:first-child { margin-top: 0; }
-.prose-preview em { color: var(--color-text-muted); font-style: normal; }
+.prose-preview h2:first-child {
+  margin-top: 0;
+}
+.prose-preview em {
+  color: var(--color-text-muted);
+  font-style: normal;
+}
 .prose-preview code {
   font-family: var(--font-code);
   font-size: 0.875rem;

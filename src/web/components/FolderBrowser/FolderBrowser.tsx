@@ -1,6 +1,6 @@
+import { ArrowLeft, Check, ChevronRight, FolderOpen, HardDrive } from 'lucide-react';
 import type React from 'react';
-import { useEffect, useState, useCallback } from 'react';
-import { ChevronRight, FolderOpen, ArrowLeft, HardDrive, Check } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface BrowseResult {
   current: string;
@@ -16,7 +16,12 @@ interface FolderBrowserProps {
 }
 
 function basename(p: string): string {
-  return p.replace(/[/\\]+$/, '').split(/[/\\]/).pop() ?? p;
+  return (
+    p
+      .replace(/[/\\]+$/, '')
+      .split(/[/\\]/)
+      .pop() ?? p
+  );
 }
 
 export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserProps) {
@@ -28,9 +33,7 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
     setLoading(true);
     setError(null);
     try {
-      const url = targetPath
-        ? `/api/browse?path=${encodeURIComponent(targetPath)}`
-        : '/api/browse';
+      const url = targetPath ? `/api/browse?path=${encodeURIComponent(targetPath)}` : '/api/browse';
       const res = await fetch(url);
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? '탐색 실패');
@@ -56,12 +59,7 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
 
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: modal backdrop click-away pattern
-    <div
-      role="presentation"
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-[200]"
-      onClick={onClose}
-      onKeyDown={handleKeyDown}
-    >
+    <div role="presentation" className="fixed inset-0 bg-black/60 flex items-center justify-center z-[200]" onClick={onClose} onKeyDown={handleKeyDown}>
       <div
         role="dialog"
         aria-modal="true"
@@ -74,7 +72,7 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
           <button
             type="button"
             className="inline-flex items-center justify-center text-text-muted p-1 rounded-md transition-colors hover:text-text-primary hover:bg-bg-hover"
-            onClick={() => data?.parent ? navigate(data.parent) : navigate()}
+            onClick={() => (data?.parent ? navigate(data.parent) : navigate())}
             disabled={loading}
             title="상위 폴더"
           >
@@ -86,36 +84,30 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
                 <HardDrive size={14} /> 드라이브 선택
               </span>
             ) : (
-              data?.current ?? '로딩 중...'
+              (data?.current ?? '로딩 중...')
             )}
           </span>
         </div>
 
         {/* 목록 */}
         <div className="flex-1 overflow-y-auto p-2">
-          {loading && (
-            <div className="py-4 text-center text-sm text-text-muted">로딩 중...</div>
-          )}
-          {error && (
-            <div className="py-4 text-center text-sm text-accent-danger">{error}</div>
-          )}
-          {!loading && !error && data?.dirs.length === 0 && (
-            <div className="py-4 text-center text-sm text-text-muted">하위 폴더가 없습니다.</div>
-          )}
-          {!loading && !error && data?.dirs.map((dir) => (
-            <button
-              key={dir}
-              type="button"
-              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-left bg-transparent text-text-primary transition-colors hover:bg-bg-hover"
-              onClick={() => navigate(dir)}
-            >
-              <FolderOpen size={15} className="text-accent-primary shrink-0" />
-              <span className="flex-1 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
-                {data.isRoot ? dir : basename(dir)}
-              </span>
-              <ChevronRight size={14} className="text-text-muted shrink-0" />
-            </button>
-          ))}
+          {loading && <div className="py-4 text-center text-sm text-text-muted">로딩 중...</div>}
+          {error && <div className="py-4 text-center text-sm text-accent-danger">{error}</div>}
+          {!loading && !error && data?.dirs.length === 0 && <div className="py-4 text-center text-sm text-text-muted">하위 폴더가 없습니다.</div>}
+          {!loading &&
+            !error &&
+            data?.dirs.map((dir) => (
+              <button
+                key={dir}
+                type="button"
+                className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-left bg-transparent text-text-primary transition-colors hover:bg-bg-hover"
+                onClick={() => navigate(dir)}
+              >
+                <FolderOpen size={15} className="text-accent-primary shrink-0" />
+                <span className="flex-1 text-sm overflow-hidden text-ellipsis whitespace-nowrap">{data.isRoot ? dir : basename(dir)}</span>
+                <ChevronRight size={14} className="text-text-muted shrink-0" />
+              </button>
+            ))}
         </div>
 
         {/* 푸터 */}
@@ -137,8 +129,7 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
               onClick={() => data?.current && !data.isRoot && onSelect(data.current)}
               disabled={!data?.current || data.isRoot}
             >
-              <Check size={14} />
-              이 폴더 선택
+              <Check size={14} />이 폴더 선택
             </button>
           </div>
         </div>

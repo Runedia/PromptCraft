@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { initialize, history } from '../../core/db/index.js';
+import { history, initialize } from '../../core/db/index.js';
 
 const router = Router();
 

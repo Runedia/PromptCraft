@@ -3,19 +3,7 @@ import path from 'node:path';
 import type { IgnoreRules, ScanStructureNode } from '../types.js';
 import { shouldIgnore } from './gitignore.js';
 
-const FALLBACK_EXCLUDE_DIRS = new Set([
-  'node_modules',
-  '.git',
-  'dist',
-  'build',
-  '.cache',
-  '.next',
-  'coverage',
-  '.gradle',
-  '.idea',
-  '.vscode',
-  '.claude',
-]);
+const FALLBACK_EXCLUDE_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '.cache', '.next', 'coverage', '.gradle', '.idea', '.vscode', '.claude']);
 
 /**
  * 재귀적으로 디렉토리 트리를 빌드한다.
@@ -26,13 +14,7 @@ const FALLBACK_EXCLUDE_DIRS = new Set([
  * @param {string} [rootPath] - 프로젝트 루트 (상대 경로 계산용)
  * @returns {{ name: string, children: Array<string|object> }}
  */
-function buildStructure(
-  dirPath: string,
-  currentDepth: number,
-  maxDepth = 2,
-  ignoreRules?: IgnoreRules,
-  rootPath?: string
-): ScanStructureNode {
+function buildStructure(dirPath: string, currentDepth: number, maxDepth = 2, ignoreRules?: IgnoreRules, rootPath?: string): ScanStructureNode {
   const name = path.basename(dirPath);
   const children: Array<string | ScanStructureNode> = [];
 
@@ -53,15 +35,7 @@ function buildStructure(
       }
 
       if (currentDepth < maxDepth) {
-        children.push(
-          buildStructure(
-            path.join(dirPath, entry.name),
-            currentDepth + 1,
-            maxDepth,
-            ignoreRules,
-            rootPath
-          )
-        );
+        children.push(buildStructure(path.join(dirPath, entry.name), currentDepth + 1, maxDepth, ignoreRules, rootPath));
       } else {
         children.push({ name: entry.name, children: [] });
       }

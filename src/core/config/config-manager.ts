@@ -23,9 +23,7 @@ class ConfigManager {
    */
   constructor(projectPath?: string) {
     this.projectPath = projectPath;
-    this.projectConfigPath = projectPath
-      ? path.join(projectPath, '.promptcraft', 'config.json')
-      : null;
+    this.projectConfigPath = projectPath ? path.join(projectPath, '.promptcraft', 'config.json') : null;
   }
 
   /**

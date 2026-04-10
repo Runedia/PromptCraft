@@ -25,10 +25,7 @@ function nowISO() {
 function formatDate(isoString) {
   const d = new Date(isoString);
   const pad = (n) => String(n).padStart(2, '0');
-  return (
-    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
-    `${pad(d.getHours())}:${pad(d.getMinutes())}`
-  );
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` + `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 /**
@@ -73,13 +70,4 @@ function formatDuration(ms) {
   return `${(ms / 1000).toFixed(2)}s`;
 }
 
-export {
-  estimateTokens,
-  formatDate,
-  formatDuration,
-  fromJson,
-  nowISO,
-  resolvePath,
-  toJson,
-  truncate,
-};
+export { estimateTokens, formatDate, formatDuration, fromJson, nowISO, resolvePath, toJson, truncate };

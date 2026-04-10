@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import { createCardSession } from '../../core/builder/cardSession.js';
-import { useCardStore } from '../store/cardStore.js';
-import type { TreeConfig, CardDefinition } from '../../core/types/card.js';
+import type { CardDefinition, TreeConfig } from '../../core/types/card.js';
 import type { ScanResult } from '../../core/types.js';
+import { useCardStore } from '../store/cardStore.js';
 
 const SESSION_KEY_PREFIX = 'promptcraft:session:';
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24시간
@@ -59,12 +59,7 @@ export function useCardSession() {
 
   /** 새 세션 초기화 */
   const initSession = useCallback(
-    (
-      treeConfig: TreeConfig,
-      cardDefs: Record<string, CardDefinition>,
-      scanResult: ScanResult | null,
-      prefill?: Record<string, string>
-    ) => {
+    (treeConfig: TreeConfig, cardDefs: Record<string, CardDefinition>, scanResult: ScanResult | null, prefill?: Record<string, string>) => {
       const session = createCardSession(treeConfig, cardDefs, scanResult, prefill);
       setSession(session);
     },

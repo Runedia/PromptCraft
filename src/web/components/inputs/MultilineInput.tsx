@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Textarea } from '@/components/ui/textarea.js';
 
 interface MultilineInputProps {
@@ -18,14 +18,5 @@ export function MultilineInput({ value, hint, onChange, placeholder }: Multiline
     ref.current.style.height = `${ref.current.scrollHeight}px`;
   }, [value]);
 
-  return (
-    <Textarea
-      ref={ref}
-      className="resize-none"
-      value={value}
-      placeholder={placeholder ?? hint}
-      rows={3}
-      onChange={(e) => onChange(e.target.value)}
-    />
-  );
+  return <Textarea ref={ref} className="resize-none" value={value} placeholder={placeholder ?? hint} rows={3} onChange={(e) => onChange(e.target.value)} />;
 }

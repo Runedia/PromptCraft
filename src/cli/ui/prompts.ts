@@ -74,9 +74,7 @@ async function askText(
 async function askSelect(message, choices) {
   const { select } = await getInquirerPrompts();
   // 문자열 배열을 {name, value} 형식으로 변환
-  const formattedChoices = choices.map((choice) =>
-    typeof choice === 'string' ? { name: choice, value: choice } : choice
-  );
+  const formattedChoices = choices.map((choice) => (typeof choice === 'string' ? { name: choice, value: choice } : choice));
   return await select({ message, choices: formattedChoices });
 }
 

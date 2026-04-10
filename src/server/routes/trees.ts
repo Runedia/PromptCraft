@@ -1,7 +1,7 @@
-import { Router } from 'express';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Router } from 'express';
 
 const router = Router();
 const DATA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../../data');
@@ -37,10 +37,7 @@ router.get('/:treeId', async (req, res, next) => {
     const { treeId } = req.params;
     const treePath = path.join(TREES_DIR, `${treeId}.json`);
 
-    const [treeRaw, cardsRaw] = await Promise.all([
-      fs.readFile(treePath, 'utf-8').catch(() => null),
-      fs.readFile(CARDS_FILE, 'utf-8'),
-    ]);
+    const [treeRaw, cardsRaw] = await Promise.all([fs.readFile(treePath, 'utf-8').catch(() => null), fs.readFile(CARDS_FILE, 'utf-8')]);
 
     if (!treeRaw) {
       res.status(404).json({ error: `트리를 찾을 수 없습니다: ${treeId}` });

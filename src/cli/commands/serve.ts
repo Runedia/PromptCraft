@@ -1,5 +1,5 @@
-import { Command } from 'commander';
 import net from 'node:net';
+import { Command } from 'commander';
 import { createServer } from '../../server/index.js';
 
 export const serveCommand = new Command('serve')

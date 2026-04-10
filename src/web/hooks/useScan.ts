@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useCardStore } from '../store/cardStore.js';
 import type { ScanResult } from '../../core/types.js';
+import { useCardStore } from '../store/cardStore.js';
 
 export function useScan() {
   const [error, setError] = useState<string | null>(null);

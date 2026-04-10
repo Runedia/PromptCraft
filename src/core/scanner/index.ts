@@ -9,14 +9,7 @@ import { loadIgnoreRules, shouldIgnore, toGlobIgnorePatterns } from './gitignore
 import { detectLanguages } from './language.js';
 import { buildTree } from './structure.js';
 
-const CONFIG_PATTERNS = [
-  'package.json',
-  '.eslintrc*',
-  'tsconfig.json',
-  '*.config.js',
-  '*.config.ts',
-  '.prettierrc*',
-];
+const CONFIG_PATTERNS = ['package.json', '.eslintrc*', 'tsconfig.json', '*.config.js', '*.config.ts', '.prettierrc*'];
 
 /** 패키지 계층 구조가 깊은 언어 목록 */
 const DEEP_LANGUAGES = new Set(['Java', 'Kotlin', 'C#', 'Go']);
@@ -50,10 +43,7 @@ function nowMs(): number {
  * @param {number} [options.depth] - 디렉토리 탐색 최대 깊이 (미지정 시 언어 기반 자동 결정)
  * @returns {Promise<ScanResult>} ScanResult
  */
-async function scan(
-  inputPath: string,
-  options: { depth?: number; metrics?: boolean } = {}
-): Promise<ScanResult> {
+async function scan(inputPath: string, options: { depth?: number; metrics?: boolean } = {}): Promise<ScanResult> {
   const scanStart = nowMs();
   const absolutePath = resolvePath(inputPath);
 

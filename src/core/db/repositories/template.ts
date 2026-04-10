@@ -36,9 +36,7 @@ function findById(id: number): TemplateRecord | null {
 
 function findByName(name: string): TemplateRecord | null {
   const db = getConnection();
-  const row = db.prepare(`SELECT * FROM template WHERE name = ?`).get(name) as
-    | TemplateRow
-    | undefined;
+  const row = db.prepare(`SELECT * FROM template WHERE name = ?`).get(name) as TemplateRow | undefined;
   return row ? _parse(row) : null;
 }
 
@@ -64,9 +62,7 @@ function update(id: number, data: TemplateUpdateInput): number {
   values.push(id);
 
   try {
-    const result = db
-      .prepare(`UPDATE template SET ${fields.join(', ')} WHERE id = ?`)
-      .run(...values);
+    const result = db.prepare(`UPDATE template SET ${fields.join(', ')} WHERE id = ?`).run(...values);
     return result.changes;
   } catch (err: unknown) {
     throw new DBError(`template.update failed: ${toErrorMessage(err)}`);

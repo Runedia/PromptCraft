@@ -15,9 +15,7 @@ async function printList(rows) {
   const headerDate = ' 날짜/시간            ';
   const headerSit = ' 상황         ';
   const headerPrev = ' 프롬프트 미리보기';
-  console.log(
-    chalk.bold(headerId) + chalk.bold(headerDate) + chalk.bold(headerSit) + chalk.bold(headerPrev)
-  );
+  console.log(chalk.bold(headerId) + chalk.bold(headerDate) + chalk.bold(headerSit) + chalk.bold(headerPrev));
   console.log(chalk.gray('─'.repeat(cols)));
 
   for (const row of rows) {

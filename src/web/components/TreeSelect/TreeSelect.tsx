@@ -1,9 +1,9 @@
+import { BookOpen, Bug, FolderOpen, GitPullRequest, X, Zap } from 'lucide-react';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FolderOpen, X, Bug, Zap, GitPullRequest, BookOpen } from 'lucide-react';
-import { FolderBrowser } from '../FolderBrowser/FolderBrowser.js';
 import type { TreeConfig } from '../../../core/types/card.js';
 import { useCardStore } from '../../store/cardStore.js';
+import { FolderBrowser } from '../FolderBrowser/FolderBrowser.js';
 
 interface TreeSelectProps {
   onSelect: (treeId: string, projectPath: string) => void;
@@ -62,13 +62,9 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
   const SESSION_PATH_KEY = 'promptcraft:projectPath';
 
   const { setScanResult } = useCardStore();
-  const [trees, setTrees] = useState<Pick<TreeConfig, 'id' | 'label' | 'description' | 'icon'>[]>(
-    []
-  );
+  const [trees, setTrees] = useState<Pick<TreeConfig, 'id' | 'label' | 'description' | 'icon'>[]>([]);
   const [loading, setLoading] = useState(true);
-  const [projectPath, setProjectPath] = useState(
-    () => sessionStorage.getItem(SESSION_PATH_KEY) ?? ''
-  );
+  const [projectPath, setProjectPath] = useState(() => sessionStorage.getItem(SESSION_PATH_KEY) ?? '');
   const [showBrowser, setShowBrowser] = useState(false);
   const [isPreScanning, setIsPreScanning] = useState(false);
   const [suggestedRoles, setSuggestedRoles] = useState<string[]>([]);
@@ -104,9 +100,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
         setScanResult(result);
 
         // buildRoleOptions와 동일한 로직: 프레임워크 기반 우선, 최대 5개
-        const frameworkRoles = (result.frameworks as { name: string }[])
-          .slice(0, 3)
-          .map((f) => `${f.name} 개발자`);
+        const frameworkRoles = (result.frameworks as { name: string }[]).slice(0, 3).map((f) => `${f.name} 개발자`);
         const baseRoles = ['TypeScript 개발자', '백엔드 엔지니어', '풀스택 개발자', 'DevOps 엔지니어'];
         const seen = new Set<string>();
         const roles: string[] = [];
@@ -156,9 +150,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
-          <span className="text-xs font-semibold text-accent-primary tracking-widest uppercase">
-            AI Coding Assistant
-          </span>
+          <span className="text-xs font-semibold text-accent-primary tracking-widest uppercase">AI Coding Assistant</span>
           <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
         </div>
         <h1 className="text-4xl font-bold tracking-tight">
@@ -166,7 +158,8 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
           <span className="text-accent-primary">Craft</span>
         </h1>
         <p className="text-sm text-text-muted max-w-xs leading-relaxed">
-          상황을 선택하면 단 한 번의 완벽한 AI 프롬프트를 <br /> 자동으로 생성합니다
+          상황을 선택하면 입력을 자동으로 구조화해
+          <br />단 한 번의 AI 호출로 끝나는 프롬프트를 완성합니다
         </p>
       </div>
 
@@ -177,9 +170,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
             <FolderOpen size={15} className="text-accent-primary" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-text-primary leading-tight">
-              대상 프로젝트 경로
-            </p>
+            <p className="text-sm font-semibold text-text-primary leading-tight">대상 프로젝트 경로</p>
             <p className="text-xs text-text-muted">경로를 입력하면 프로젝트를 자동 스캔합니다</p>
           </div>
         </div>
@@ -237,10 +228,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
               <>
                 <span className="text-xs text-text-muted shrink-0">예상 역할:</span>
                 {suggestedRoles.map((role) => (
-                  <span
-                    key={role}
-                    className="text-xs rounded-full px-2 py-0.5 bg-bg-tertiary border border-border-subtle text-text-muted"
-                  >
+                  <span key={role} className="text-xs rounded-full px-2 py-0.5 bg-bg-tertiary border border-border-subtle text-text-muted">
                     {role}
                   </span>
                 ))}
@@ -253,9 +241,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
       {/* 상황 선택 제목 */}
       <div className="flex items-center gap-3 w-full max-w-[600px]">
         <div className="flex-1 h-px bg-border-subtle" />
-        <p className="text-xs font-semibold text-text-muted tracking-widest uppercase whitespace-nowrap">
-          상황을 선택하세요
-        </p>
+        <p className="text-xs font-semibold text-text-muted tracking-widest uppercase whitespace-nowrap">상황을 선택하세요</p>
         <div className="flex-1 h-px bg-border-subtle" />
       </div>
 
@@ -286,9 +272,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
                 {style.icon}
               </div>
               <div className="flex flex-col gap-1.5">
-                <span className="text-sm font-semibold text-text-primary leading-tight">
-                  {tree.label}
-                </span>
+                <span className="text-sm font-semibold text-text-primary leading-tight">{tree.label}</span>
                 <span className="text-xs text-text-muted leading-relaxed">{tree.description}</span>
               </div>
             </button>
@@ -296,13 +280,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
         })}
       </div>
 
-      {showBrowser && (
-        <FolderBrowser
-          initialPath={projectPath || undefined}
-          onSelect={handleBrowseSelect}
-          onClose={() => setShowBrowser(false)}
-        />
-      )}
+      {showBrowser && <FolderBrowser initialPath={projectPath || undefined} onSelect={handleBrowseSelect} onClose={() => setShowBrowser(false)} />}
     </div>
   );
 }

@@ -9,13 +9,7 @@ Module._resolveFilename = function resolveWithTsFallback(request, parent, isMain
     return originalResolveFilename.call(this, request, parent, isMain, options);
   } catch (err) {
     if (typeof request === 'string' && request.endsWith('.js')) {
-      return originalResolveFilename.call(
-        this,
-        `${request.slice(0, -3)}.ts`,
-        parent,
-        isMain,
-        options
-      );
+      return originalResolveFilename.call(this, `${request.slice(0, -3)}.ts`, parent, isMain, options);
     }
     throw err;
   }

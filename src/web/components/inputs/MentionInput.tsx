@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface MentionInputProps {
   value: string;
@@ -48,9 +48,7 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
         clearTimeout(debounceRef.current ?? undefined);
         debounceRef.current = setTimeout(async () => {
           try {
-            const res = await fetch(
-              `/api/mention/suggest?root=${encodeURIComponent(scanRoot)}&partial=${encodeURIComponent(atMatch[1])}`
-            );
+            const res = await fetch(`/api/mention/suggest?root=${encodeURIComponent(scanRoot)}&partial=${encodeURIComponent(atMatch[1])}`);
             if (res.ok) {
               const { suggestions: s } = await res.json();
               setSuggestions(s);
@@ -130,14 +128,15 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
         onKeyDown={handleKeyDown}
       />
       {suggestions.length > 0 && (
-        <ul ref={listRef} className="absolute top-full left-0 right-0 bg-bg-secondary border border-border rounded-lg list-none z-50 max-h-[200px] overflow-y-auto shadow-lg">
+        <ul
+          ref={listRef}
+          className="absolute top-full left-0 right-0 bg-bg-secondary border border-border rounded-lg list-none z-50 max-h-[200px] overflow-y-auto shadow-lg"
+        >
           {suggestions.map((s, i) => (
             <li key={s.path}>
               <button
                 type="button"
-                className={`w-full text-left px-3 py-2 text-text-primary text-sm font-code ${
-                  i === selectedIdx ? 'bg-bg-tertiary' : 'hover:bg-bg-tertiary'
-                }`}
+                className={`w-full text-left px-3 py-2 text-text-primary text-sm font-code ${i === selectedIdx ? 'bg-bg-tertiary' : 'hover:bg-bg-tertiary'}`}
                 onClick={() => insertMention(s.path, s.isDir)}
               >
                 {s.isDir ? `${s.display}` : s.display}

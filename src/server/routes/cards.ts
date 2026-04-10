@@ -1,13 +1,10 @@
-import { Router } from 'express';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Router } from 'express';
 
 const router = Router();
-const CARDS_FILE = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  '../../../data/cards/card-definitions.json'
-);
+const CARDS_FILE = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../../data/cards/card-definitions.json');
 
 router.get('/', async (_req, res, next) => {
   try {

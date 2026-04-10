@@ -1,10 +1,10 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, X, Lock } from 'lucide-react';
+import { GripVertical, Lock, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { SectionCard as SectionCardType } from '../../../core/types/card.js';
-import { CardInput } from './CardInput.js';
 import { useCardStore } from '../../store/cardStore.js';
-import { cn } from '@/lib/utils.js';
+import { CardInput } from './CardInput.js';
 
 interface SectionCardProps {
   card: SectionCardType;
@@ -14,14 +14,9 @@ interface SectionCardProps {
 export function SectionCard({ card, scanRoot }: SectionCardProps) {
   const { updateCardValue, deactivateCard } = useCardStore();
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: card.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: card.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -37,9 +32,7 @@ export function SectionCard({ card, scanRoot }: SectionCardProps) {
       className={cn(
         'border rounded-xl p-5 transition-[border-color,box-shadow] duration-150',
         'hover:border-border',
-        isDragging
-          ? 'bg-card-drag shadow-[var(--shadow-drag)] border-accent-primary'
-          : 'bg-card-active border-border-subtle shadow-[var(--shadow-card)]'
+        isDragging ? 'bg-card-drag shadow-[var(--shadow-drag)] border-accent-primary' : 'bg-card-active border-border-subtle shadow-[var(--shadow-card)]'
       )}
     >
       <div className="flex items-center gap-2 mb-4">
@@ -54,10 +47,7 @@ export function SectionCard({ card, scanRoot }: SectionCardProps) {
         </button>
         <span className="text-lg font-semibold text-text-primary flex-1">{card.label}</span>
         {card.required && (
-          <span
-            className="inline-flex items-center px-2 py-1 bg-[rgba(59,130,246,0.12)] rounded-md text-accent-primary text-xs"
-            title="필수 카드"
-          >
+          <span className="inline-flex items-center px-2 py-1 bg-[rgba(59,130,246,0.12)] rounded-md text-accent-primary text-xs" title="필수 카드">
             <Lock size={12} />
           </span>
         )}

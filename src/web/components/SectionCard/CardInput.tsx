@@ -1,15 +1,9 @@
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
 import type { InputType, SelectOption } from '../../../core/types/card.js';
-import { TextInput } from '../inputs/TextInput.js';
+import { MentionInput } from '../inputs/MentionInput.js';
 import { MultilineInput } from '../inputs/MultilineInput.js';
 import { SelectOrTextInput } from '../inputs/SelectOrTextInput.js';
-import { MentionInput } from '../inputs/MentionInput.js';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select.js';
+import { TextInput } from '../inputs/TextInput.js';
 
 interface CardInputProps {
   type: InputType;
@@ -43,12 +37,8 @@ export function CardInput({ type, value, hint, examples, options, onChange, scan
         </Select>
       );
     case 'select-or-text':
-      return (
-        <SelectOrTextInput value={value} options={options} hint={hint} onChange={onChange} />
-      );
+      return <SelectOrTextInput value={value} options={options} hint={hint} onChange={onChange} />;
     case 'multiline-mention':
-      return (
-        <MentionInput value={value} hint={hint} onChange={onChange} scanRoot={scanRoot} />
-      );
+      return <MentionInput value={value} hint={hint} onChange={onChange} scanRoot={scanRoot} />;
   }
 }

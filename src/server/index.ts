@@ -1,19 +1,19 @@
-import express from 'express';
+import { createServer as createHttpServer } from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createServer as createHttpServer } from 'node:http';
+import express from 'express';
 import { closeConnection, initialize } from '../core/db/index.js';
-import { securityHeaders, corsLocalhost } from './middleware/security.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { corsLocalhost, securityHeaders } from './middleware/security.js';
 import browseRouter from './routes/browse.js';
-import scanRouter from './routes/scan.js';
-import treesRouter from './routes/trees.js';
 import cardsRouter from './routes/cards.js';
-import promptRouter from './routes/prompt.js';
-import historyRouter from './routes/history.js';
-import templateRouter from './routes/template.js';
 import configRouter from './routes/config.js';
+import historyRouter from './routes/history.js';
 import mentionRouter from './routes/mention.js';
+import promptRouter from './routes/prompt.js';
+import scanRouter from './routes/scan.js';
+import templateRouter from './routes/template.js';
+import treesRouter from './routes/trees.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WEB_DIST = path.join(__dirname, '../../dist/web');
