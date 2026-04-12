@@ -22,7 +22,7 @@ module.exports = {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
-  collectCoverageFrom: ['src/**/*.{js,ts}', '!tests/**/*'],
+  collectCoverageFrom: ['src/**/*.{js,ts}', '!src/web/**', '!tests/**/*'],
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   coveragePathIgnorePatterns: ['/node_modules/'],
 };
