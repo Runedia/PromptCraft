@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Router } from 'express';
+import { loadRoleMappings } from '../domain-loader.js';
 
 const router = Router();
 const DATA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../../data');
@@ -46,8 +47,9 @@ router.get('/:treeId', async (req, res, next) => {
 
     const tree = JSON.parse(treeRaw);
     const cardDefs = JSON.parse(cardsRaw);
+    const roleMappings = loadRoleMappings();
 
-    res.json({ tree, cardDefs });
+    res.json({ tree, cardDefs, roleMappings });
   } catch (err) {
     next(err);
   }

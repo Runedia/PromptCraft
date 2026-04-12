@@ -4,6 +4,7 @@ import { globSync } from 'glob';
 import { ScanError } from '../../shared/errors.js';
 import { nowISO, resolvePath } from '../../shared/utils.js';
 import type { ScanLanguage, ScanResult, ScanTimings } from '../types.js';
+import { classifyDomain } from './domain-classifier.js';
 import { detectFrameworks } from './framework.js';
 import { loadIgnoreRules, shouldIgnore, toGlobIgnorePatterns } from './gitignore.js';
 import { detectLanguages } from './language.js';
@@ -57,19 +58,21 @@ async function scan(inputPath: string, options: { depth?: number; metrics?: bool
   // gitignore 규칙 로딩
   const ignoreRules = loadIgnoreRules(absolutePath);
 
+  // Phase 1: 언어 감지 (maxDepth 결정에 필요)
   const languagesStart = nowMs();
   const languages = detectLanguages(absolutePath, ignoreRules);
   const languagesMs = nowMs() - languagesStart;
 
-  const frameworksStart = nowMs();
-  const frameworks = detectFrameworks(absolutePath);
-  const frameworksMs = nowMs() - frameworksStart;
-
   const maxDepth = resolveMaxDepth(languages, options.depth);
 
-  const structureStart = nowMs();
-  const structure = buildTree(absolutePath, maxDepth, ignoreRules);
-  const structureMs = nowMs() - structureStart;
+  // Phase 2: 프레임워크 감지 + 트리 빌드 병렬 실행
+  const parallelStart = nowMs();
+  const [frameworks, structure] = await Promise.all([Promise.resolve(detectFrameworks(absolutePath)), buildTree(absolutePath, maxDepth, ignoreRules)]);
+  const parallelMs = nowMs() - parallelStart;
+  const frameworksMs = parallelMs;
+  const structureMs = parallelMs;
+
+  const domainContext = classifyDomain(frameworks, languages);
 
   // 패키지 매니저 감지
   let packageManager = null;
@@ -79,6 +82,10 @@ async function scan(inputPath: string, options: { depth?: number; metrics?: bool
     packageManager = 'yarn';
   } else if (fs.existsSync(path.join(absolutePath, 'package-lock.json'))) {
     packageManager = 'npm';
+  } else if (fs.existsSync(path.join(absolutePath, 'pom.xml'))) {
+    packageManager = 'maven';
+  } else if (fs.existsSync(path.join(absolutePath, 'build.gradle')) || fs.existsSync(path.join(absolutePath, 'build.gradle.kts'))) {
+    packageManager = 'gradle';
   }
 
   // .env 존재 여부
@@ -103,6 +110,7 @@ async function scan(inputPath: string, options: { depth?: number; metrics?: bool
     configFiles,
     ignoreSource: ignoreRules.source,
     scannedAt: nowISO(),
+    domainContext,
   };
 
   if (options.metrics === true) {

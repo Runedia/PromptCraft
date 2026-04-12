@@ -1,6 +1,21 @@
 {
   "version": 1,
   "skills": {
+    "academic-paper": {
+      "source": "Imbad0202/academic-research-skills",
+      "sourceType": "github",
+      "computedHash": "a7e2d322357e844f8ba4f28f06b107643f4ab5c6f6d1ec127ee52e8af8203bdb"
+    },
+    "academic-paper-reviewer": {
+      "source": "Imbad0202/academic-research-skills",
+      "sourceType": "github",
+      "computedHash": "b51c7b83a1aed6cf8ddec079c746b53f5d7199be173eeee45f255fc2f7638587"
+    },
+    "academic-pipeline": {
+      "source": "Imbad0202/academic-research-skills",
+      "sourceType": "github",
+      "computedHash": "ec4688bfb6ec4736fbae239d4ea8ed59f349a1e6fc6363a9000f668276159417"
+    },
     "adapt": {
       "source": "pbakaus/impeccable",
       "sourceType": "github",
@@ -15,6 +30,11 @@
       "source": "pbakaus/impeccable",
       "sourceType": "github",
       "computedHash": "6e292a0ba428d339615e025cab1f2692b2e6267ba247574a00545b1dac1acc5a"
+    },
+    "deep-research": {
+      "source": "Imbad0202/academic-research-skills",
+      "sourceType": "github",
+      "computedHash": "67c03a0a0be5bde077e23b32aa41f10e4fc5da54258c53ac9399bfc88e656d9c"
     },
     "extract": {
       "source": "pbakaus/impeccable",

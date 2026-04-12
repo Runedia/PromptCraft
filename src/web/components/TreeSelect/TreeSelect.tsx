@@ -2,6 +2,7 @@ import { BookOpen, Bug, FolderOpen, GitPullRequest, X, Zap } from 'lucide-react'
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { TreeConfig } from '../../../core/types/card.js';
+import { cn } from '../../lib/utils.js';
 import { useCardStore } from '../../store/cardStore.js';
 import { FolderBrowser } from '../FolderBrowser/FolderBrowser.js';
 
@@ -68,7 +69,11 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
   const [showBrowser, setShowBrowser] = useState(false);
   const [isPreScanning, setIsPreScanning] = useState(false);
   const [suggestedRoles, setSuggestedRoles] = useState<string[]>([]);
+  const [scanReady, setScanReady] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isPathEmpty = projectPath.trim().length === 0;
+  const isDisabled = isPathEmpty || isPreScanning || !scanReady;
+  const [nudge, setNudge] = useState(false);
 
   useEffect(() => {
     fetch('/api/trees')
@@ -83,11 +88,13 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
   // 경로 변경 시 debounce 800ms 후 사전 스캔 → 역할 제안 생성
   useEffect(() => {
     setSuggestedRoles([]);
+    setScanReady(false);
     if (projectPath.length < 3) return;
 
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       setIsPreScanning(true);
+      let aborted = false;
       try {
         const res = await fetch('/api/scan', {
           method: 'POST',
@@ -99,23 +106,15 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
         const result = await res.json();
         setScanResult(result);
 
-        // buildRoleOptions와 동일한 로직: 프레임워크 기반 우선, 최대 5개
-        const frameworkRoles = (result.frameworks as { name: string }[]).slice(0, 3).map((f) => `${f.name} 개발자`);
-        const baseRoles = ['TypeScript 개발자', '백엔드 엔지니어', '풀스택 개발자', 'DevOps 엔지니어'];
-        const seen = new Set<string>();
-        const roles: string[] = [];
-        for (const r of [...frameworkRoles, ...baseRoles]) {
-          if (!seen.has(r)) {
-            seen.add(r);
-            roles.push(r);
-          }
-          if (roles.length >= 5) break;
-        }
+        // 서버가 resolveRoleSuggestions로 계산한 역할 제안 사용
+        const roles = (result.roleSuggestions as string[] | undefined) ?? [];
         setSuggestedRoles(roles);
       } catch (e) {
-        if ((e as Error).name !== 'AbortError') setSuggestedRoles([]);
+        if ((e as Error).name === 'AbortError') aborted = true;
+        else setSuggestedRoles([]);
       } finally {
         setIsPreScanning(false);
+        if (!aborted) setScanReady(true);
       }
     }, 800);
 
@@ -175,7 +174,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
           </div>
         </div>
         <div className="flex gap-2 items-center">
-          <div className="relative flex-1">
+          <div className={cn('relative flex-1 rounded-lg transition-shadow', nudge && 'ring-2 ring-accent-warning/60')}>
             <input
               ref={inputRef}
               type="text"
@@ -241,7 +240,9 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
       {/* 상황 선택 제목 */}
       <div className="flex items-center gap-3 w-full max-w-[600px]">
         <div className="flex-1 h-px bg-border-subtle" />
-        <p className="text-xs font-semibold text-text-muted tracking-widest uppercase whitespace-nowrap">상황을 선택하세요</p>
+        <p className={cn('text-xs font-semibold tracking-widest uppercase whitespace-nowrap', isPathEmpty ? 'text-accent-warning' : 'text-text-muted')}>
+          {isPathEmpty ? '먼저 프로젝트 경로를 입력하세요' : !scanReady ? '분석 완료 후 활성화됩니다' : '상황을 선택하세요'}
+        </p>
         <div className="flex-1 h-px bg-border-subtle" />
       </div>
 
@@ -253,6 +254,8 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
             <button
               key={tree.id}
               type="button"
+              aria-disabled={isDisabled}
+              title={isPathEmpty ? '프로젝트 경로를 먼저 입력하세요' : isDisabled ? '분석이 완료되면 선택할 수 있습니다' : undefined}
               className={[
                 'group flex flex-col items-start gap-4 p-6',
                 'bg-bg-secondary rounded-2xl text-left cursor-pointer',
@@ -263,8 +266,19 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
                 'hover:shadow-[0_8px_28px_rgba(0,0,0,0.55)] hover:-translate-y-1',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary',
                 'active:translate-y-0',
+                'aria-disabled:opacity-40 aria-disabled:cursor-not-allowed aria-disabled:hover:shadow-[0_2px_12px_rgba(0,0,0,0.4)] aria-disabled:hover:translate-y-0',
               ].join(' ')}
-              onClick={() => onSelect(tree.id, projectPath.trim())}
+              onClick={() => {
+                if (isDisabled) {
+                  if (isPathEmpty) {
+                    inputRef.current?.focus();
+                    setNudge(true);
+                    setTimeout(() => setNudge(false), 800);
+                  }
+                  return;
+                }
+                onSelect(tree.id, projectPath.trim());
+              }}
             >
               <div
                 className={`flex items-center justify-center w-10 h-10 rounded-xl ${style.iconBg} ${style.iconColor} transition-transform duration-200 group-hover:scale-110`}

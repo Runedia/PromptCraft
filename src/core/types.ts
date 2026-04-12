@@ -1,16 +1,21 @@
 import type { Ignore } from 'ignore';
+import type { DomainContext } from './types/domain.js';
+
+export type { DomainContext };
 
 export interface ScanLanguage {
   name: string;
   extension: string;
   count: number;
   percentage: number;
+  role: 'primary' | 'template' | 'config';
 }
 
 export interface ScanFramework {
   name: string;
   version: string | null;
   source: string;
+  domain?: string;
 }
 
 export interface ScanStructureNode {
@@ -28,6 +33,7 @@ export interface ScanTimings {
 export interface IgnoreRules {
   ig: Ignore;
   source: 'gitignore' | 'default';
+  rawPatterns: string[];
 }
 
 export interface ScanResult {
@@ -35,8 +41,9 @@ export interface ScanResult {
   languages: ScanLanguage[];
   frameworks: ScanFramework[];
   structure: ScanStructureNode;
-  packageManager: 'pnpm' | 'yarn' | 'npm' | null;
+  packageManager: string | null;
   hasEnv: boolean;
+  domainContext?: DomainContext;
   configFiles: string[];
   ignoreSource: IgnoreRules['source'];
   scannedAt: string;

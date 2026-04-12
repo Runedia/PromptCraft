@@ -1,0 +1,54 @@
+{
+  "domain": "web-backend",
+  "cardOverrides": {
+    "goal": {
+      "examples": {
+        "error-solving": [
+          "배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정",
+          "Kafka 컨슈머 리밸런싱 중 메시지 유실 원인 파악",
+          "DB 연결 풀 고갈로 인한 503 에러 원인 분석 및 대응",
+          "JWT 토큰 검증 실패가 특정 환경에서만 발생하는 원인 분석",
+          "Redis 캐시 TTL 만료 시 thundering herd 문제 재현 및 해결"
+        ],
+        "feature-impl": [
+          "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환",
+          "Redis 캐싱 레이어를 추가해 DB 조회 성능 개선",
+          "Kafka 이벤트 기반 주문-결제 연동 파이프라인 구현",
+          "Rate limiting 미들웨어 구현 (슬라이딩 윈도우 알고리즘)",
+          "Webhook 수신 엔드포인트와 재시도 로직 구현"
+        ],
+        "code-review": [
+          "트랜잭션 경계 설정의 정확성 및 롤백 시나리오 점검",
+          "API 인증/인가 로직의 우회 가능성 및 보안 취약점 점검",
+          "N+1 쿼리 문제 및 DB 인덱스 최적화 리뷰",
+          "에러 핸들링 일관성 — HTTP 상태코드 및 에러 응답 형식 점검",
+          "API 응답 형식의 하위 호환성 유지 여부 검토"
+        ],
+        "concept-learn": [
+          "데이터베이스 트랜잭션 격리 수준과 동시성 문제 이해",
+          "JWT vs 세션 기반 인증의 트레이드오프 분석",
+          "메시지 큐(Kafka/RabbitMQ)의 At-Least-Once vs Exactly-Once 보장",
+          "API Rate Limiting 알고리즘 비교 — 토큰 버킷 vs 슬라이딩 윈도우",
+          "CQRS + Event Sourcing 패턴의 실무 적용 방법"
+        ]
+      }
+    },
+    "error-evidence": {
+      "hint": "다음을 포함하세요: (1) 에러 메시지 원문 및 스택트레이스 (2) HTTP 메서드, URL, 상태코드, 응답 본문 (3) 환경(dev/staging/prod) (4) 재현 빈도. @파일경로로 관련 파일 참조 가능."
+    },
+    "profiling-data": {
+      "hint": "API p95/p99 응답 시간, DB 쿼리 실행 계획, 스레드/커넥션 풀 상태, 메모리 사용량을 포함하면 좋습니다."
+    },
+    "goal": {
+      "hint": "API 계약(입출력 형식, 상태코드)과 성능 목표를 함께 적으면 구현 품질이 좋아집니다."
+    }
+  },
+  "cardRelevance": {
+    "request-log": "high",
+    "security-context": "high",
+    "profiling-data": "high",
+    "build-log": "medium",
+    "baseline-metric": "high",
+    "tech-preference": "medium"
+  }
+}

@@ -1,5 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { createCardSession } from '../../core/builder/cardSession.js';
+import type { DomainOverlay } from '../../core/builder/domain-overlay.js';
+import type { RoleMappings } from '../../core/builder/role-resolver.js';
 import type { CardDefinition, TreeConfig } from '../../core/types/card.js';
 import type { ScanResult } from '../../core/types.js';
 import { useCardStore } from '../store/cardStore.js';
@@ -59,8 +61,15 @@ export function useCardSession() {
 
   /** 새 세션 초기화 */
   const initSession = useCallback(
-    (treeConfig: TreeConfig, cardDefs: Record<string, CardDefinition>, scanResult: ScanResult | null, prefill?: Record<string, string>) => {
-      const session = createCardSession(treeConfig, cardDefs, scanResult, prefill);
+    (
+      treeConfig: TreeConfig,
+      cardDefs: Record<string, CardDefinition>,
+      scanResult: ScanResult | null,
+      prefill?: Record<string, string>,
+      roleMappings?: RoleMappings | null,
+      domainOverlay?: DomainOverlay | null
+    ) => {
+      const session = createCardSession(treeConfig, cardDefs, scanResult, prefill, roleMappings ?? undefined, domainOverlay ?? undefined);
       setSession(session);
     },
     [setSession]

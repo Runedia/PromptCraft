@@ -64,32 +64,6 @@ pnpm benchmark:scan
 SCAN_PERF_DEPTH=100 SCAN_PERF_FILES=1000 SCAN_PERF_ITERATIONS=5 SCAN_PERF_SEED=20260323 pnpm benchmark:scan
 ```
 
-스캐너 개선 검토 메모:
-- 현재는 `glob` + `readdirSync` 조합을 사용합니다.
-- 1차 최적화로 언어 감지 패턴을 `**/*.*` 에서 알려진 확장자 기반 glob으로 축소해 불필요한 파일 순회를 줄였습니다.
-- 추가 후보 라이브러리로 `fast-glob`, `fdir`를 검토할 수 있으며, 실제 채택은 `benchmark:scan` 누적 결과 비교 후 결정하는 것을 권장합니다.
-
-## 프로젝트 구조
-
-```
-promptcraft/
-├── bin/                   # CLI 진입점
-├── src/
-│   ├── core/              # 순수 비즈니스 로직
-│   │   ├── scanner/       # 프로젝트 디렉토리 분석
-│   │   ├── qna/           # 분기 Q&A 엔진
-│   │   ├── prompt/        # 프롬프트 빌더
-│   │   ├── context/       # 컨텍스트 파일 생성기
-│   │   └── db/            # SQLite 데이터 계층
-│   ├── cli/               # CLI 레이어
-│   ├── api/               # Express REST API
-│   └── shared/            # 공통 유틸리티
-├── data/
-│   ├── trees/             # Q&A 분기 트리 JSON
-│   └── templates/         # Handlebars 템플릿
-└── tasks/                 # 개발 계획
-```
-
 ## 데이터 저장 위치
 
 - DB, 설정: `~/.promptcraft/`

@@ -20,18 +20,23 @@ function loadIgnoreRules(targetPath: string): IgnoreRules {
 
   const gitignorePath = path.join(targetPath, '.gitignore');
   let source: IgnoreRules['source'] = 'default';
+  let rawPatterns: string[] = [];
 
   if (fs.existsSync(gitignorePath)) {
     try {
       const content = fs.readFileSync(gitignorePath, 'utf8');
       ig.add(content);
       source = 'gitignore';
+      rawPatterns = content
+        .split('\n')
+        .map((l) => l.trim())
+        .filter((l) => l && !l.startsWith('#'));
     } catch {
       // 읽기 실패 시 기본 규칙만 사용
     }
   }
 
-  return { ig, source };
+  return { ig, source, rawPatterns };
 }
 
 /**
@@ -43,7 +48,10 @@ function toGlobIgnorePatterns(ignoreRules: IgnoreRules): string[] {
   if (!ignoreRules) {
     return [];
   }
-  return DEFAULT_IGNORE_DIRS.map((dir) => `**/${dir}/**`);
+  const defaults = DEFAULT_IGNORE_DIRS.map((dir) => `**/${dir}/**`);
+  // 부정 패턴(!)은 picomatch에 전달하지 않음 — JS 레벨 shouldIgnore가 안전망 역할
+  const gitignorePatterns = (ignoreRules.rawPatterns ?? []).filter((p) => !p.startsWith('!'));
+  return [...defaults, ...gitignorePatterns];
 }
 
 /**

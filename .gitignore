@@ -52,6 +52,7 @@ desktop.ini
 $RECYCLE.BIN/
 
 # AI 및 LLM 지원 도구
+.agents/
 .claude/
 .omc/
 .serena/

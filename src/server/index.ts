@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { createServer as createHttpServer } from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

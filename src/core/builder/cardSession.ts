@@ -1,5 +1,7 @@
 import type { CardDefinition, CardSession, SectionCard, SelectOption, TreeConfig } from '../types/card.js';
 import type { ScanResult } from '../types.js';
+import { applyDomainOverrides, type DomainOverlay, reorderCardPool } from './domain-overlay.js';
+import { type RoleMappings, resolveRoleSuggestions } from './role-resolver.js';
 
 /**
  * 트리 설정과 카드 정의 JSON을 받아 CardSession을 초기화한다.
@@ -9,26 +11,39 @@ export function createCardSession(
   treeConfig: TreeConfig,
   cardDefs: Record<string, CardDefinition>,
   scanResult: ScanResult | null,
-  prefill?: Record<string, string>
+  prefill?: Record<string, string>,
+  roleMappings?: RoleMappings,
+  domainOverlay?: DomainOverlay | null
 ): CardSession {
-  const allCardIds = [...treeConfig.defaultActiveCards, ...treeConfig.cardPool];
+  // 3계층 카드 정의 병합: base → treeOverrides → domainOverrides
+  const mergedDefs = applyDomainOverrides(cardDefs, treeConfig.cardOverrides, domainOverlay ?? null, treeConfig.id);
+
+  // 도메인 관련성 기반 카드풀 재정렬
+  const orderedPool = reorderCardPool(treeConfig.cardPool, domainOverlay?.cardRelevance);
+
+  const allCardIds = [...treeConfig.defaultActiveCards, ...orderedPool];
 
   const cards: SectionCard[] = allCardIds.map((id) => {
-    const def = cardDefs[id];
+    const def = mergedDefs[id] ?? cardDefs[id];
     if (!def) {
       throw new Error(`카드 정의를 찾을 수 없습니다: ${id}`);
     }
 
-    const override = treeConfig.cardOverrides?.[id] ?? {};
     const isActive = treeConfig.defaultActiveCards.includes(id);
-
-    let value = prefill?.[id] ?? override.defaultValue ?? def.defaultValue ?? '';
+    let value = prefill?.[id] ?? def.defaultValue ?? '';
 
     if (id === 'stack-environment' && scanResult && !value) {
       value = formatScanToStackEnv(scanResult);
     }
 
-    const options: SelectOption[] | undefined = id === 'role' && scanResult ? buildRoleOptions(scanResult) : def.options;
+    let options: SelectOption[] | undefined = def.options;
+    if (id === 'role') {
+      if (roleMappings && scanResult) {
+        options = resolveRoleSuggestions(scanResult, treeConfig.id, roleMappings);
+      } else if (scanResult) {
+        options = buildRoleOptions(scanResult);
+      }
+    }
 
     return {
       id,
@@ -39,8 +54,8 @@ export function createCardSession(
       inputType: def.inputType,
       value,
       template: def.template,
-      hint: override.hint ?? def.hint,
-      examples: override.examples ?? def.examples,
+      hint: def.hint,
+      examples: def.examples,
       options,
       scanSuggested: def.scanSuggested ?? false,
     };
@@ -90,28 +105,28 @@ function formatScanToStackEnv(scan: ScanResult): string {
 }
 
 function buildRoleOptions(scan: ScanResult): SelectOption[] {
-  const baseOptions: SelectOption[] = [
-    { value: 'TypeScript 개발자', label: 'TypeScript 개발자' },
-    { value: '백엔드 엔지니어', label: '백엔드 엔지니어' },
-    { value: '풀스택 개발자', label: '풀스택 개발자' },
-    { value: 'DevOps 엔지니어', label: 'DevOps 엔지니어' },
-  ];
-
-  // 스캔 결과 기반 동적 옵션 생성
-  const scanBased: SelectOption[] = scan.frameworks.slice(0, 3).map((f) => ({
-    value: `${f.name} 개발자`,
-    label: `${f.name} 개발자`,
-  }));
-
-  // 중복 제거
-  const seen = new Set(baseOptions.map((o) => o.value));
-  const merged = [...baseOptions];
-  for (const opt of scanBased) {
-    if (!seen.has(opt.value)) {
-      merged.push(opt);
-      seen.add(opt.value);
+  const roles: string[] = [];
+  const seen = new Set<string>();
+  const addRole = (r: string) => {
+    if (!seen.has(r)) {
+      seen.add(r);
+      roles.push(r);
     }
+  };
+
+  // 주 언어 기반 역할 우선
+  const primaryLang = scan.languages.find((l) => l.role === 'primary');
+  if (primaryLang) addRole(`${primaryLang.name} 개발자`);
+
+  // 프레임워크 기반 (상위 2개)
+  for (const fw of scan.frameworks.slice(0, 2)) {
+    addRole(`${fw.name} 개발자`);
   }
 
-  return merged;
+  // general fallback
+  for (const r of ['소프트웨어 엔지니어', '풀스택 개발자', '백엔드 엔지니어']) {
+    addRole(r);
+  }
+
+  return roles.map((r) => ({ value: r, label: r }));
 }

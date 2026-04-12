@@ -1,0 +1,146 @@
+{
+  "domainRoles": {
+    "web-frontend": {
+      "default": ["프론트엔드 개발자", "UI/UX 엔지니어", "웹 개발자"],
+      "error-solving": ["프론트엔드 디버깅 전문가", "브라우저 호환성 엔지니어", "프론트엔드 개발자"],
+      "feature-impl": ["프론트엔드 아키텍트", "UI 컴포넌트 개발자", "프론트엔드 개발자"],
+      "code-review": ["시니어 프론트엔드 개발자", "접근성(a11y) 전문가", "프론트엔드 아키텍트"],
+      "concept-learn": ["프론트엔드 멘토", "웹 기술 강사", "시니어 프론트엔드 개발자"]
+    },
+    "web-backend": {
+      "default": ["백엔드 엔지니어", "API 개발자", "서버 개발자"],
+      "error-solving": ["백엔드 SRE", "API 디버깅 전문가", "백엔드 엔지니어"],
+      "feature-impl": ["백엔드 아키텍트", "API 설계자", "백엔드 엔지니어"],
+      "code-review": ["시니어 백엔드 개발자", "보안 엔지니어", "테크 리드"],
+      "concept-learn": ["백엔드 멘토", "시스템 설계 강사", "시니어 백엔드 개발자"]
+    },
+    "data-ml": {
+      "default": ["데이터 사이언티스트", "ML 엔지니어", "데이터 엔지니어"],
+      "error-solving": ["ML 디버깅 엔지니어", "데이터 파이프라인 엔지니어", "ML 엔지니어"],
+      "feature-impl": ["ML 엔지니어", "데이터 엔지니어", "AI 시스템 개발자"],
+      "code-review": ["시니어 ML 엔지니어", "데이터 품질 엔지니어", "ML 아키텍트"],
+      "concept-learn": ["ML 리서처", "데이터 과학 강사", "시니어 ML 엔지니어"]
+    },
+    "mobile": {
+      "default": ["모바일 개발자", "앱 개발자"],
+      "error-solving": ["모바일 디버깅 전문가", "앱 퍼포먼스 엔지니어", "모바일 개발자"],
+      "feature-impl": ["모바일 아키텍트", "앱 개발자", "UI 개발자"],
+      "code-review": ["시니어 모바일 개발자", "앱 보안 전문가", "모바일 아키텍트"],
+      "concept-learn": ["모바일 멘토", "앱 개발 강사", "시니어 모바일 개발자"]
+    },
+    "systems": {
+      "default": ["시스템 프로그래머", "성능 엔지니어", "백엔드 엔지니어"],
+      "error-solving": ["시스템 디버깅 전문가", "성능 최적화 엔지니어", "시스템 프로그래머"],
+      "feature-impl": ["시스템 아키텍트", "성능 엔지니어", "시스템 프로그래머"],
+      "code-review": ["시니어 시스템 엔지니어", "메모리 안전성 전문가", "테크 리드"],
+      "concept-learn": ["시스템 프로그래밍 멘토", "성능 최적화 강사", "시니어 시스템 엔지니어"]
+    },
+    "devops": {
+      "default": ["DevOps 엔지니어", "SRE", "클라우드 엔지니어"],
+      "error-solving": ["SRE", "인프라 디버깅 엔지니어", "DevOps 엔지니어"],
+      "feature-impl": ["DevOps 아키텍트", "클라우드 엔지니어", "플랫폼 엔지니어"],
+      "code-review": ["시니어 DevOps 엔지니어", "보안 엔지니어", "클라우드 아키텍트"],
+      "concept-learn": ["DevOps 멘토", "인프라 강사", "시니어 SRE"]
+    },
+    "game": {
+      "default": ["게임 프로그래머", "게임 개발자"],
+      "error-solving": ["게임 디버깅 전문가", "그래픽스 엔지니어", "게임 프로그래머"],
+      "feature-impl": ["게임 아키텍트", "게임플레이 프로그래머", "그래픽스 엔지니어"],
+      "code-review": ["시니어 게임 프로그래머", "성능 최적화 엔지니어", "게임 아키텍트"],
+      "concept-learn": ["게임 개발 멘토", "게임 프로그래밍 강사", "시니어 게임 개발자"]
+    },
+    "desktop": {
+      "default": ["데스크톱 앱 개발자", "GUI 개발자"],
+      "error-solving": ["데스크톱 디버깅 전문가", "GUI 개발자"],
+      "feature-impl": ["데스크톱 앱 아키텍트", "GUI 개발자"],
+      "code-review": ["시니어 데스크톱 개발자", "앱 보안 전문가"],
+      "concept-learn": ["데스크톱 개발 멘토", "GUI 프로그래밍 강사"]
+    },
+    "cli": {
+      "default": ["CLI 도구 개발자", "백엔드 엔지니어"],
+      "error-solving": ["CLI 디버깅 전문가", "백엔드 엔지니어"],
+      "feature-impl": ["CLI 도구 개발자", "백엔드 엔지니어"],
+      "code-review": ["시니어 백엔드 개발자", "API 설계자"],
+      "concept-learn": ["백엔드 멘토", "CLI 개발 강사"]
+    },
+    "embedded": {
+      "default": ["임베디드 시스템 엔지니어", "펌웨어 개발자"],
+      "error-solving": ["임베디드 디버깅 전문가", "하드웨어 소프트웨어 엔지니어"],
+      "feature-impl": ["임베디드 아키텍트", "펌웨어 개발자"],
+      "code-review": ["시니어 임베디드 엔지니어", "안전성 검토 엔지니어"],
+      "concept-learn": ["임베디드 개발 멘토", "펌웨어 강사"]
+    },
+    "general": {
+      "default": ["소프트웨어 엔지니어", "풀스택 개발자", "백엔드 엔지니어"],
+      "error-solving": ["시니어 개발자", "SRE", "백엔드 엔지니어"],
+      "feature-impl": ["소프트웨어 아키텍트", "풀스택 개발자", "백엔드 엔지니어"],
+      "code-review": ["시니어 개발자", "테크 리드", "코드 리뷰어"],
+      "concept-learn": ["시니어 멘토", "기술 강사", "소프트웨어 아키텍트"]
+    }
+  },
+  "languageRoles": {
+    "Java":       "Java 개발자",
+    "Python":     "Python 개발자",
+    "TypeScript": "TypeScript 개발자",
+    "JavaScript": "JavaScript 개발자",
+    "C++":        "C++ 개발자",
+    "C":          "C 개발자",
+    "C#":         "C# 개발자",
+    "Go":         "Go 개발자",
+    "Rust":       "Rust 개발자",
+    "Ruby":       "Ruby 개발자",
+    "PHP":        "PHP 개발자",
+    "Swift":      "Swift 개발자",
+    "Kotlin":     "Kotlin 개발자"
+  },
+  "frameworkRoles": {
+    "React": "React 컴포넌트 아키텍트",
+    "Next.js": "Next.js 풀스택 개발자",
+    "Vue": "Vue.js 프론트엔드 개발자",
+    "Angular": "Angular 엔터프라이즈 개발자",
+    "Svelte": "Svelte 프론트엔드 개발자",
+    "NestJS": "NestJS 백엔드 아키텍트",
+    "Express": "Node.js API 엔지니어",
+    "Fastify": "Node.js API 엔지니어",
+    "Hono": "엣지 API 개발자",
+    "React Native": "React Native 모바일 개발자",
+    "Electron": "Electron 데스크톱 앱 개발자",
+    "Prisma": "TypeScript 백엔드 엔지니어",
+    "Drizzle": "TypeScript 백엔드 엔지니어",
+    "TypeORM": "TypeScript 백엔드 엔지니어",
+    "Remix": "Remix 풀스택 개발자",
+    "Astro": "Astro 웹 개발자",
+    "Django": "Django 백엔드 엔지니어",
+    "FastAPI": "FastAPI 백엔드 엔지니어",
+    "Flask": "Flask API 개발자",
+    "PyTorch": "ML 엔지니어 (PyTorch)",
+    "TensorFlow": "ML 엔지니어 (TensorFlow)",
+    "scikit-learn": "데이터 사이언티스트",
+    "Streamlit": "데이터 앱 개발자",
+    "Hugging Face Transformers": "NLP/LLM 엔지니어",
+    "LangChain": "LLM 애플리케이션 개발자",
+    "Gin": "Go API 엔지니어",
+    "Echo": "Go 백엔드 엔지니어",
+    "Fiber": "Go 웹 개발자",
+    "GORM": "Go 백엔드 엔지니어",
+    "gRPC-Go": "Go gRPC 엔지니어",
+    "Actix Web": "Rust 웹 엔지니어",
+    "Axum": "Rust 웹 엔지니어",
+    "Tokio": "Rust 비동기 엔지니어",
+    "Bevy": "Rust 게임 개발자",
+    "Tauri": "Tauri 데스크톱 개발자",
+    "Spring Boot": "Spring Boot 엔지니어",
+    "Quarkus": "Java 클라우드 네이티브 개발자",
+    "Ktor": "Kotlin 백엔드 개발자",
+    "Jetpack Compose": "Android 개발자",
+    "Flutter": "Flutter 모바일 개발자",
+    "Vapor": "Swift 백엔드 개발자",
+    "Ruby on Rails": "Rails 개발자",
+    "Laravel": "Laravel PHP 개발자",
+    "Symfony": "Symfony PHP 개발자",
+    "Play Framework": "Scala 백엔드 개발자",
+    "Apache Spark": "데이터 엔지니어 (Spark)",
+    "ASP.NET Core": ".NET 백엔드 개발자",
+    ".NET MAUI": ".NET 모바일 개발자"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "domain": "data-ml",
+  "cardOverrides": {
+    "goal": {
+      "examples": {
+        "error-solving": [
+          "GPU OOM 발생 원인 파악 — batch size, 모델 크기, gradient accumulation 중 병목 특정",
+          "추론 시 텐서 shape mismatch 원인 파악 및 reshape 전략 수립",
+          "데이터 로더에서 발생하는 직렬화 에러 재현 및 수정",
+          "학습 중 loss가 NaN이 되는 원인 분석 — gradient explosion 여부 확인",
+          "훈련/검증 정확도 격차로 인한 과적합 원인 분석 및 정규화 전략 수립"
+        ],
+        "feature-impl": [
+          "사전 학습 모델에 커스텀 레이어를 추가하고 fine-tuning 파이프라인 구현",
+          "실시간 추론 API를 FastAPI로 구축하고 배치 처리 지원 추가",
+          "모델 실험 결과를 MLflow에 자동 로깅하는 트래커 구현",
+          "데이터 전처리 파이프라인에 캐싱과 증강(augmentation) 추가",
+          "A/B 테스트를 위한 모델 버전 라우팅 서비스 구현"
+        ],
+        "code-review": [
+          "학습 파이프라인의 데이터 누수(data leakage) 여부 점검",
+          "모델 서빙 코드의 메모리 효율성 및 배치 처리 최적화 리뷰",
+          "데이터 전처리 로직의 재현성 보장 여부 점검 (시드, 결정론적 처리)",
+          "피처 엔지니어링의 타당성 및 분산 누수 가능성 검토",
+          "타입 힌트 및 docstring 품질 점검 — 모델 입출력 명세 포함"
+        ],
+        "concept-learn": [
+          "Transformer attention 메커니즘의 수학적 직관과 구현 이해",
+          "PyTorch autograd의 동작 원리 — computational graph와 backward pass",
+          "분산 학습에서 DataParallel vs DistributedDataParallel 차이 이해",
+          "모델 양자화(Quantization)와 지식 증류(Knowledge Distillation) 기초",
+          "벡터 데이터베이스와 RAG(Retrieval-Augmented Generation) 아키텍처"
+        ]
+      }
+    },
+    "error-evidence": {
+      "hint": "다음을 포함하세요: (1) 전체 트레이스백 (2) 모델 입력 shape 및 dtype (3) GPU 메모리 상태(nvidia-smi 출력) (4) 재현용 시드값. @파일경로로 관련 스크립트 참조 가능."
+    },
+    "profiling-data": {
+      "hint": "GPU 사용률, 학습 step당 시간, 데이터 로딩 대기 시간, 메모리 피크를 포함하세요. torch.profiler 또는 nvprof 출력 권장."
+    },
+    "goal": {
+      "hint": "실무에서 어떤 모델/데이터에 적용할지를 적으면 맞춤 설명이 가능합니다. 에러 발생 시 재현용 시드값도 포함하세요."
+    }
+  },
+  "cardRelevance": {
+    "profiling-data": "high",
+    "baseline-metric": "high",
+    "build-log": "medium",
+    "request-log": "low",
+    "security-context": "low",
+    "tech-preference": "high"
+  }
+}
