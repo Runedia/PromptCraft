@@ -1,8 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 
-const { resolvePath, nowISO, formatDate, truncate, estimateTokens, toJson, fromJson, formatDuration } =
-  require('../../src/shared/utils');
+const { resolvePath, nowISO, formatDate, truncate, estimateTokens, toJson, fromJson, formatDuration } = require('../../src/shared/utils');
 
 // ─── resolvePath ─────────────────────────────────────────────────────
 

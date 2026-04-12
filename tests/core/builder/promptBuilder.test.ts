@@ -1,3 +1,5 @@
+import type { SectionCard } from '../../../src/core/types/card';
+
 const { resolveMentionLinks, substituteOnce, buildPrompt, buildPreview } = require('../../../src/core/builder/promptBuilder');
 
 // ─── resolveMentionLinks ─────────────────────────────────────────────
@@ -48,7 +50,7 @@ describe('substituteOnce()', () => {
 
 // ─── buildPrompt ─────────────────────────────────────────────────────
 
-function makeCard(overrides: any) {
+function makeCard(overrides: Partial<SectionCard>) {
   return {
     id: 'test',
     label: '테스트',
@@ -94,6 +96,27 @@ describe('buildPrompt()', () => {
   test('@멘션이 마크다운 링크로 변환된다', () => {
     const cards = [makeCard({ value: '@src/main.ts', template: '{{value}}' })];
     expect(buildPrompt(cards)).toBe('[@main.ts](@src/main.ts)');
+  });
+});
+
+// ─── resolveMentionLinks — #L 라인 범위 ──────────────────────────────
+
+describe('resolveMentionLinks() — 라인 범위', () => {
+  test('@path#L시작-끝 → 마크다운 링크', () => {
+    expect(resolveMentionLinks('@src/foo.ts#L10-20')).toBe('[@foo.ts#L10-20](@src/foo.ts#L10-20)');
+  });
+
+  test('@path#L시작만 → 마크다운 링크', () => {
+    expect(resolveMentionLinks('@src/foo.ts#L7')).toBe('[@foo.ts#L7](@src/foo.ts#L7)');
+  });
+
+  test('기존 형식(@file.ts) 회귀 확인', () => {
+    expect(resolveMentionLinks('@src/bar.ts')).toBe('[@bar.ts](@src/bar.ts)');
+  });
+
+  test('#L 없는 멘션과 있는 멘션 혼합', () => {
+    const result = resolveMentionLinks('@src/a.ts와 @src/b.ts#L1-5');
+    expect(result).toBe('[@a.ts](@src/a.ts)와 [@b.ts#L1-5](@src/b.ts#L1-5)');
   });
 });
 

@@ -3,11 +3,15 @@ import type { SectionCard } from '../types/card.js';
 /**
  * @파일경로 멘션을 [@파일명](@파일경로) 마크다운 링크로 변환.
  * @src/foo/bar.ts → [@bar.ts](@src/foo/bar.ts)
+ * @src/foo/bar.ts#L10-20 → [@bar.ts#L10-20](@src/foo/bar.ts#L10-20)
  */
 export function resolveMentionLinks(text: string): string {
-  return text.replace(/@([\w.\s/-]+)/g, (_, p: string) => {
-    const basename = p.split('/').filter(Boolean).pop() ?? p;
-    return `[@${basename}](@${p})`;
+  return text.replace(/@([\w.\s/-]+(?:#L\d+(?:-\d+)?)?)/g, (_, p: string) => {
+    const hashIdx = p.indexOf('#');
+    const pathPart = hashIdx >= 0 ? p.slice(0, hashIdx) : p;
+    const rangePart = hashIdx >= 0 ? p.slice(hashIdx) : '';
+    const basename = pathPart.split('/').filter(Boolean).pop() ?? pathPart;
+    return `[@${basename}${rangePart}](@${p})`;
   });
 }
 

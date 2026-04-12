@@ -1,23 +1,17 @@
+import type { CardDefinition, SectionCard, SelectOption } from '../../../src/core/types/card';
+
 jest.mock('../../../src/core/builder/domain-overlay', () => ({
-  applyDomainOverrides: jest.fn((cardDefs: any) => cardDefs),
-  reorderCardPool: jest.fn((pool: any) => pool),
+  applyDomainOverrides: jest.fn((cardDefs: Record<string, CardDefinition>) => cardDefs),
+  reorderCardPool: jest.fn((pool: string[]) => pool),
 }));
 
 jest.mock('../../../src/core/builder/role-resolver', () => ({
-  resolveRoleSuggestions: jest.fn().mockReturnValue([
-    { value: '모의 역할', label: '모의 역할' },
-  ]),
+  resolveRoleSuggestions: jest.fn().mockReturnValue([{ value: '모의 역할', label: '모의 역할' }]),
 }));
 
-const {
-  activateCard,
-  deactivateCard,
-  reorderCards,
-  updateCardValue,
-  createCardSession,
-} = require('../../../src/core/builder/cardSession');
+const { activateCard, deactivateCard, reorderCards, updateCardValue, createCardSession } = require('../../../src/core/builder/cardSession');
 
-function makeCard(overrides: any = {}) {
+function makeCard(overrides: Partial<SectionCard> = {}) {
   return {
     id: 'card1',
     label: '카드1',
@@ -42,7 +36,7 @@ describe('activateCard()', () => {
       makeCard({ id: 'c', active: false, order: 0 }),
     ];
     const result = activateCard(cards, 'c');
-    const c = result.find((x: any) => x.id === 'c');
+    const c = result.find((x: SectionCard) => x.id === 'c');
     expect(c.active).toBe(true);
     expect(c.order).toBe(3);
   });
@@ -50,7 +44,7 @@ describe('activateCard()', () => {
   test('active 카드가 없을 때 order=1이 된다', () => {
     const cards = [makeCard({ id: 'a', active: false, order: 0 })];
     const result = activateCard(cards, 'a');
-    expect(result.find((x: any) => x.id === 'a').order).toBe(1);
+    expect(result.find((x: SectionCard) => x.id === 'a').order).toBe(1);
   });
 
   test('원본 배열을 변경하지 않는다 (불변)', () => {
@@ -66,7 +60,7 @@ describe('deactivateCard()', () => {
   test('카드를 inactive로 변경하고 order=0으로 초기화', () => {
     const cards = [makeCard({ id: 'a', active: true, order: 2 })];
     const result = deactivateCard(cards, 'a');
-    const a = result.find((x: any) => x.id === 'a');
+    const a = result.find((x: SectionCard) => x.id === 'a');
     expect(a.active).toBe(false);
     expect(a.order).toBe(0);
   });
@@ -74,7 +68,7 @@ describe('deactivateCard()', () => {
   test('required 카드는 비활성화되지 않는다', () => {
     const cards = [makeCard({ id: 'a', required: true, active: true, order: 1 })];
     const result = deactivateCard(cards, 'a');
-    expect(result.find((x: any) => x.id === 'a').active).toBe(true);
+    expect(result.find((x: SectionCard) => x.id === 'a').active).toBe(true);
   });
 
   test('존재하지 않는 id는 배열 그대로 반환', () => {
@@ -88,22 +82,16 @@ describe('deactivateCard()', () => {
 
 describe('reorderCards()', () => {
   test('orderedActiveIds 순서대로 order가 1-indexed로 할당된다', () => {
-    const cards = [
-      makeCard({ id: 'a', active: true, order: 2 }),
-      makeCard({ id: 'b', active: true, order: 1 }),
-    ];
+    const cards = [makeCard({ id: 'a', active: true, order: 2 }), makeCard({ id: 'b', active: true, order: 1 })];
     const result = reorderCards(cards, ['b', 'a']);
-    expect(result.find((x: any) => x.id === 'b').order).toBe(1);
-    expect(result.find((x: any) => x.id === 'a').order).toBe(2);
+    expect(result.find((x: SectionCard) => x.id === 'b').order).toBe(1);
+    expect(result.find((x: SectionCard) => x.id === 'a').order).toBe(2);
   });
 
   test('orderedActiveIds에 없는 카드는 order 변경 없음', () => {
-    const cards = [
-      makeCard({ id: 'a', active: true, order: 1 }),
-      makeCard({ id: 'pool', active: false, order: 0 }),
-    ];
+    const cards = [makeCard({ id: 'a', active: true, order: 1 }), makeCard({ id: 'pool', active: false, order: 0 })];
     const result = reorderCards(cards, ['a']);
-    expect(result.find((x: any) => x.id === 'pool').order).toBe(0);
+    expect(result.find((x: SectionCard) => x.id === 'pool').order).toBe(0);
   });
 });
 
@@ -113,16 +101,13 @@ describe('updateCardValue()', () => {
   test('지정 카드의 value를 업데이트한다', () => {
     const cards = [makeCard({ id: 'a', value: '기존' })];
     const result = updateCardValue(cards, 'a', '새값');
-    expect(result.find((x: any) => x.id === 'a').value).toBe('새값');
+    expect(result.find((x: SectionCard) => x.id === 'a').value).toBe('새값');
   });
 
   test('다른 카드의 value는 변경되지 않는다', () => {
-    const cards = [
-      makeCard({ id: 'a', value: 'A' }),
-      makeCard({ id: 'b', value: 'B' }),
-    ];
+    const cards = [makeCard({ id: 'a', value: 'A' }), makeCard({ id: 'b', value: 'B' })];
     const result = updateCardValue(cards, 'a', 'A-변경');
-    expect(result.find((x: any) => x.id === 'b').value).toBe('B');
+    expect(result.find((x: SectionCard) => x.id === 'b').value).toBe('B');
   });
 });
 
@@ -152,15 +137,15 @@ describe('createCardSession()', () => {
 
   test('defaultActiveCards의 카드들이 active=true, 나머지는 false', () => {
     const session = createCardSession(TREE_CONFIG, CARD_DEFS, null);
-    const role = session.cards.find((c: any) => c.id === 'role');
-    const stack = session.cards.find((c: any) => c.id === 'stack-environment');
+    const role = session.cards.find((c: SectionCard) => c.id === 'role');
+    const stack = session.cards.find((c: SectionCard) => c.id === 'stack-environment');
     expect(role.active).toBe(true);
     expect(stack.active).toBe(false);
   });
 
   test('prefill 값이 카드 value에 반영된다', () => {
     const session = createCardSession(TREE_CONFIG, CARD_DEFS, null, { role: '백엔드 개발자' });
-    const role = session.cards.find((c: any) => c.id === 'role');
+    const role = session.cards.find((c: SectionCard) => c.id === 'role');
     expect(role.value).toBe('백엔드 개발자');
   });
 
@@ -172,7 +157,7 @@ describe('createCardSession()', () => {
       domainContext: { primary: 'web', confidence: 'high' },
     };
     const session = createCardSession(TREE_CONFIG, CARD_DEFS, scan);
-    const stack = session.cards.find((c: any) => c.id === 'stack-environment');
+    const stack = session.cards.find((c: SectionCard) => c.id === 'stack-environment');
     expect(stack.value).toContain('TypeScript');
     expect(stack.value).toContain('Express');
     expect(stack.value).toContain('pnpm');
@@ -209,14 +194,14 @@ describe('createCardSession() — roleMappings 분기', () => {
 
   test('resolveRoleSuggestions 반환값이 role 카드 options에 반영된다', () => {
     const session = createCardSession(TREE_CONFIG, CARD_DEFS, SCAN, undefined, ROLE_MAPPINGS);
-    const role = session.cards.find((c: any) => c.id === 'role');
+    const role = session.cards.find((c: SectionCard) => c.id === 'role');
     expect(role.options).toEqual([{ value: '모의 역할', label: '모의 역할' }]);
   });
 
   test('roleMappings 없이 scanResult만 → buildRoleOptions 사용 (주 언어 기반 역할)', () => {
     const session = createCardSession(TREE_CONFIG, CARD_DEFS, SCAN);
-    const role = session.cards.find((c: any) => c.id === 'role');
-    const roleValues = role.options.map((o: any) => o.value);
+    const role = session.cards.find((c: SectionCard) => c.id === 'role');
+    const roleValues = role.options.map((o: SelectOption) => o.value);
     expect(roleValues[0]).toBe('TypeScript 개발자');
     expect(roleValues).toContain('React 개발자');
     expect(resolveRoleSuggestions).not.toHaveBeenCalled();
@@ -240,15 +225,11 @@ describe('createCardSession() — domainOverlay 분기', () => {
 
   test('domainOverlay 전달 시 applyDomainOverrides 호출', () => {
     createCardSession(TREE_CONFIG, CARD_DEFS, null, undefined, undefined, DOMAIN_OVERLAY);
-    expect(applyDomainOverrides).toHaveBeenCalledWith(
-      CARD_DEFS, TREE_CONFIG.cardOverrides, DOMAIN_OVERLAY, TREE_CONFIG.id
-    );
+    expect(applyDomainOverrides).toHaveBeenCalledWith(CARD_DEFS, TREE_CONFIG.cardOverrides, DOMAIN_OVERLAY, TREE_CONFIG.id);
   });
 
   test('domainOverlay 전달 시 reorderCardPool에 cardRelevance 전달', () => {
     createCardSession(TREE_CONFIG, CARD_DEFS, null, undefined, undefined, DOMAIN_OVERLAY);
-    expect(reorderCardPool).toHaveBeenCalledWith(
-      TREE_CONFIG.cardPool, DOMAIN_OVERLAY.cardRelevance
-    );
+    expect(reorderCardPool).toHaveBeenCalledWith(TREE_CONFIG.cardPool, DOMAIN_OVERLAY.cardRelevance);
   });
 });

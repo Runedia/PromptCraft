@@ -1,6 +1,9 @@
+import type { ScanResult } from '../../../src/core/types';
+import type { SelectOption } from '../../../src/core/types/card';
+
 const { resolveRoleSuggestions } = require('../../../src/core/builder/role-resolver');
 
-function makeScan(overrides: any = {}) {
+function makeScan(overrides: Partial<ScanResult> = {}) {
   return {
     languages: [],
     frameworks: [],
@@ -36,7 +39,7 @@ const BASE_MAPPINGS = {
 describe('resolveRoleSuggestions() — 기본 동작', () => {
   test('scanResult가 null이면 general fallback을 반환한다', () => {
     const result = resolveRoleSuggestions(null, 'code-review', BASE_MAPPINGS);
-    const values = result.map((r: any) => r.value);
+    const values = result.map((r: SelectOption) => r.value);
     expect(values).toContain('소프트웨어 엔지니어');
   });
 
@@ -57,7 +60,7 @@ describe('resolveRoleSuggestions() — 프레임워크 역할', () => {
       domainContext: { primary: 'web', confidence: 'high' },
     });
     const result = resolveRoleSuggestions(scan, 'default', BASE_MAPPINGS);
-    const values = result.map((r: any) => r.value);
+    const values = result.map((r: SelectOption) => r.value);
     expect(values[0]).toBe('React 개발자');
   });
 
@@ -67,7 +70,7 @@ describe('resolveRoleSuggestions() — 프레임워크 역할', () => {
       domainContext: { primary: 'web', confidence: 'high' },
     });
     const result = resolveRoleSuggestions(scan, 'default', BASE_MAPPINGS);
-    const values = result.map((r: any) => r.value);
+    const values = result.map((r: SelectOption) => r.value);
     expect(values).toContain('React 개발자');
     expect(values).toContain('Node.js 백엔드 개발자');
   });
@@ -78,7 +81,7 @@ describe('resolveRoleSuggestions() — 프레임워크 역할', () => {
       domainContext: { primary: 'web', confidence: 'high' },
     });
     const result = resolveRoleSuggestions(scan, 'default', BASE_MAPPINGS);
-    const values = result.map((r: any) => r.value);
+    const values = result.map((r: SelectOption) => r.value);
     expect(values).not.toContain('Angular 개발자');
   });
 });
@@ -92,7 +95,7 @@ describe('resolveRoleSuggestions() — 언어 역할 (low confidence)', () => {
       domainContext: { primary: 'web', confidence: 'low' },
     });
     const result = resolveRoleSuggestions(scan, 'default', BASE_MAPPINGS);
-    const values = result.map((r: any) => r.value);
+    const values = result.map((r: SelectOption) => r.value);
     expect(values).toContain('TypeScript 개발자');
   });
 
@@ -102,7 +105,7 @@ describe('resolveRoleSuggestions() — 언어 역할 (low confidence)', () => {
       domainContext: { primary: 'general', confidence: 'high' },
     });
     const result = resolveRoleSuggestions(scan, 'default', BASE_MAPPINGS);
-    const values = result.map((r: any) => r.value);
+    const values = result.map((r: SelectOption) => r.value);
     expect(values).toContain('Python 개발자');
   });
 });
@@ -122,7 +125,7 @@ describe('resolveRoleSuggestions() — 중복 제거', () => {
       frameworkRoles: {},
     };
     const result = resolveRoleSuggestions(null, 'code-review', mappings);
-    const values = result.map((r: any) => r.value);
+    const values = result.map((r: SelectOption) => r.value);
     expect(values.filter((v: string) => v === '소프트웨어 엔지니어')).toHaveLength(1);
   });
 });
@@ -144,7 +147,7 @@ describe('resolveRoleSuggestions() — general fallback', () => {
     };
     const scan = makeScan({ domainContext: { primary: 'sparse', confidence: 'high' } });
     const result = resolveRoleSuggestions(scan, 'default', mappings);
-    const values = result.map((r: any) => r.value);
+    const values = result.map((r: SelectOption) => r.value);
     expect(values.length).toBeGreaterThanOrEqual(2);
     expect(values).toContain('소프트웨어 엔지니어');
   });

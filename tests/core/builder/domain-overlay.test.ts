@@ -1,8 +1,10 @@
+import type { CardDefinition } from '../../../src/core/types/card';
+
 const { applyDomainOverrides, reorderCardPool } = require('../../../src/core/builder/domain-overlay');
 
 // ─── applyDomainOverrides ────────────────────────────────────────────
 
-function makeCardDef(overrides: any = {}) {
+function makeCardDef(overrides: Partial<CardDefinition> = {}) {
   return {
     label: '기본 레이블',
     required: false,

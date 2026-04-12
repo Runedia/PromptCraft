@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { Router } from 'express';
+import { extractLines, inferLanguage } from '../../core/builder/mentionParser.js';
 import { validatePath } from '../middleware/pathGuard.js';
 
 const router = Router();
@@ -60,7 +61,19 @@ router.get('/suggest', async (req, res, next) => {
 
 router.post('/read', async (req, res, next) => {
   try {
-    const { filePath, scanRoot } = req.body as { filePath: string; scanRoot: string };
+    const {
+      filePath,
+      scanRoot,
+      lineStart: rawStart,
+      lineEnd: rawEnd,
+    } = req.body as {
+      filePath: string;
+      scanRoot: string;
+      lineStart?: unknown;
+      lineEnd?: unknown;
+    };
+    const lineStart = rawStart !== undefined ? Number(rawStart) : undefined;
+    const lineEnd = rawEnd !== undefined ? Number(rawEnd) : undefined;
 
     if (!filePath || !scanRoot) {
       res.status(400).json({ error: 'filePath와 scanRoot가 필요합니다.' });
@@ -68,8 +81,12 @@ router.post('/read', async (req, res, next) => {
     }
 
     const absolutePath = validatePath(filePath, scanRoot);
-    const content = await fs.readFile(absolutePath, 'utf-8');
-    res.json({ content, filePath });
+    const rawContent = await fs.readFile(absolutePath, 'utf-8');
+    const totalLines = rawContent.split('\n').length;
+    const content = extractLines(rawContent, lineStart, lineEnd);
+    const language = inferLanguage(filePath);
+
+    res.json({ content, filePath, totalLines, language, lineStart, lineEnd });
   } catch (err) {
     if (err instanceof Error && err.message.includes('접근이 허용되지 않는')) {
       res.status(403).json({ error: err.message });

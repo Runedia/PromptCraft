@@ -54,10 +54,7 @@ describe('PUT /api/config', () => {
   });
 
   test('body가 null이면 500 에러 반환', async () => {
-    const res = await request(app)
-      .put('/')
-      .set('Content-Type', 'application/json')
-      .send('null');
+    const res = await request(app).put('/').set('Content-Type', 'application/json').send('null');
     expect(res.status).toBe(500);
   });
 });

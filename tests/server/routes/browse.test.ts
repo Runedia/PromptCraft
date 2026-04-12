@@ -1,6 +1,6 @@
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import fs from 'node:fs';
 
 const request = require('supertest');
 const { makeApp } = require('../../helpers/make-app');

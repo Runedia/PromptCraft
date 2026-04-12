@@ -1,5 +1,4 @@
-const { AppError, ScanError, QnAError, BuildError, DBError, ContextError, ValidationError } =
-  require('../../src/shared/errors');
+const { AppError, ScanError, QnAError, BuildError, DBError, ContextError, ValidationError } = require('../../src/shared/errors');
 
 // ─── AppError ────────────────────────────────────────────────────────
 

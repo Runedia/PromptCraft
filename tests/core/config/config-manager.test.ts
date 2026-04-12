@@ -1,6 +1,6 @@
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import fs from 'node:fs';
 
 // jest.mock 팩토리 내부에서 require 가능 — DATA_DIR을 temp dir로 대체
 jest.mock('../../../src/shared/constants', () => {

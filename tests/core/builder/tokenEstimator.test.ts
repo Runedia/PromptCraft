@@ -6,8 +6,8 @@ describe('estimateTokens()', () => {
   });
 
   test('null/undefined-like falsy는 0을 반환한다', () => {
-    expect(estimateTokens(null as any)).toBe(0);
-    expect(estimateTokens(undefined as any)).toBe(0);
+    expect(estimateTokens(null as unknown as string)).toBe(0);
+    expect(estimateTokens(undefined as unknown as string)).toBe(0);
   });
 
   test('순수 ASCII 4자 → 1토큰', () => {

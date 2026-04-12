@@ -1,3 +1,5 @@
+import type { SectionCard } from '../../../src/core/types/card';
+
 jest.mock('../../../src/core/db/index', () => {
   const actual = jest.requireActual('../../../src/core/db/index');
   return { ...actual, initialize: jest.fn().mockResolvedValue(undefined) };
@@ -11,7 +13,7 @@ const db = require('../../../src/core/db');
 
 const app = makeApp(router);
 
-function makeCard(overrides: any = {}) {
+function makeCard(overrides: Partial<SectionCard> = {}) {
   return {
     id: 'goal',
     label: '목표',

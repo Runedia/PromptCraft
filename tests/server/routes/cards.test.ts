@@ -1,3 +1,5 @@
+import type { CardDefinition } from '../../../src/core/types/card';
+
 jest.mock('node:fs/promises', () => {
   const actual = jest.requireActual('node:fs/promises');
   return { ...actual, readFile: jest.fn().mockImplementation(actual.readFile) };
@@ -25,7 +27,7 @@ describe('GET /api/cards', () => {
 
   test('각 카드에 label, inputType, template 필드가 존재한다', async () => {
     const res = await request(app).get('/');
-    for (const card of Object.values(res.body) as any[]) {
+    for (const card of Object.values(res.body) as CardDefinition[]) {
       expect(card).toHaveProperty('label');
       expect(card).toHaveProperty('inputType');
       expect(card).toHaveProperty('template');

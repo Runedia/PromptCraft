@@ -1,6 +1,6 @@
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import fs from 'node:fs';
 
 const request = require('supertest');
 const { makeApp } = require('../../helpers/make-app');
@@ -39,14 +39,14 @@ describe('GET /api/mention/suggest', () => {
 
   test('node_modules 같은 무시 디렉토리는 제외', async () => {
     const res = await request(app).get(`/suggest?root=${encodeURIComponent(tmpDir)}`);
-    const paths = res.body.suggestions.map((s: any) => s.path);
+    const paths = res.body.suggestions.map((s: { path: string; display: string; isDir: boolean }) => s.path);
     expect(paths).not.toContain('node_modules/');
   });
 
   test('partial로 필터링된다', async () => {
     const res = await request(app).get(`/suggest?root=${encodeURIComponent(tmpDir)}&partial=src`);
     expect(res.status).toBe(200);
-    const paths = res.body.suggestions.map((s: any) => s.path);
+    const paths = res.body.suggestions.map((s: { path: string; display: string; isDir: boolean }) => s.path);
     expect(paths.every((p: string) => p.startsWith('src'))).toBe(true);
   });
 });
@@ -76,5 +76,38 @@ describe('POST /api/mention/read', () => {
       scanRoot: tmpDir,
     });
     expect(res.status).toBe(403);
+  });
+
+  test('totalLines, language 응답 필드 포함', async () => {
+    const res = await request(app).post('/read').send({
+      filePath: 'src/index.ts',
+      scanRoot: tmpDir,
+    });
+    expect(res.status).toBe(200);
+    expect(typeof res.body.totalLines).toBe('number');
+    expect(res.body.language).toBe('typescript');
+  });
+
+  test('lineStart=1, lineEnd=1 → 첫 줄만 반환', async () => {
+    fs.writeFileSync(path.join(tmpDir, 'multi.ts'), 'line1\nline2\nline3');
+    const res = await request(app).post('/read').send({
+      filePath: 'multi.ts',
+      scanRoot: tmpDir,
+      lineStart: 1,
+      lineEnd: 1,
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.content).toBe('line1');
+    expect(res.body.lineStart).toBe(1);
+    expect(res.body.lineEnd).toBe(1);
+  });
+
+  test('lineStart/lineEnd 생략 → 전체 내용 반환', async () => {
+    const res = await request(app).post('/read').send({
+      filePath: 'README.md',
+      scanRoot: tmpDir,
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.content).toBe('# Project');
   });
 });

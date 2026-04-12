@@ -28,4 +28,6 @@
 - Never record secrets, API keys, or user data
 - Never overwrite decisions — mark as [superseded]
 - Never promote from inbox without user confirmation
-w
+
+### Code Style
+- Follow biome.json: single quotes, 2-space indent, LF, lineWidth 160, trailingCommas es5.
