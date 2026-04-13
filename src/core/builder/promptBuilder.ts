@@ -1,17 +1,20 @@
 import type { SectionCard } from '../types/card.js';
+import { MENTION_PATTERN } from './mentionParser.js';
 
 /**
  * @파일경로 멘션을 [@파일명](@파일경로) 마크다운 링크로 변환.
- * @src/foo/bar.ts → [@bar.ts](@src/foo/bar.ts)
+ * @src/foo/bar.ts        → [@bar.ts](@src/foo/bar.ts)
  * @src/foo/bar.ts#L10-20 → [@bar.ts#L10-20](@src/foo/bar.ts#L10-20)
+ * @"path with spaces"   → [@spaces](@"path with spaces")
  */
 export function resolveMentionLinks(text: string): string {
-  return text.replace(/@([\w.\s/-]+(?:#L\d+(?:-\d+)?)?)/g, (_, p: string) => {
-    const hashIdx = p.indexOf('#');
-    const pathPart = hashIdx >= 0 ? p.slice(0, hashIdx) : p;
-    const rangePart = hashIdx >= 0 ? p.slice(hashIdx) : '';
-    const basename = pathPart.split('/').filter(Boolean).pop() ?? pathPart;
-    return `[@${basename}${rangePart}](@${p})`;
+  // MENTION_PATTERN 은 /g 플래그를 갖고 있어 lastIndex 상태가 있으므로 새 인스턴스 생성
+  const pattern = new RegExp(MENTION_PATTERN.source, MENTION_PATTERN.flags);
+  return text.replace(pattern, (match, quotedPath: string | undefined, unquotedPath: string | undefined, ls: string | undefined, le: string | undefined) => {
+    const filePath = quotedPath ?? unquotedPath ?? '';
+    const basename = filePath.split('/').filter(Boolean).pop() ?? filePath;
+    const rangePart = ls !== undefined ? `#L${ls}${le !== undefined ? `-${le}` : ''}` : '';
+    return `[@${basename}${rangePart}](@${match.slice(1)})`;
   });
 }
 

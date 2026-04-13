@@ -1,6 +1,9 @@
 import type { FileLineRange, MentionReference } from '../../shared/fileAnnotation.js';
 
-const MENTION_PATTERN = /@([\w.\s/-]+(?:#L\d+(?:-\d+)?)?)/g;
+// 따옴표 경로: @"path with spaces/file.ts"  (공백 허용)
+// 일반 경로:  @src/foo/bar.ts              (공백 불허)
+// 라인 범위는 닫는 따옴표 또는 일반 경로 뒤에 #L 로 붙음
+export const MENTION_PATTERN = /@(?:"([^"]+)"|([\w./-]+))(?:#L(\d+)(?:-(\d+))?)?/g;
 const LINE_RANGE_REGEX = /^([^#]+)(?:#L(\d+)(?:-(\d+))?)?$/;
 
 const EXT_LANG: Record<string, string> = {
@@ -33,9 +36,12 @@ const EXT_LANG: Record<string, string> = {
 
 export function parseMentions(text: string): MentionReference[] {
   const refs: MentionReference[] = [];
+  // matchAll 은 글로벌 정규식을 내부적으로 복사하므로 lastIndex 부작용 없음
   for (const match of text.matchAll(MENTION_PATTERN)) {
     const raw = match[0];
-    const { filename: filePath, lineStart, lineEnd } = parseLineRange(match[1]);
+    const filePath = match[1] ?? match[2]; // 따옴표 경로 | 일반 경로
+    const lineStart = match[3] !== undefined ? Number(match[3]) : undefined;
+    const lineEnd = match[4] !== undefined ? Number(match[4]) : undefined;
     refs.push({ raw, filePath, lineStart, lineEnd, offset: match.index ?? 0 });
   }
   return refs;

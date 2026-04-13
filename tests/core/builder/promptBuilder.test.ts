@@ -118,6 +118,18 @@ describe('resolveMentionLinks() — 라인 범위', () => {
     const result = resolveMentionLinks('@src/a.ts와 @src/b.ts#L1-5');
     expect(result).toBe('[@a.ts](@src/a.ts)와 [@b.ts#L1-5](@src/b.ts#L1-5)');
   });
+
+  test('공백 이후 텍스트는 링크에 포함하지 않음', () => {
+    expect(resolveMentionLinks('@run/config/modmenu.json asdfsdf')).toBe('[@modmenu.json](@run/config/modmenu.json) asdfsdf');
+  });
+
+  test('따옴표 경로를 마크다운 링크로 변환', () => {
+    expect(resolveMentionLinks('@"my config/app settings.json"')).toBe('[@app settings.json](@"my config/app settings.json")');
+  });
+
+  test('따옴표 경로 + 라인 범위 변환', () => {
+    expect(resolveMentionLinks('@"src/my file.ts"#L5-10')).toBe('[@my file.ts#L5-10](@"src/my file.ts"#L5-10)');
+  });
 });
 
 // ─── buildPreview ────────────────────────────────────────────────────

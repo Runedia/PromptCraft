@@ -74,6 +74,24 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
     setPreview(null);
   }, []);
 
+  const fetchSuggestions = useCallback(
+    async (partial: string) => {
+      if (!scanRoot) return;
+      try {
+        const pathPart = partial.split('#')[0];
+        const res = await fetch(`/api/mention/suggest?root=${encodeURIComponent(scanRoot)}&partial=${encodeURIComponent(pathPart)}`);
+        if (res.ok) {
+          const { suggestions: s } = await res.json();
+          setSuggestions(s);
+          setSelectedIdx(-1);
+        }
+      } catch {
+        setSuggestions([]);
+      }
+    },
+    [scanRoot]
+  );
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const newVal = e.target.value;
@@ -81,30 +99,23 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
 
       const cursor = e.target.selectionStart;
       const textBefore = newVal.slice(0, cursor);
-      const atMatch = textBefore.match(/@([\w.\s/-]*(?:#L\d*(?:-\d*)?)?)$/);
+      // 따옴표 모드: @"partial (닫히지 않은 따옴표) — 공백 포함 경로 입력 중
+      // 일반 모드:  @partial/path — 공백 없는 경로
+      const atMatch = textBefore.match(/@(?:"([^"]*)|([[\w./-]*(?:#L\d*(?:-\d*)?)?))$/);
 
       if (atMatch && scanRoot) {
         setMentionStart(cursor - atMatch[0].length);
         clearTimeout(debounceRef.current ?? undefined);
-        debounceRef.current = setTimeout(async () => {
-          try {
-            // #L 이후는 제거하고 파일 경로만 자동완성
-            const pathPart = atMatch[1].split('#')[0];
-            const res = await fetch(`/api/mention/suggest?root=${encodeURIComponent(scanRoot)}&partial=${encodeURIComponent(pathPart)}`);
-            if (res.ok) {
-              const { suggestions: s } = await res.json();
-              setSuggestions(s);
-              setSelectedIdx(-1);
-            }
-          } catch {
-            setSuggestions([]);
-          }
+        debounceRef.current = setTimeout(() => {
+          // 따옴표 모드면 group1, 일반 모드면 group2; #L 이후는 제거
+          const pathPart = (atMatch[1] ?? atMatch[2] ?? '').split('#')[0];
+          fetchSuggestions(pathPart);
         }, 150);
       } else {
         closeSuggestions();
       }
     },
-    [onChange, scanRoot, closeSuggestions]
+    [onChange, scanRoot, closeSuggestions, fetchSuggestions]
   );
 
   const insertMention = useCallback(
@@ -113,24 +124,26 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
 
       const before = value.slice(0, mentionStart);
       const after = value.slice(ref.current.selectionStart);
-      onChange(`${before}@${filePath}${after}`);
+      // 공백 포함 경로는 따옴표로 감싸서 파서가 경계를 명확히 인식하게 함
+      const quoted = filePath.includes(' ') ? `"${filePath}"` : filePath;
+      onChange(`${before}@${quoted}${after}`);
       setPreview(null);
 
       if (isDir) {
-        setSuggestions([]);
         setSelectedIdx(-1);
+        const savedMentionStart = mentionStart;
         setTimeout(() => {
           if (ref.current) {
-            const pos = mentionStart + 1 + filePath.length;
+            const pos = savedMentionStart + 1 + quoted.length;
             ref.current.setSelectionRange(pos, pos);
-            ref.current.dispatchEvent(new Event('input', { bubbles: true }));
+            fetchSuggestions(filePath);
           }
         }, 0);
       } else {
         closeSuggestions();
       }
     },
-    [value, mentionStart, onChange, closeSuggestions]
+    [value, mentionStart, onChange, closeSuggestions, fetchSuggestions]
   );
 
   const insertMentionWithLineRange = useCallback(
@@ -138,11 +151,12 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
       if (!ref.current || mentionStart === -1) return;
       const before = value.slice(0, mentionStart);
       const after = value.slice(ref.current.selectionStart);
-      onChange(`${before}@${filePath}#L${after}`);
+      const quoted = filePath.includes(' ') ? `"${filePath}"` : filePath;
+      onChange(`${before}@${quoted}#L${after}`);
       closeSuggestions();
       setTimeout(() => {
         if (ref.current) {
-          const pos = mentionStart + 1 + filePath.length + 2; // @path#L
+          const pos = mentionStart + 1 + quoted.length + 2; // @quoted#L
           ref.current.setSelectionRange(pos, pos);
           ref.current.focus();
         }

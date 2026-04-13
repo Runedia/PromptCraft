@@ -55,6 +55,36 @@ describe('parseMentions()', () => {
   test('멘션 없으면 빈 배열', () => {
     expect(parseMentions('그냥 텍스트')).toHaveLength(0);
   });
+
+  test('공백 이후 텍스트는 멘션에 포함하지 않음', () => {
+    const refs = parseMentions('@run/config/modmenu.json asdfsdf');
+    expect(refs).toHaveLength(1);
+    expect(refs[0].raw).toBe('@run/config/modmenu.json');
+    expect(refs[0].filePath).toBe('run/config/modmenu.json');
+  });
+
+  test('공백으로 구분된 연속 멘션 각각 파싱', () => {
+    const refs = parseMentions('@src/a.ts @src/b.ts');
+    expect(refs).toHaveLength(2);
+    expect(refs[0].filePath).toBe('src/a.ts');
+    expect(refs[1].filePath).toBe('src/b.ts');
+  });
+
+  test('따옴표로 감싼 공백 포함 경로 파싱', () => {
+    const refs = parseMentions('@"my config/app settings.json"');
+    expect(refs).toHaveLength(1);
+    expect(refs[0].raw).toBe('@"my config/app settings.json"');
+    expect(refs[0].filePath).toBe('my config/app settings.json');
+    expect(refs[0].lineStart).toBeUndefined();
+  });
+
+  test('따옴표 경로 + 라인 범위 파싱', () => {
+    const refs = parseMentions('@"src/my file.ts"#L10-20');
+    expect(refs).toHaveLength(1);
+    expect(refs[0].filePath).toBe('src/my file.ts');
+    expect(refs[0].lineStart).toBe(10);
+    expect(refs[0].lineEnd).toBe(20);
+  });
 });
 
 // ─── extractLines ─────────────────────────────────────────────────────
