@@ -44,6 +44,7 @@ lerna-debug.log*
 *.sln
 *.swp
 *~
+.history
 
 # 운영체제 메타데이터
 .DS_Store
