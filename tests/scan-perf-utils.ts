@@ -1,10 +1,10 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const os = require('node:os');
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
-const DEFAULT_EXTENSIONS = ['js', 'py', 'md', 'java'];
+export const DEFAULT_EXTENSIONS = ['js', 'py', 'md', 'java'];
 
-function createSeededRandom(seed) {
+export function createSeededRandom(seed: number): () => number {
   let state = seed >>> 0;
   return function next() {
     state = (1664525 * state + 1013904223) >>> 0;
@@ -12,21 +12,23 @@ function createSeededRandom(seed) {
   };
 }
 
-function ensureDir(targetPath) {
+export function ensureDir(targetPath: string): void {
   fs.mkdirSync(targetPath, { recursive: true });
 }
 
-function removeDir(targetPath) {
+export function removeDir(targetPath: string): void {
   fs.rmSync(targetPath, { recursive: true, force: true });
 }
 
-function createRandomTree(rootPath, maxDepth, maxBranch, random) {
-  const allDirs = [];
+function createRandomTree(rootPath: string, maxDepth: number, maxBranch: number, random: () => number): string[] {
+  const allDirs: string[] = [];
   let dirIndex = 0;
-  const queue = [[rootPath, 0]];
+  const queue: Array<[string, number]> = [[rootPath, 0]];
 
   while (queue.length > 0) {
-    const [currentDir, currentDepth] = queue.shift();
+    const nextItem = queue.shift();
+    if (!nextItem) continue;
+    const [currentDir, currentDepth] = nextItem;
     if (currentDepth >= maxDepth) continue;
 
     const numChildren = Math.floor(random() * (maxBranch + 1));
@@ -42,11 +44,31 @@ function createRandomTree(rootPath, maxDepth, maxBranch, random) {
   return allDirs;
 }
 
-function pick(arr, random) {
+function pick<T>(arr: T[], random: () => number): T {
   return arr[Math.floor(random() * arr.length)];
 }
 
-function createScanPerfFixture(options = {}) {
+type ScanPerfFixtureOptions = {
+  maxDepth?: number;
+  maxBranch?: number;
+  fileCount?: number;
+  seed?: number;
+  extensions?: string[];
+  baseRoot?: string;
+  datasetName?: string;
+};
+
+type ScanPerfFixture = {
+  seed: number;
+  maxDepth: number;
+  maxBranch: number;
+  fileCount: number;
+  extensions: string[];
+  fixtureRoot: string;
+  files: string[];
+};
+
+export function createScanPerfFixture(options: ScanPerfFixtureOptions = {}): ScanPerfFixture {
   const {
     maxDepth = 6,
     maxBranch = 4,
@@ -65,7 +87,7 @@ function createScanPerfFixture(options = {}) {
   const allDirs = createRandomTree(fixtureRoot, maxDepth, maxBranch, random);
   const writeTargets = [fixtureRoot].concat(allDirs);
 
-  const manifest = {
+  const manifest: ScanPerfFixture = {
     seed,
     maxDepth,
     maxBranch,
@@ -86,11 +108,3 @@ function createScanPerfFixture(options = {}) {
 
   return manifest;
 }
-
-module.exports = {
-  DEFAULT_EXTENSIONS,
-  createSeededRandom,
-  createScanPerfFixture,
-  ensureDir,
-  removeDir,
-};

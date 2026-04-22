@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response, Router } from 'express';
-
-const express = require('express');
+import express from 'express';
 
 /** 테스트용 최소 Express 앱 팩토리. 에러 핸들러 포함. */
 function makeApp(router: Router) {
@@ -13,4 +12,4 @@ function makeApp(router: Router) {
   return app;
 }
 
-module.exports = { makeApp };
+export { makeApp };

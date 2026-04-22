@@ -1,0 +1,42 @@
+{
+  "id": "refactoring",
+  "label": "리팩토링",
+  "description": "동작 보존 + 구조 개선",
+  "icon": "🛠",
+  "defaultActiveCards": [
+    "role",
+    "goal",
+    "target-code",
+    "modification-scope",
+    "concern-area"
+  ],
+  "cardPool": [
+    "related-code",
+    "constraints",
+    "output-format"
+  ],
+  "roleSuffix": "리팩토링 전문가",
+  "cardOverrides": {
+    "goal": {
+      "defaultValue": "리팩토링",
+      "hint": "리팩토링 목적을 구체화하세요. 외부 동작은 유지하면서 달성하고자 하는 구조적 개선을 서술하세요. (예: 중복 제거 후 단일 책임 원칙 적용, 조건문을 전략 패턴으로 교체)"
+    },
+    "role": {
+      "examples": ["리팩토링 전문가", "시니어 개발자", "테크 리드", "코드 품질 엔지니어", "소프트웨어 아키텍트"]
+    },
+    "modification-scope": {
+      "hint": "변경 대상 범위와 반드시 보존해야 할 동작을 명시하세요. (예: 이 함수의 공개 인터페이스 유지, 기존 테스트 통과 보장, API 응답 형식 불변)"
+    },
+    "concern-area": {
+      "hint": "리팩토링 동기를 설명하세요. (예: 중복 로직 3곳, 함수 길이 200줄 초과, 순환 의존성, 테스트 불가 구조)"
+    },
+    "output-format": {
+      "options": [
+        { "value": "변경 전후 diff + 각 변경의 근거", "label": "diff + 근거" },
+        { "value": "단계별 안전 변환 시퀀스 — 각 단계에서 테스트 통과 보장", "label": "단계별 안전 변환" },
+        { "value": "Before/After 구조 비교 + 테스트 영향 분석", "label": "Before/After 비교" },
+        { "value": "리팩토링 카탈로그 매핑(Fowler) + 적용 코드", "label": "카탈로그 매핑" }
+      ]
+    }
+  }
+}

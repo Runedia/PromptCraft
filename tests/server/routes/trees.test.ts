@@ -1,6 +1,6 @@
-const request = require('supertest');
-const { makeApp } = require('../../helpers/make-app');
-const router = require('../../../src/server/routes/trees').default;
+import request from 'supertest';
+import router from '../../../src/server/routes/trees.js';
+import { makeApp } from '../../helpers/make-app.js';
 
 const app = makeApp(router);
 

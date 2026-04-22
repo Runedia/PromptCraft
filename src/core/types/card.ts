@@ -38,6 +38,7 @@ export interface TreeConfig {
   defaultActiveCards: string[];
   cardPool: string[];
   cardOverrides?: Record<string, Partial<CardDefinition>>;
+  roleSuffix?: string;
 }
 
 export interface CardDefinition {

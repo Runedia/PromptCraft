@@ -1,0 +1,16 @@
+{
+  "id": "rf-04-replace-conditional",
+  "treeId": "refactoring",
+  "name": "조건문 단순화",
+  "description": "복잡한 분기를 전략 패턴·맵·다형성으로 교체",
+  "examples": [
+    {
+      "label": "결제 수단별 switch 제거",
+      "prefill": {
+        "goal": "결제 수단마다 분기하는 switch 문을 전략 맵으로 교체해 신규 수단 추가 시 기존 코드 무수정",
+        "modificationScope": "결제 처리 함수 내부만 변경, 호출부 시그니처 및 반환 타입 불변",
+        "concernArea": "결제 수단 추가마다 switch에 case를 덧붙여 오픈-클로즈드 원칙 위반"
+      }
+    }
+  ]
+}

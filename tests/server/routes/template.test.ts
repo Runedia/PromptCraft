@@ -1,13 +1,8 @@
-jest.mock('../../../src/core/db/index', () => {
-  const actual = jest.requireActual('../../../src/core/db/index');
-  return { ...actual, initialize: jest.fn().mockResolvedValue(undefined) };
-});
-
-const request = require('supertest');
-const { makeApp } = require('../../helpers/make-app');
-const router = require('../../../src/server/routes/template').default;
-const connection = require('../../../src/core/db/connection');
-const db = require('../../../src/core/db');
+import request from 'supertest';
+import * as connection from '../../../src/core/db/connection.js';
+import * as db from '../../../src/core/db/index.js';
+import router from '../../../src/server/routes/template.js';
+import { makeApp } from '../../helpers/make-app.js';
 
 const app = makeApp(router);
 

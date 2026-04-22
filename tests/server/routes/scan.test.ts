@@ -1,3 +1,7 @@
+import request from 'supertest';
+import router from '../../../src/server/routes/scan.js';
+import { makeApp } from '../../helpers/make-app.js';
+
 // scan과 domain-loader를 mock — 실제 스캔은 무겁고 느림
 jest.mock('../../../src/core/scanner/index', () => ({
   scan: jest.fn().mockResolvedValue({
@@ -21,10 +25,6 @@ jest.mock('../../../src/server/domain-loader', () => ({
 jest.mock('../../../src/server/scan-debug', () => ({
   writeScanDebugLog: jest.fn(),
 }));
-
-const request = require('supertest');
-const { makeApp } = require('../../helpers/make-app');
-const router = require('../../../src/server/routes/scan').default;
 
 const app = makeApp(router);
 

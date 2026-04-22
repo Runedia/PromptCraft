@@ -1,16 +1,22 @@
-import type { ScanResult } from '../../../src/core/types';
-import type { SelectOption } from '../../../src/core/types/card';
+import { resolveRoleSuggestions } from '../../../src/core/builder/role-resolver.js';
+import type { SelectOption } from '../../../src/core/types/card.js';
+import type { ScanResult } from '../../../src/core/types.js';
 
-const { resolveRoleSuggestions } = require('../../../src/core/builder/role-resolver');
+const BASE_SCAN: ScanResult = {
+  path: '/tmp/fixture',
+  languages: [],
+  frameworks: [],
+  structure: { name: 'root', children: [] },
+  packageManager: null,
+  hasEnv: false,
+  configFiles: [],
+  ignoreSource: 'gitignore',
+  scannedAt: '2026-04-21T00:00:00.000Z',
+  domainContext: { primary: 'general', secondary: null, confidence: 'medium' },
+};
 
-function makeScan(overrides: Partial<ScanResult> = {}) {
-  return {
-    languages: [],
-    frameworks: [],
-    packageManager: null,
-    domainContext: { primary: 'general', confidence: 'medium' },
-    ...overrides,
-  };
+function makeScan(overrides: Partial<ScanResult> = {}): ScanResult {
+  return { ...BASE_SCAN, ...overrides };
 }
 
 const BASE_MAPPINGS = {
@@ -19,7 +25,7 @@ const BASE_MAPPINGS = {
       default: ['소프트웨어 엔지니어', '풀스택 개발자'],
       'code-review': ['코드 리뷰어'],
     },
-    web: {
+    'web-frontend': {
       default: ['웹 개발자', 'UI 엔지니어'],
       'code-review': ['프론트엔드 리뷰어'],
     },
@@ -56,8 +62,8 @@ describe('resolveRoleSuggestions() — 기본 동작', () => {
 describe('resolveRoleSuggestions() — 프레임워크 역할', () => {
   test('감지된 프레임워크의 역할이 최우선으로 포함된다', () => {
     const scan = makeScan({
-      frameworks: [{ name: 'React' }],
-      domainContext: { primary: 'web', confidence: 'high' },
+      frameworks: [{ name: 'React', version: null, source: 'package.json' }],
+      domainContext: { primary: 'web-frontend', secondary: null, confidence: 'high' },
     });
     const result = resolveRoleSuggestions(scan, 'default', BASE_MAPPINGS);
     const values = result.map((r: SelectOption) => r.value);
@@ -66,8 +72,12 @@ describe('resolveRoleSuggestions() — 프레임워크 역할', () => {
 
   test('프레임워크 역할은 최대 2개까지만 추가된다', () => {
     const scan = makeScan({
-      frameworks: [{ name: 'React' }, { name: 'Express' }, { name: 'Unknown' }],
-      domainContext: { primary: 'web', confidence: 'high' },
+      frameworks: [
+        { name: 'React', version: null, source: 'package.json' },
+        { name: 'Express', version: null, source: 'package.json' },
+        { name: 'Unknown', version: null, source: 'package.json' },
+      ],
+      domainContext: { primary: 'web-frontend', secondary: null, confidence: 'high' },
     });
     const result = resolveRoleSuggestions(scan, 'default', BASE_MAPPINGS);
     const values = result.map((r: SelectOption) => r.value);
@@ -77,8 +87,8 @@ describe('resolveRoleSuggestions() — 프레임워크 역할', () => {
 
   test('존재하지 않는 프레임워크는 무시된다', () => {
     const scan = makeScan({
-      frameworks: [{ name: 'Angular' }],
-      domainContext: { primary: 'web', confidence: 'high' },
+      frameworks: [{ name: 'Angular', version: null, source: 'package.json' }],
+      domainContext: { primary: 'web-frontend', secondary: null, confidence: 'high' },
     });
     const result = resolveRoleSuggestions(scan, 'default', BASE_MAPPINGS);
     const values = result.map((r: SelectOption) => r.value);
@@ -91,8 +101,8 @@ describe('resolveRoleSuggestions() — 프레임워크 역할', () => {
 describe('resolveRoleSuggestions() — 언어 역할 (low confidence)', () => {
   test('confidence=low일 때 primary 언어 역할이 추가된다', () => {
     const scan = makeScan({
-      languages: [{ name: 'TypeScript', role: 'primary' }],
-      domainContext: { primary: 'web', confidence: 'low' },
+      languages: [{ name: 'TypeScript', extension: '.ts', count: 1, percentage: 100, role: 'primary' }],
+      domainContext: { primary: 'web-frontend', secondary: null, confidence: 'low' },
     });
     const result = resolveRoleSuggestions(scan, 'default', BASE_MAPPINGS);
     const values = result.map((r: SelectOption) => r.value);
@@ -101,8 +111,8 @@ describe('resolveRoleSuggestions() — 언어 역할 (low confidence)', () => {
 
   test('general 도메인일 때도 언어 역할이 추가된다', () => {
     const scan = makeScan({
-      languages: [{ name: 'Python', role: 'primary' }],
-      domainContext: { primary: 'general', confidence: 'high' },
+      languages: [{ name: 'Python', extension: '.py', count: 1, percentage: 100, role: 'primary' }],
+      domainContext: { primary: 'general', secondary: null, confidence: 'high' },
     });
     const result = resolveRoleSuggestions(scan, 'default', BASE_MAPPINGS);
     const values = result.map((r: SelectOption) => r.value);
@@ -139,13 +149,13 @@ describe('resolveRoleSuggestions() — general fallback', () => {
         general: {
           default: ['소프트웨어 엔지니어', '풀스택 개발자', '백엔드 엔지니어'],
         },
-        sparse: {
+        game: {
           default: ['희소 역할'],
         },
       },
       frameworkRoles: {},
     };
-    const scan = makeScan({ domainContext: { primary: 'sparse', confidence: 'high' } });
+    const scan = makeScan({ domainContext: { primary: 'game', secondary: null, confidence: 'high' } });
     const result = resolveRoleSuggestions(scan, 'default', mappings);
     const values = result.map((r: SelectOption) => r.value);
     expect(values.length).toBeGreaterThanOrEqual(2);

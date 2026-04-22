@@ -18,6 +18,7 @@ const QNA_TREE_IDS = {
   FEATURE_IMPL: 'feature-impl',
   CODE_REVIEW: 'code-review',
   CONCEPT_LEARN: 'concept-learn',
+  REFACTORING: 'refactoring',
 };
 
 const QNA_TREE_LABELS = {
@@ -25,6 +26,7 @@ const QNA_TREE_LABELS = {
   'feature-impl': '기능 구현',
   'code-review': '코드 리뷰',
   'concept-learn': '개념 학습',
+  refactoring: '리팩토링',
 };
 
 const QNA_TREE_DESCRIPTIONS = {
@@ -32,6 +34,7 @@ const QNA_TREE_DESCRIPTIONS = {
   'feature-impl': '새로운 기능 구현을 위한 프롬프트',
   'code-review': '작성한 코드에 대한 리뷰 요청 프롬프트',
   'concept-learn': '프로그래밍 개념/기술 학습 프롬프트',
+  refactoring: '외부 동작 보존 + 내부 구조 개선 프롬프트',
 };
 
 // CONTEXT_FORMATS: PRD 2.0에서 비활성화 (CLI context 명령 제거)

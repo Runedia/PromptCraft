@@ -1,52 +1,21 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const Module = require('node:module');
-const { transformSync } = require('@swc/core');
+import fs from 'node:fs';
+import path from 'node:path';
 
-const originalResolveFilename = Module._resolveFilename;
-Module._resolveFilename = function resolveWithTsFallback(request, parent, isMain, options) {
-  try {
-    return originalResolveFilename.call(this, request, parent, isMain, options);
-  } catch (err) {
-    if (typeof request === 'string' && request.endsWith('.js')) {
-      return originalResolveFilename.call(this, `${request.slice(0, -3)}.ts`, parent, isMain, options);
-    }
-    throw err;
-  }
-};
-
-require.extensions['.ts'] = function compileTs(module, filename) {
-  const source = fs.readFileSync(filename, 'utf8');
-  const output = transformSync(source, {
-    filename,
-    jsc: {
-      target: 'es2022',
-      parser: {
-        syntax: 'typescript',
-        dynamicImport: true,
-      },
-    },
-    module: {
-      type: 'commonjs',
-    },
-  });
-  module._compile(output.code, filename);
-};
-
-const { scan } = require('../src/core/scanner/index.ts');
-const { createScanPerfFixture, ensureDir, removeDir } = require('./scan-perf-utils');
+import { scan } from '../src/core/scanner/index.js';
+import type { ScanTimings } from '../src/core/types.js';
+import { createScanPerfFixture, ensureDir, removeDir } from './scan-perf-utils.js';
 
 const DEFAULT_ITERATIONS = 5;
 const RESULTS_DIR = path.join(process.cwd(), 'tests', 'perf-results');
 const RESULTS_FILE = path.join(RESULTS_DIR, 'scan-benchmark.json');
 const FIXTURE_WORK_DIR = path.join(process.cwd(), 'tests', 'tmp');
 
-function parseIntOrDefault(value, fallback) {
+function parseIntOrDefault(value: string | undefined, fallback: number): number {
   const n = Number(value);
   return Number.isInteger(n) && n > 0 ? n : fallback;
 }
 
-function summarize(samples) {
+function summarize(samples: number[]) {
   const sorted = samples.slice().sort((a, b) => a - b);
   const count = sorted.length;
   const min = sorted[0];
@@ -63,7 +32,23 @@ function summarize(samples) {
   };
 }
 
-function readHistory() {
+type BenchmarkEntry = {
+  executedAt: string;
+  config: {
+    maxDepth: number;
+    maxBranch: number;
+    scanDepth: number;
+    fileCount: number;
+    iterations: number;
+    seed: number;
+    extensions: string[];
+  };
+  summary: ReturnType<typeof summarize>;
+  samplesMs: number[];
+  phaseSamples: Array<ScanTimings | null>;
+};
+
+function readHistory(): BenchmarkEntry[] {
   if (!fs.existsSync(RESULTS_FILE)) return [];
   try {
     const raw = fs.readFileSync(RESULTS_FILE, 'utf8');
@@ -74,7 +59,7 @@ function readHistory() {
   }
 }
 
-function writeHistory(history) {
+function writeHistory(history: BenchmarkEntry[]): void {
   ensureDir(RESULTS_DIR);
   fs.writeFileSync(RESULTS_FILE, JSON.stringify(history, null, 2), 'utf8');
 }
@@ -82,7 +67,7 @@ function writeHistory(history) {
 async function run() {
   const maxDepth = parseIntOrDefault(process.env.SCAN_PERF_MAX_DEPTH, 6);
   const maxBranch = parseIntOrDefault(process.env.SCAN_PERF_MAX_BRANCH, 4);
-  const scanDepth = parseIntOrDefault(process.env.SCAN_PERF_SCAN_DEPTH, 100);
+  const scanDepth = parseIntOrDefault(process.env.SCAN_PERF_DEPTH ?? process.env.SCAN_PERF_SCAN_DEPTH, 100);
   const fileCount = parseIntOrDefault(process.env.SCAN_PERF_FILES, 1000);
   const iterations = parseIntOrDefault(process.env.SCAN_PERF_ITERATIONS, DEFAULT_ITERATIONS);
   const seed = parseIntOrDefault(process.env.SCAN_PERF_SEED, 20260323);
@@ -97,8 +82,8 @@ async function run() {
     datasetName: `scan-perf-${Date.now()}`,
   });
 
-  const samples = [];
-  const phaseSamples = [];
+  const samples: number[] = [];
+  const phaseSamples: Array<ScanTimings | null> = [];
   try {
     for (let i = 0; i < iterations; i += 1) {
       const start = Date.now();
@@ -135,7 +120,11 @@ async function run() {
   console.log(JSON.stringify({ summary, resultsFile: RESULTS_FILE }, null, 2));
 }
 
-run().catch((err) => {
-  console.error(err.stack || err.message);
+run().catch((err: unknown) => {
+  if (err instanceof Error) {
+    console.error(err.stack || err.message);
+  } else {
+    console.error(String(err));
+  }
   process.exitCode = 1;
 });

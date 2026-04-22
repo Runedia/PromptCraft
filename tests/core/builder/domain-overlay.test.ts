@@ -1,17 +1,16 @@
-import type { CardDefinition } from '../../../src/core/types/card';
-
-const { applyDomainOverrides, reorderCardPool } = require('../../../src/core/builder/domain-overlay');
+import { applyDomainOverrides, reorderCardPool } from '../../../src/core/builder/domain-overlay.js';
+import type { CardDefinition } from '../../../src/core/types/card.js';
 
 // ─── applyDomainOverrides ────────────────────────────────────────────
 
-function makeCardDef(overrides: Partial<CardDefinition> = {}) {
+function makeCardDef(overrides: Partial<CardDefinition> = {}): CardDefinition {
   return {
     label: '기본 레이블',
     required: false,
     inputType: 'text',
     template: '{{value}}',
     ...overrides,
-  };
+  } as CardDefinition;
 }
 
 describe('applyDomainOverrides()', () => {
@@ -96,7 +95,7 @@ describe('reorderCardPool()', () => {
 
   test('high → medium → low 순서로 정렬', () => {
     const pool = ['low-card', 'high-card', 'mid-card'];
-    const relevance = { 'high-card': 'high', 'mid-card': 'medium', 'low-card': 'low' };
+    const relevance = { 'high-card': 'high', 'mid-card': 'medium', 'low-card': 'low' } as const;
     const result = reorderCardPool(pool, relevance);
     expect(result.indexOf('high-card')).toBeLessThan(result.indexOf('mid-card'));
     expect(result.indexOf('mid-card')).toBeLessThan(result.indexOf('low-card'));
@@ -104,14 +103,14 @@ describe('reorderCardPool()', () => {
 
   test('relevance 없는 카드는 medium으로 간주', () => {
     const pool = ['unknown', 'high-card'];
-    const relevance = { 'high-card': 'high' };
+    const relevance = { 'high-card': 'high' } as const;
     const result = reorderCardPool(pool, relevance);
     expect(result[0]).toBe('high-card');
   });
 
   test('원본 배열을 변경하지 않는다 (불변)', () => {
     const pool = ['a', 'b'];
-    const relevance = { a: 'low', b: 'high' };
+    const relevance = { a: 'low', b: 'high' } as const;
     reorderCardPool(pool, relevance);
     expect(pool).toEqual(['a', 'b']);
   });

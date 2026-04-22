@@ -18,7 +18,8 @@
   "include": [
     "src/**/*",
     "bin/**/*",
-    "tests/**/*.test.ts"
+    "tests/**/*.test.ts",
+    "tests/**/*.d.ts"
   ],
   "exclude": [
     "dist",

@@ -1,0 +1,16 @@
+{
+  "id": "rf-05-overall",
+  "treeId": "refactoring",
+  "name": "종합 리팩토링",
+  "description": "여러 smell을 우선순위에 따라 단계적으로 개선",
+  "examples": [
+    {
+      "label": "레거시 모듈 전면 개선",
+      "prefill": {
+        "goal": "레거시 모듈의 주요 코드 smell을 우선순위에 따라 단계적으로 제거",
+        "modificationScope": "모듈 내부 전체 대상, 외부에서 사용하는 export 인터페이스 불변",
+        "concernArea": "중복 로직, 과도한 함수 길이, 순환 의존성, 전역 상태 남용이 복합적으로 존재"
+      }
+    }
+  ]
+}

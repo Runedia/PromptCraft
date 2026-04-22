@@ -41,7 +41,7 @@ export async function createServer(port: number): Promise<void> {
 
   // 정적 파일 서빙 (프로덕션 빌드)
   app.use(express.static(WEB_DIST));
-  app.get('*', (_req, res) => {
+  app.get('/{*splat}', (_req, res) => {
     res.sendFile(path.join(WEB_DIST, 'index.html'));
   });
 

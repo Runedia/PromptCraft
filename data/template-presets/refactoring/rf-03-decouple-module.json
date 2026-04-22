@@ -1,0 +1,16 @@
+{
+  "id": "rf-03-decouple-module",
+  "treeId": "refactoring",
+  "name": "결합도 감소",
+  "description": "모듈 간 강결합을 인터페이스/DI로 분리",
+  "examples": [
+    {
+      "label": "서비스 레이어 직접 import 제거",
+      "prefill": {
+        "goal": "컨트롤러가 서비스를 직접 import하는 구조를 의존성 주입으로 전환",
+        "modificationScope": "컨트롤러·서비스 내부 구조 변경, 공개 메서드 시그니처 불변",
+        "concernArea": "컨트롤러가 서비스 구현에 직접 의존해 단위 테스트 시 실제 DB 호출 발생"
+      }
+    }
+  ]
+}

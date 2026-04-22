@@ -1,23 +1,25 @@
+import { Database } from 'bun:sqlite';
 import fs from 'node:fs';
 import path from 'node:path';
-import Database from 'better-sqlite3';
 import { DB_PATH } from '../../shared/constants.js';
 import { DBError } from '../../shared/errors.js';
 
-let _db: Database.Database | null = null;
+let _db: Database | null = null;
 
 function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function getConnection(): Database.Database {
+function getConnection(): Database {
   if (!_db) {
     throw new DBError('DB not initialized. Call initialize() first.');
   }
   return _db;
 }
 
-function initialize(dbPath?: string): Database.Database {
+function initialize(dbPath?: string): Database {
+  if (_db) return _db;
+
   const resolvedPath = dbPath || DB_PATH;
 
   if (resolvedPath !== ':memory:') {
@@ -31,7 +33,7 @@ function initialize(dbPath?: string): Database.Database {
     throw new DBError(`Failed to open database: ${toErrorMessage(err)}`);
   }
 
-  _db.pragma('journal_mode = WAL');
+  _db.exec('PRAGMA journal_mode = WAL');
 
   _db.exec(`
     CREATE TABLE IF NOT EXISTS history (

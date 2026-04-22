@@ -17,7 +17,7 @@ export interface RoleMappings {
  * 3. 도메인 기본 역할 목록
  * 4. general 도메인 fallback
  */
-export function resolveRoleSuggestions(scanResult: ScanResult | null, treeId: string, roleMappings: RoleMappings): SelectOption[] {
+export function resolveRoleSuggestions(scanResult: ScanResult | null, treeId: string, roleMappings: RoleMappings, roleSuffix?: string): SelectOption[] {
   const domain = (scanResult?.domainContext?.primary ?? 'general') as ProgrammingDomain;
   const domainMap = roleMappings.domainRoles[domain] ?? roleMappings.domainRoles.general ?? {};
 
@@ -31,7 +31,16 @@ export function resolveRoleSuggestions(scanResult: ScanResult | null, treeId: st
     }
   };
 
-  // 1. 프레임워크별 정제 역할 (상위 2개 프레임워크)
+  // 1. 트리×언어/프레임워크 조합 역할 (roleSuffix가 있을 때 최우선)
+  if (roleSuffix && scanResult) {
+    const primaryFw = scanResult.frameworks?.[0];
+    if (primaryFw) addRole(`${primaryFw.name} ${roleSuffix}`);
+    const primaryLang = scanResult.languages?.find((l) => l.role === 'primary');
+    if (primaryLang) addRole(`${primaryLang.name} ${roleSuffix}`);
+    addRole(roleSuffix);
+  }
+
+  // 2. 프레임워크별 정제 역할 (상위 2개 프레임워크)
   if (scanResult?.frameworks) {
     let frameworkCount = 0;
     for (const fw of scanResult.frameworks) {
@@ -44,7 +53,7 @@ export function resolveRoleSuggestions(scanResult: ScanResult | null, treeId: st
     }
   }
 
-  // 2. 언어 기반 역할 (confidence=low 또는 general 도메인일 때)
+  // 3. 언어 기반 역할 (confidence=low 또는 general 도메인일 때)
   const isLowConfidence = scanResult?.domainContext?.confidence === 'low' || domain === 'general';
   if (isLowConfidence && roleMappings.languageRoles && scanResult?.languages) {
     const primaryLang = scanResult.languages.find((l) => l.role === 'primary');
@@ -54,15 +63,15 @@ export function resolveRoleSuggestions(scanResult: ScanResult | null, treeId: st
     }
   }
 
-  // 3. 도메인 × 트리 역할
+  // 4. 도메인 × 트리 역할
   const treeRoles = domainMap[treeId] ?? [];
   for (const r of treeRoles) addRole(r);
 
-  // 4. 도메인 기본 역할
+  // 5. 도메인 기본 역할
   const defaultRoles = domainMap.default ?? [];
   for (const r of defaultRoles) addRole(r);
 
-  // 5. general fallback (도메인 역할이 부족할 때)
+  // 6. general fallback (도메인 역할이 부족할 때)
   if (roleNames.length < 3) {
     const generalMap = roleMappings.domainRoles.general ?? {};
     const generalRoles = generalMap[treeId] ?? generalMap.default ?? [];

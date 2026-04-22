@@ -1,17 +1,14 @@
 # src/cli — CLI 인터페이스 레이어
 
-**목적:** Commander.js 기반 CLI 진입점 및 Ink 기반 인터랙티브 UI 컴포넌트.
+**목적:** Commander.js 기반 CLI 진입점. `serve` 명령어로 웹 UI를 실행하는 것이 유일한 역할.
+
+## 명령어
+
+| 명령어  | 옵션                                 | 설명                               |
+| ------- | ------------------------------------ | ---------------------------------- |
+| `serve` | `-p <port>` (기본 3000), `--no-open` | 웹 UI 실행, 포트 충돌 시 자동 탐색 |
 
 ## 컨벤션
 
-- **JSX 금지**: `React.createElement()` 직접 사용 (JSX 트랜스파일 미적용)
-- Commander.js / Ink import 이 레이어에서만 허용
-- Core 레이어 함수 호출로 비즈니스 로직 위임 — CLI 레이어에 로직 직접 구현 금지
-
-## 패턴
-
-```ts
-// 컴포넌트 정의
-const MyComponent = (props: Props) =>
-  React.createElement('div', null, React.createElement(Child, props));
-```
+- Commander.js import는 이 레이어에서만 허용
+- CLI 레이어에 비즈니스 로직 직접 구현 금지 — server 레이어로 위임

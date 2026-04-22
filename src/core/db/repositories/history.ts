@@ -10,7 +10,7 @@ function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function save(data: HistorySaveInput): number | bigint {
+function save(data: HistorySaveInput): number {
   const db = getConnection();
   const { treeId, situation, prompt, scanPath = null, answers } = data;
   try {
@@ -19,7 +19,7 @@ function save(data: HistorySaveInput): number | bigint {
        VALUES (?, ?, ?, ?, ?)`
     );
     const result = stmt.run(treeId, situation, prompt, scanPath, JSON.stringify(answers));
-    return result.lastInsertRowid;
+    return Number(result.lastInsertRowid);
   } catch (err: unknown) {
     throw new DBError(`history.save failed: ${toErrorMessage(err)}`);
   }

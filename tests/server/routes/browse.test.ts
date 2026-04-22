@@ -1,10 +1,9 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-
-const request = require('supertest');
-const { makeApp } = require('../../helpers/make-app');
-const router = require('../../../src/server/routes/browse').default;
+import request from 'supertest';
+import router from '../../../src/server/routes/browse.js';
+import { makeApp } from '../../helpers/make-app.js';
 
 const app = makeApp(router);
 

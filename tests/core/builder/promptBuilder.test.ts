@@ -1,4 +1,4 @@
-import type { SectionCard } from '../../../src/core/types/card';
+import type { SectionCard } from '../../../src/core/types/card.js';
 
 const { resolveMentionLinks, substituteOnce, buildPrompt, buildPreview } = require('../../../src/core/builder/promptBuilder');
 

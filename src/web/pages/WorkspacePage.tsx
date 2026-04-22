@@ -2,6 +2,7 @@ import { closestCenter, DndContext, type DragEndEvent, KeyboardSensor, PointerSe
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Scan } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import type { RoleMappings } from '../../core/builder/role-resolver.js';
 import type { CardDefinition, TreeConfig } from '../../core/types/card.js';
 import { CardPool } from '../components/CardPool/CardPool.js';
 import { PromptPreview } from '../components/PromptPreview/PromptPreview.js';
@@ -22,6 +23,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   const { scan, isScanLoading } = useScan();
 
   const [treeConfig, setTreeConfig] = useState<TreeConfig | null>(null);
+  const [roleMappings, setRoleMappings] = useState<RoleMappings | null>(null);
   const [scanPath, setScanPath] = useState(projectPath);
   const [showScanInput, setShowScanInput] = useState(false);
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
@@ -34,8 +36,9 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   useEffect(() => {
     fetch(`/api/trees/${treeId}`)
       .then((r) => r.json())
-      .then(async ({ tree, cardDefs }: { tree: TreeConfig; cardDefs: Record<string, CardDefinition> }) => {
+      .then(async ({ tree, cardDefs, roleMappings: rm }: { tree: TreeConfig; cardDefs: Record<string, CardDefinition>; roleMappings?: RoleMappings }) => {
         setTreeConfig(tree);
+        if (rm) setRoleMappings(rm);
         const saved = getSavedSession(treeId);
         if (saved) {
           setPendingRestore(saved);
@@ -43,7 +46,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         } else {
           const existingScan = useCardStore.getState().scanResult;
           const scanMatchesPath = existingScan?.path === projectPath;
-          initSession(tree, cardDefs, scanMatchesPath ? existingScan : null);
+          initSession(tree, cardDefs, scanMatchesPath ? existingScan : null, undefined, rm ?? null);
           if (projectPath && !scanMatchesPath) await scan(projectPath);
         }
       });
@@ -61,12 +64,12 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         .then((cardDefs: Record<string, CardDefinition>) => {
           const existingScan = useCardStore.getState().scanResult;
           const scanMatchesPath = existingScan?.path === projectPath;
-          initSession(treeConfig, cardDefs, scanMatchesPath ? existingScan : null);
+          initSession(treeConfig, cardDefs, scanMatchesPath ? existingScan : null, undefined, roleMappings);
           clearSavedSession(treeId);
         });
     }
     setShowRestorePrompt(false);
-  }, [treeConfig, treeId, projectPath, initSession, clearSavedSession]);
+  }, [treeConfig, treeId, projectPath, initSession, clearSavedSession, roleMappings]);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {

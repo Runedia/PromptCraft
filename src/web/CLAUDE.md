@@ -4,8 +4,8 @@
 
 ## 컨벤션
 
-- **별도 CSS 파일 신규 생성 금지** — `design-system.css`의 `@theme` 토큰 + Tailwind 유틸 사용
-- shadcn/ui 추가: `pnpm dlx shadcn@latest add <component>` → `src/web/components/ui/`
+- **별도 CSS 파일 신규 생성 금지** — `styles/design-system.css`의 `@theme` 토큰 + Tailwind 유틸 사용
+- shadcn/ui 추가: `bunx --bun shadcn@latest add <component>` → `src/web/components/ui/`
 - 조건부 클래스: `cn()` from `@/lib/utils`
 
 ## 상태 관리
@@ -26,4 +26,5 @@ font-code
 ## 컴포넌트 구조
 
 - `components/ui/` — shadcn/ui 원본
-- `components/[Feature]/` — 기능별 컴포넌트
+- `components/[Feature]/` — 기능별 컴포넌트 (PascalCase)
+- `components/inputs/` — 입력 관련 공통 컴포넌트 (소문자 예외)

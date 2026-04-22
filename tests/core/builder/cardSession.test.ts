@@ -1,17 +1,9 @@
-import type { CardDefinition, SectionCard, SelectOption } from '../../../src/core/types/card';
+import { activateCard, createCardSession, deactivateCard, reorderCards, updateCardValue } from '../../../src/core/builder/cardSession.js';
+import type { RoleMappings } from '../../../src/core/builder/role-resolver.js';
+import type { CardDefinition, SectionCard, SelectOption } from '../../../src/core/types/card.js';
+import type { ScanResult } from '../../../src/core/types.js';
 
-jest.mock('../../../src/core/builder/domain-overlay', () => ({
-  applyDomainOverrides: jest.fn((cardDefs: Record<string, CardDefinition>) => cardDefs),
-  reorderCardPool: jest.fn((pool: string[]) => pool),
-}));
-
-jest.mock('../../../src/core/builder/role-resolver', () => ({
-  resolveRoleSuggestions: jest.fn().mockReturnValue([{ value: '모의 역할', label: '모의 역할' }]),
-}));
-
-const { activateCard, deactivateCard, reorderCards, updateCardValue, createCardSession } = require('../../../src/core/builder/cardSession');
-
-function makeCard(overrides: Partial<SectionCard> = {}) {
+function makeCard(overrides: Partial<SectionCard> = {}): SectionCard {
   return {
     id: 'card1',
     label: '카드1',
@@ -23,7 +15,7 @@ function makeCard(overrides: Partial<SectionCard> = {}) {
     template: '{{value}}',
     scanSuggested: false,
     ...overrides,
-  };
+  } as SectionCard;
 }
 
 // ─── activateCard ────────────────────────────────────────────────────
@@ -113,7 +105,7 @@ describe('updateCardValue()', () => {
 
 // ─── createCardSession ───────────────────────────────────────────────
 
-const CARD_DEFS = {
+const CARD_DEFS: Record<string, CardDefinition> = {
   role: { label: '역할', required: true, inputType: 'text', template: '## 역할\n{{value}}', defaultValue: '' },
   goal: { label: '목표', required: false, inputType: 'text', template: '## 목표\n{{value}}', defaultValue: '' },
   'stack-environment': { label: '스택', required: false, inputType: 'text', template: '## 스택\n{{value}}', defaultValue: '', scanSuggested: true },
@@ -150,11 +142,17 @@ describe('createCardSession()', () => {
   });
 
   test('scanResult가 있으면 stack-environment에 자동 채움', () => {
-    const scan = {
-      languages: [{ name: 'TypeScript', role: 'primary' }],
-      frameworks: [{ name: 'Express' }],
+    const scan: ScanResult = {
+      path: '/tmp/fixture',
+      languages: [{ name: 'TypeScript', extension: '.ts', count: 1, percentage: 100, role: 'primary' }],
+      frameworks: [{ name: 'Express', version: null, source: 'package.json' }],
+      structure: { name: 'root', children: [] },
       packageManager: 'pnpm',
-      domainContext: { primary: 'web', confidence: 'high' },
+      hasEnv: false,
+      configFiles: [],
+      ignoreSource: 'gitignore',
+      scannedAt: '2026-04-21T00:00:00.000Z',
+      domainContext: { primary: 'web-frontend', secondary: null, confidence: 'high' },
     };
     const session = createCardSession(TREE_CONFIG, CARD_DEFS, scan);
     const stack = session.cards.find((c: SectionCard) => c.id === 'stack-environment');
@@ -172,30 +170,45 @@ describe('createCardSession()', () => {
 // ─── createCardSession — roleMappings 분기 ───────────────────────────
 
 describe('createCardSession() — roleMappings 분기', () => {
-  const { resolveRoleSuggestions } = require('../../../src/core/builder/role-resolver');
-
-  const SCAN = {
-    languages: [{ name: 'TypeScript', role: 'primary' }],
-    frameworks: [{ name: 'React' }, { name: 'Express' }],
+  const SCAN: ScanResult = {
+    path: '/tmp/fixture',
+    languages: [{ name: 'TypeScript', extension: '.ts', count: 1, percentage: 100, role: 'primary' }],
+    frameworks: [
+      { name: 'React', version: null, source: 'package.json' },
+      { name: 'Express', version: null, source: 'package.json' },
+    ],
+    structure: { name: 'root', children: [] },
     packageManager: 'pnpm',
-    domainContext: { primary: 'web', confidence: 'high' },
+    hasEnv: false,
+    configFiles: [],
+    ignoreSource: 'gitignore',
+    scannedAt: '2026-04-21T00:00:00.000Z',
+    domainContext: { primary: 'web-frontend', secondary: null, confidence: 'high' },
   };
 
-  const ROLE_MAPPINGS = { web: { 'feature-dev': ['프론트엔드 개발자', 'React 개발자'] } };
+  const ROLE_MAPPINGS: RoleMappings = {
+    domainRoles: {
+      'web-frontend': {
+        default: ['웹 개발자'],
+        'feature-dev': ['프론트엔드 개발자'],
+      },
+      general: {
+        default: ['소프트웨어 엔지니어'],
+      },
+    },
+    frameworkRoles: {
+      React: 'React 개발자',
+      Express: 'Node.js 백엔드 개발자',
+    },
+  };
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('roleMappings + scanResult → resolveRoleSuggestions 호출', () => {
-    createCardSession(TREE_CONFIG, CARD_DEFS, SCAN, undefined, ROLE_MAPPINGS);
-    expect(resolveRoleSuggestions).toHaveBeenCalledWith(SCAN, 'feature-dev', ROLE_MAPPINGS);
-  });
-
-  test('resolveRoleSuggestions 반환값이 role 카드 options에 반영된다', () => {
+  test('roleMappings + scanResult → 프레임워크 역할이 options 최우선으로 포함된다', () => {
     const session = createCardSession(TREE_CONFIG, CARD_DEFS, SCAN, undefined, ROLE_MAPPINGS);
     const role = session.cards.find((c: SectionCard) => c.id === 'role');
-    expect(role.options).toEqual([{ value: '모의 역할', label: '모의 역할' }]);
+    const values = role.options.map((o: SelectOption) => o.value);
+    expect(values[0]).toBe('React 개발자');
+    expect(values).toContain('Node.js 백엔드 개발자');
+    expect(values).toContain('프론트엔드 개발자');
   });
 
   test('roleMappings 없이 scanResult만 → buildRoleOptions 사용 (주 언어 기반 역할)', () => {
@@ -204,32 +217,37 @@ describe('createCardSession() — roleMappings 분기', () => {
     const roleValues = role.options.map((o: SelectOption) => o.value);
     expect(roleValues[0]).toBe('TypeScript 개발자');
     expect(roleValues).toContain('React 개발자');
-    expect(resolveRoleSuggestions).not.toHaveBeenCalled();
   });
 });
 
 // ─── createCardSession — domainOverlay 분기 ─────────────────────────
 
 describe('createCardSession() — domainOverlay 분기', () => {
-  const { applyDomainOverrides, reorderCardPool } = require('../../../src/core/builder/domain-overlay');
-
-  const DOMAIN_OVERLAY = {
-    domain: 'web',
-    cardOverrides: {},
-    cardRelevance: { 'stack-environment': 'high' as const },
+  const CARD_DEFS_EXTENDED: Record<string, CardDefinition> = {
+    ...CARD_DEFS,
+    constraints: { label: '제약', required: false, inputType: 'text', template: '{{value}}', defaultValue: '' },
   };
 
-  beforeEach(() => {
-    jest.clearAllMocks();
+  test('domainOverlay.cardOverrides가 카드 label에 반영된다', () => {
+    const overlay = {
+      domain: 'web',
+      cardOverrides: { role: { label: '웹 개발 역할' } },
+    };
+    const session = createCardSession(TREE_CONFIG, CARD_DEFS, null, undefined, undefined, overlay);
+    const role = session.cards.find((c: SectionCard) => c.id === 'role');
+    expect(role.label).toBe('웹 개발 역할');
   });
 
-  test('domainOverlay 전달 시 applyDomainOverrides 호출', () => {
-    createCardSession(TREE_CONFIG, CARD_DEFS, null, undefined, undefined, DOMAIN_OVERLAY);
-    expect(applyDomainOverrides).toHaveBeenCalledWith(CARD_DEFS, TREE_CONFIG.cardOverrides, DOMAIN_OVERLAY, TREE_CONFIG.id);
-  });
-
-  test('domainOverlay 전달 시 reorderCardPool에 cardRelevance 전달', () => {
-    createCardSession(TREE_CONFIG, CARD_DEFS, null, undefined, undefined, DOMAIN_OVERLAY);
-    expect(reorderCardPool).toHaveBeenCalledWith(TREE_CONFIG.cardPool, DOMAIN_OVERLAY.cardRelevance);
+  test('cardRelevance=high인 cardPool 항목이 앞으로 정렬된다', () => {
+    const treeWithPool = { ...TREE_CONFIG, cardPool: ['constraints', 'stack-environment'] };
+    const overlay = {
+      domain: 'web',
+      cardOverrides: {},
+      cardRelevance: { 'stack-environment': 'high' as const, constraints: 'low' as const },
+    };
+    const session = createCardSession(treeWithPool, CARD_DEFS_EXTENDED, null, undefined, undefined, overlay);
+    const stackIdx = session.cards.findIndex((c: SectionCard) => c.id === 'stack-environment');
+    const constraintsIdx = session.cards.findIndex((c: SectionCard) => c.id === 'constraints');
+    expect(stackIdx).toBeLessThan(constraintsIdx);
   });
 });

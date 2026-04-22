@@ -1,0 +1,16 @@
+{
+  "id": "rf-01-extract-function",
+  "treeId": "refactoring",
+  "name": "함수 추출",
+  "description": "긴 함수에서 독립적인 로직을 별도 함수로 분리",
+  "examples": [
+    {
+      "label": "200줄 핸들러 분리",
+      "prefill": {
+        "goal": "200줄 핸들러에서 검증/변환/저장 로직을 독립 함수로 추출",
+        "modificationScope": "핸들러 함수 내부만 변경, 라우터 등록 코드 및 응답 형식 불변",
+        "concernArea": "단일 함수에 검증·변환·DB 저장·응답 조립이 혼재해 테스트 불가"
+      }
+    }
+  ]
+}

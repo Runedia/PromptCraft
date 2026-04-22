@@ -1,8 +1,8 @@
 const path = require('node:path');
 const fs = require('node:fs');
 
-const { scan } = require('../src/core/scanner');
-const { createScanPerfFixture, ensureDir, removeDir } = require('./scan-perf-utils');
+const { scan } = require('../src/core/scanner/index.js');
+const { createScanPerfFixture, ensureDir, removeDir } = require('./scan-perf-utils.js');
 
 describe('scan benchmark smoke', () => {
   const tmpRoot = path.join(process.cwd(), 'tests', 'tmp');

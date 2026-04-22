@@ -1,0 +1,16 @@
+{
+  "id": "rf-02-rename-clarity",
+  "treeId": "refactoring",
+  "name": "명명 개선",
+  "description": "모호한 변수/함수명을 의도가 드러나는 이름으로 변경",
+  "examples": [
+    {
+      "label": "축약어 해소",
+      "prefill": {
+        "goal": "단일 문자 변수와 축약어를 의도가 명확한 이름으로 일괄 변경",
+        "modificationScope": "식별자 이름만 변경, 로직·타입·API 계약 불변",
+        "concernArea": "d, tmp, res2, handler2 등 의미 불명 식별자가 모듈 전반에 산재"
+      }
+    }
+  ]
+}

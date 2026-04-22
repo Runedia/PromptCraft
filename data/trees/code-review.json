@@ -16,6 +16,7 @@
     "constraints",
     "output-format"
   ],
+  "roleSuffix": "코드 리뷰 전문가",
   "cardOverrides": {
     "goal": {
       "defaultValue": "코드 리뷰",

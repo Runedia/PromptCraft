@@ -39,9 +39,12 @@ export function createCardSession(
     let options: SelectOption[] | undefined = def.options;
     if (id === 'role') {
       if (roleMappings && scanResult) {
-        options = resolveRoleSuggestions(scanResult, treeConfig.id, roleMappings);
+        options = resolveRoleSuggestions(scanResult, treeConfig.id, roleMappings, treeConfig.roleSuffix);
       } else if (scanResult) {
         options = buildRoleOptions(scanResult);
+      }
+      if (scanResult && !value && options?.length) {
+        value = options[0].value;
       }
     }
 
