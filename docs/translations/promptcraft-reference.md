@@ -1,4 +1,4 @@
-# PromptCraft 참고 자료 및 활용 전략
+# PromptCraft 참고 자료
 
 ## 1. 개요 및 목적
 
