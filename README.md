@@ -48,3 +48,13 @@ bun test:coverage
 ## 데이터 저장 위치
 
 - DB, 설정: `~/.promptcraft/`
+
+## 문서
+
+| 문서 | 설명 |
+|------|------|
+| [SETUP.md](./docs/SETUP.md) | 최초 설치 및 개발 환경 세팅 가이드 (Windows 기준) |
+| [PRD 2.4](./docs/PRD/PRD_2.4.md) | AutoPlan 기능 PRD 2.4 전체 사양 |
+| [SWA 평가 보고서](./docs/SWA-evaluation-2026-04.md) | 2026년 4월 소프트웨어 아키텍처 평가 결과 |
+| [Vibe 레벨 레퍼런스](./docs/vibe_level.md) | AutoPlan Vibe 레벨(L1–L5) 이론 기준 정의 |
+| [프롬프트 엔지니어링 근거](./docs/prompt-engineering-evidence.md) | 설계 근거 및 참고 자료 |
