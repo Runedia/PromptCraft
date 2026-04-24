@@ -1,6 +1,6 @@
 {
   "name": "promptcraft",
-  "version": "0.0.1",
+  "version": "0.0.1.0",
   "description": "로컬 설치형 코딩 프롬프트 빌더",
   "type": "module",
   "main": "dist/bin/promptcraft.mjs",
