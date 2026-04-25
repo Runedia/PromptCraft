@@ -11,9 +11,7 @@ export default defineConfig({
   plugins: [react(),tailwindcss()],
   resolve: {
     alias: {
-      // core 모듈을 웹에서도 직접 임포트할 수 있도록
-      '../../core': path.join(__dirname, 'src/core'),
-      '../../../core': path.join(__dirname, 'src/core'),
+      '@core': path.join(__dirname, 'src/core'),
       '@': path.join(__dirname, 'src/web'),
     },
   },

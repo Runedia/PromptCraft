@@ -1,7 +1,7 @@
+import type { DomainOverlay } from '@core/builder/domain-overlay.js';
+import type { ScanResult } from '@core/types.js';
 import { useState } from 'react';
-import type { DomainOverlay } from '../../core/builder/domain-overlay.js';
-import type { ScanResult } from '../../core/types.js';
-import { useCardStore } from '../store/cardStore.js';
+import { useCardStore } from '@/store/cardStore.js';
 
 export interface ScanApiResponse extends ScanResult {
   elapsedMs: number;

@@ -1,10 +1,10 @@
+import { activateCard, deactivateCard, reorderCards, updateCardValue } from '@core/builder/cardSession.js';
+import { buildPreview, buildPrompt } from '@core/builder/promptBuilder.js';
+import { estimateTokens } from '@core/builder/tokenEstimator.js';
+import type { CardSession, SectionCard } from '@core/types/card.js';
+import type { ScanResult } from '@core/types.js';
 import { temporal } from 'zundo';
 import { create, useStore } from 'zustand';
-import { activateCard, deactivateCard, reorderCards, updateCardValue } from '../../core/builder/cardSession.js';
-import { buildPreview, buildPrompt } from '../../core/builder/promptBuilder.js';
-import { estimateTokens } from '../../core/builder/tokenEstimator.js';
-import type { CardSession, SectionCard } from '../../core/types/card.js';
-import type { ScanResult } from '../../core/types.js';
 
 interface CardStore {
   treeId: string | null;

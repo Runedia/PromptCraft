@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useTemporalStore } from '../store/cardStore.js';
+import { useTemporalStore } from '@/store/cardStore.js';
 
 interface KeyboardOptions {
   onCopy?: () => void;

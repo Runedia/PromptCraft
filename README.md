@@ -22,6 +22,8 @@ cd promptcraft
 bun install
 ```
 
+`bun install` 시 `ui-map:generate`가 자동 실행되어 `docs/ui-map.md`가 동기화됩니다.
+
 ## 사용법
 
 ```bash

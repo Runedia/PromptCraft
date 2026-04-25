@@ -18,7 +18,7 @@ export function TextInput({ value, hint, examples, onChange, placeholder }: Text
             <button
               key={ex}
               type="button"
-              className="text-xs text-muted-foreground border border-border-subtle rounded-md px-2 py-1 bg-transparent transition-all text-left max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap hover:border-primary hover:text-foreground"
+              className="text-xs text-muted-foreground border border-border/50 rounded-md px-2 py-1 bg-transparent transition-all text-left max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap hover:border-primary hover:text-foreground"
               onClick={() => onChange(ex)}
               title="이 예시를 사용합니다"
             >

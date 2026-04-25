@@ -2,43 +2,17 @@
 @import "tailwindcss";
 
 @theme {
-  /* Backgrounds */
-  --color-bg-primary: #0f172a;
-  --color-bg-secondary: #1e293b;
-  --color-bg-tertiary: #334155;
-  --color-bg-hover: #253348;
-
-  /* Borders */
-  --color-border: #475569;
-  --color-border-subtle: #334155;
-
-  /* Text */
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #64748b;
-
-  /* Accents */
-  --color-accent-primary: #3b82f6;
-  --color-accent-success: #22c55e;
-  --color-accent-warning: #f59e0b;
-  --color-accent-danger: #ef4444;
-
-  /* Card states */
-  --color-card-active: #1e293b;
-  --color-card-drag: #1e3a5f;
-
   /* Fonts */
   --font-ui: "Fira Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-code: "Fira Code", "Cascadia Code", "JetBrains Mono", monospace;
 
-  /* Shadows (used via arbitrary values) */
+  /* Shadows */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-drag: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 /* ── Base resets ─────────────────────────────── */
-/* @layer base 안에 넣어야 Tailwind utilities(@layer utilities)가 올바르게 override 가능 */
 @layer base {
   *,
   *::before,
@@ -52,8 +26,8 @@
   body,
   #root {
     height: 100%;
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: var(--font-ui);
     font-size: 1rem;
     line-height: 1.5;
@@ -73,13 +47,12 @@
   }
 
   a {
-    color: var(--color-accent-primary);
+    color: var(--primary);
     text-decoration: none;
   }
 }
 
-/* ── shadcn/ui CSS variable mapping ─────────── */
-/* shadcn 컴포넌트가 참조하는 --background, --primary 등을 정의 */
+/* ── shadcn/ui CSS variables ─────────────────── */
 @layer base {
   :root {
     --background: #0f172a;
@@ -98,9 +71,14 @@
     --accent-foreground: #f8fafc;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
+    --border: #475569;
     --input: #475569;
     --ring: #3b82f6;
     --radius: 0.5rem;
+    --success: #22c55e;
+    --success-foreground: #ffffff;
+    --warning: #f59e0b;
+    --warning-foreground: #0f172a;
   }
 }
 
@@ -121,8 +99,13 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -148,29 +131,29 @@
 .prose-preview h2 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: var(--foreground);
   margin: 1.5rem 0 0.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--border);
 }
 .prose-preview h2:first-child {
   margin-top: 0;
 }
 .prose-preview em {
-  color: var(--color-text-muted);
+  color: var(--muted-foreground);
   font-style: normal;
 }
 .prose-preview code {
   font-family: var(--font-code);
   font-size: 0.875rem;
-  background: var(--color-bg-primary);
+  background: var(--background);
   border-radius: 4px;
   padding: 2px 6px;
 }
 .prose-preview pre {
   font-family: var(--font-code);
   font-size: 0.875rem;
-  background: var(--color-bg-primary);
+  background: var(--background);
   border-radius: 6px;
   padding: 0.75rem;
   overflow-x: auto;

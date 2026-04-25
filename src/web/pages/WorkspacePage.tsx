@@ -1,15 +1,19 @@
+import type { RoleMappings } from '@core/builder/role-resolver.js';
+import type { CardDefinition, TreeConfig } from '@core/types/card.js';
 import { closestCenter, DndContext, type DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Scan } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import type { RoleMappings } from '../../core/builder/role-resolver.js';
-import type { CardDefinition, TreeConfig } from '../../core/types/card.js';
-import { CardPool } from '../components/CardPool/CardPool.js';
-import { PromptPreview } from '../components/PromptPreview/PromptPreview.js';
-import { SectionCard } from '../components/SectionCard/SectionCard.js';
-import { useCardSession } from '../hooks/useCardSession.js';
-import { useScan } from '../hooks/useScan.js';
-import { useCardStore } from '../store/cardStore.js';
+import { CardPool } from '@/components/CardPool/CardPool.js';
+import { PromptPreview } from '@/components/PromptPreview/PromptPreview.js';
+import { SectionCard } from '@/components/SectionCard/SectionCard.js';
+import { Button } from '@/components/ui/button.js';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog.js';
+import { Input } from '@/components/ui/input.js';
+import { useCardSession } from '@/hooks/useCardSession.js';
+import { useScan } from '@/hooks/useScan.js';
+import { useCardStore } from '@/store/cardStore.js';
+import { UI_IDS } from '@/ui-ids.js';
 
 interface WorkspacePageProps {
   treeId: string;
@@ -17,6 +21,11 @@ interface WorkspacePageProps {
   onBack: () => void;
 }
 
+/**
+ * @ui-ids WORK_RESTORE_DIALOG, WORK_LEFT_PANEL, WORK_LEFT_HEADER, WORK_LEFT_BACK_BTN,
+ *   WORK_LEFT_SCAN_BTN, WORK_SCAN_INPUT, WORK_SCAN_EXECUTE_BTN, WORK_SECTION_LIST,
+ *   WORK_RIGHT_PANEL
+ */
 export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePageProps) {
   const { activeCards, reorderCards, scanResult } = useCardStore();
   const { initSession, getSavedSession, restoreSession, clearSavedSession } = useCardSession();
@@ -96,91 +105,76 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   return (
     <div className="grid grid-cols-[3fr_2fr] h-screen overflow-hidden">
       {/* 이전 작업 복원 다이얼로그 */}
-      {showRestorePrompt && (
-        <div role="presentation" className="fixed inset-0 bg-black/60 flex items-center justify-center z-[200]">
-          <div
-            role="dialog"
-            aria-modal="true"
-            className="bg-bg-secondary border border-border rounded-2xl p-8 flex flex-col gap-4 items-center max-w-sm w-full mx-4"
-          >
-            <div className="text-center">
-              <p className="text-text-primary font-semibold mb-1">이전 작업을 이어서 할까요?</p>
-              <p className="text-xs text-text-muted">저장된 세션이 있습니다.</p>
-            </div>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 text-sm font-semibold rounded-lg px-4 py-2 bg-accent-primary text-white hover:brightness-110 transition-all"
-                onClick={handleRestoreYes}
-              >
-                이어서 하기
-              </button>
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 text-sm font-semibold rounded-lg px-4 py-2 border border-border bg-transparent text-text-secondary hover:bg-bg-tertiary hover:text-text-primary transition-all"
-                onClick={handleRestoreNo}
-              >
-                새로 시작
-              </button>
-            </div>
+      <Dialog open={showRestorePrompt}>
+        <DialogContent
+          data-ui-id={UI_IDS.WORK_RESTORE_DIALOG}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+          className="max-w-sm text-center"
+        >
+          <DialogTitle>이전 작업을 이어서 할까요?</DialogTitle>
+          <DialogDescription>저장된 세션이 있습니다.</DialogDescription>
+          <div className="flex gap-3 justify-center pt-2">
+            <Button onClick={handleRestoreYes}>이어서 하기</Button>
+            <Button variant="outline" onClick={handleRestoreNo}>
+              새로 시작
+            </Button>
           </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* 좌측 패널 */}
-      <div className="flex flex-col border-r border-border-subtle overflow-hidden">
+      <div className="flex flex-col border-r border-border/50 overflow-hidden" data-ui-id={UI_IDS.WORK_LEFT_PANEL}>
         {/* 고정 헤더 */}
-        <div className="flex-none px-5 py-3 border-b border-border-subtle bg-bg-primary">
+        <div className="flex-none px-5 py-3 border-b border-border/50 bg-background" data-ui-id={UI_IDS.WORK_LEFT_HEADER}>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="text-text-muted text-sm px-2 py-1 rounded-md transition-colors hover:text-text-primary hover:bg-bg-tertiary"
-              onClick={onBack}
-            >
+            <Button type="button" variant="ghost" size="sm" data-ui-id={UI_IDS.WORK_LEFT_BACK_BTN} onClick={onBack}>
               ← 뒤로
-            </button>
+            </Button>
             {treeConfig && (
-              <span className="text-sm font-semibold text-text-primary">
+              <span className="text-sm font-semibold text-foreground">
                 {treeConfig.icon} {treeConfig.label}
               </span>
             )}
             <div className="ml-auto">
-              <button
+              <Button
                 type="button"
-                className={[
-                  'inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg px-3 py-1.5 transition-all border',
-                  showScanInput
-                    ? 'border-accent-primary text-accent-primary bg-[rgba(59,130,246,0.08)]'
-                    : 'border-border bg-transparent text-text-secondary hover:bg-bg-tertiary hover:text-text-primary',
-                ].join(' ')}
+                variant="outline"
+                size="sm"
+                data-ui-id={UI_IDS.WORK_LEFT_SCAN_BTN}
+                className={showScanInput ? 'border-primary text-primary bg-primary/10' : ''}
                 onClick={() => setShowScanInput(!showScanInput)}
                 title="프로젝트 스캔"
               >
-                <Scan size={13} />
+                <Scan data-icon="inline-start" size={13} />
                 {scanResult ? '재스캔' : '스캔'}
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* 스캔 입력 (토글) */}
           {showScanInput && (
             <div className="mt-3 flex gap-2 items-center">
-              <input
+              <Input
                 type="text"
-                className="flex-1 bg-bg-tertiary border border-border rounded-lg text-text-primary px-3 py-1.5 text-sm outline-none focus:border-accent-primary placeholder:text-text-muted font-code"
+                data-ui-id={UI_IDS.WORK_SCAN_INPUT}
+                className="flex-1 font-code text-sm"
                 value={scanPath}
                 onChange={(e) => setScanPath(e.target.value)}
                 placeholder="프로젝트 경로 (예: C:/my-project)"
                 onKeyDown={(e) => e.key === 'Enter' && handleScan()}
               />
-              <button
+              <Button
                 type="button"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg px-3 py-1.5 bg-accent-success text-white hover:brightness-110 transition-all disabled:opacity-40 shrink-0"
+                variant="default"
+                size="sm"
+                data-ui-id={UI_IDS.WORK_SCAN_EXECUTE_BTN}
                 onClick={handleScan}
                 disabled={isScanLoading}
+                className="shrink-0"
               >
                 {isScanLoading ? '스캔 중...' : '실행'}
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -189,7 +183,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-5">
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={active.map((c) => c.id)} strategy={verticalListSortingStrategy}>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4" data-ui-id={UI_IDS.WORK_SECTION_LIST}>
                 {active.map((card) => (
                   <SectionCard key={card.id} card={card} scanRoot={scanResult?.path} />
                 ))}
@@ -201,7 +195,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
       </div>
 
       {/* 우측 패널 */}
-      <div className="flex flex-col overflow-hidden">
+      <div className="flex flex-col overflow-hidden" data-ui-id={UI_IDS.WORK_RIGHT_PANEL}>
         <PromptPreview onSave={() => setShowSaveModal(true)} />
       </div>
 
@@ -210,6 +204,10 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   );
 }
 
+/**
+ * @ui-ids WORK_SAVE_TEMPLATE_MODAL, WORK_SAVE_TEMPLATE_INPUT,
+ *   WORK_SAVE_TEMPLATE_SAVE_BTN, WORK_SAVE_TEMPLATE_CANCEL_BTN
+ */
 function SaveTemplateModal({ treeId, onClose }: { treeId: string; onClose: () => void }) {
   const [name, setName] = useState('');
   const { cards } = useCardStore();
@@ -229,42 +227,27 @@ function SaveTemplateModal({ treeId, onClose }: { treeId: string; onClose: () =>
   };
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: modal backdrop click-away pattern
-    <div role="presentation" className="fixed inset-0 bg-black/60 flex items-center justify-center z-[200]" onClick={onClose}>
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="bg-bg-secondary border border-border rounded-2xl p-8 w-[400px] flex flex-col gap-4"
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-lg font-semibold text-text-primary">템플릿 저장</h3>
-        <input
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent data-ui-id={UI_IDS.WORK_SAVE_TEMPLATE_MODAL} className="w-[400px]">
+        <DialogTitle>템플릿 저장</DialogTitle>
+        <Input
           type="text"
-          className="w-full bg-bg-primary border border-border rounded-lg text-text-primary px-3 py-2 text-base transition-colors outline-none focus:border-accent-primary placeholder:text-text-muted"
+          data-ui-id={UI_IDS.WORK_SAVE_TEMPLATE_INPUT}
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="템플릿 이름"
           onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+          autoFocus
         />
         <div className="flex gap-2 justify-end">
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 text-sm font-semibold rounded-lg px-4 py-2 bg-accent-success text-white hover:brightness-110 transition-all border border-transparent disabled:opacity-40 disabled:cursor-not-allowed"
-            onClick={handleSave}
-            disabled={!name.trim()}
-          >
+          <Button type="button" variant="default" data-ui-id={UI_IDS.WORK_SAVE_TEMPLATE_SAVE_BTN} onClick={handleSave} disabled={!name.trim()}>
             저장
-          </button>
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 text-sm font-semibold rounded-lg px-4 py-2 border border-border bg-transparent text-text-secondary hover:bg-bg-tertiary hover:text-text-primary transition-all"
-            onClick={onClose}
-          >
+          </Button>
+          <Button type="button" variant="outline" data-ui-id={UI_IDS.WORK_SAVE_TEMPLATE_CANCEL_BTN} onClick={onClose}>
             취소
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

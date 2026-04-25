@@ -1,9 +1,13 @@
+import type { SectionCard as SectionCardType } from '@core/types/card.js';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Lock, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge.js';
+import { Button } from '@/components/ui/button.js';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.js';
 import { cn } from '@/lib/utils';
-import type { SectionCard as SectionCardType } from '../../../core/types/card.js';
-import { useCardStore } from '../../store/cardStore.js';
+import { useCardStore } from '@/store/cardStore.js';
+import { UI_IDS } from '@/ui-ids.js';
 import { CardInput } from './CardInput.js';
 
 interface SectionCardProps {
@@ -11,6 +15,9 @@ interface SectionCardProps {
   scanRoot?: string;
 }
 
+/**
+ * @ui-ids WORK_SECTION_CARD, WORK_SECTION_CARD_DRAG_BTN, WORK_SECTION_CARD_REMOVE_BTN
+ */
 export function SectionCard({ card, scanRoot }: SectionCardProps) {
   const { updateCardValue, deactivateCard } = useCardStore();
 
@@ -29,37 +36,49 @@ export function SectionCard({ card, scanRoot }: SectionCardProps) {
     <div
       ref={setNodeRef}
       style={style}
+      data-ui-id={UI_IDS.WORK_SECTION_CARD}
+      data-ui-card-id={card.id}
       className={cn(
         'border rounded-xl p-5 transition-[border-color,box-shadow] duration-150',
         'hover:border-border',
-        isDragging ? 'bg-card-drag shadow-[var(--shadow-drag)] border-accent-primary' : 'bg-card-active border-border-subtle shadow-[var(--shadow-card)]'
+        isDragging ? 'bg-accent shadow-[var(--shadow-drag)] border-primary ring-2 ring-primary/30' : 'bg-card border-border/50 shadow-[var(--shadow-card)]'
       )}
     >
       <div className="flex items-center gap-2 mb-4">
         <button
           type="button"
-          className="text-text-muted p-1 rounded-md flex items-center transition-colors hover:text-text-secondary cursor-grab active:cursor-grabbing"
+          data-ui-id={UI_IDS.WORK_SECTION_CARD_DRAG_BTN}
+          className="text-muted-foreground p-1 rounded-md flex items-center transition-colors hover:text-secondary-foreground cursor-grab active:cursor-grabbing"
           {...attributes}
           {...listeners}
           aria-label="드래그로 순서 변경"
         >
           <GripVertical size={16} />
         </button>
-        <span className="text-lg font-semibold text-text-primary flex-1">{card.label}</span>
+        <span className="text-lg font-semibold text-foreground flex-1">{card.label}</span>
         {card.required && (
-          <span className="inline-flex items-center px-2 py-1 bg-[rgba(59,130,246,0.12)] rounded-md text-accent-primary text-xs" title="필수 카드">
+          <Badge variant="secondary" className="gap-1">
             <Lock size={12} />
-          </span>
+            필수
+          </Badge>
         )}
         {!card.required && (
-          <button
-            type="button"
-            className="text-text-muted p-1 rounded-md flex items-center transition-colors hover:text-accent-danger hover:bg-[rgba(239,68,68,0.1)]"
-            onClick={() => deactivateCard(card.id)}
-            aria-label="카드 제거"
-          >
-            <X size={16} />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                data-ui-id={UI_IDS.WORK_SECTION_CARD_REMOVE_BTN}
+                className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                onClick={() => deactivateCard(card.id)}
+                aria-label="카드 제거"
+              >
+                <X size={16} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>제거</TooltipContent>
+          </Tooltip>
         )}
       </div>
       <CardInput

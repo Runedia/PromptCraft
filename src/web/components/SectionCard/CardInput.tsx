@@ -1,9 +1,9 @@
+import type { InputType, SelectOption } from '@core/types/card.js';
+import { MentionInput } from '@/components/inputs/MentionInput.js';
+import { MultilineInput } from '@/components/inputs/MultilineInput.js';
+import { SelectOrTextInput } from '@/components/inputs/SelectOrTextInput.js';
+import { TextInput } from '@/components/inputs/TextInput.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import type { InputType, SelectOption } from '../../../core/types/card.js';
-import { MentionInput } from '../inputs/MentionInput.js';
-import { MultilineInput } from '../inputs/MultilineInput.js';
-import { SelectOrTextInput } from '../inputs/SelectOrTextInput.js';
-import { TextInput } from '../inputs/TextInput.js';
 
 interface CardInputProps {
   type: InputType;

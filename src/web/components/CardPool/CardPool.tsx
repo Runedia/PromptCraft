@@ -1,6 +1,11 @@
 import { Plus } from 'lucide-react';
-import { useCardStore } from '../../store/cardStore.js';
+import { Button } from '@/components/ui/button.js';
+import { useCardStore } from '@/store/cardStore.js';
+import { UI_IDS } from '@/ui-ids.js';
 
+/**
+ * @ui-ids WORK_CARD_POOL, WORK_CARD_POOL_ITEM_BTN
+ */
 export function CardPool() {
   const { activateCard, inactiveCards } = useCardStore();
   const inactive = inactiveCards();
@@ -8,20 +13,24 @@ export function CardPool() {
   if (inactive.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-2 pt-4 border-t border-border-subtle">
-      <span className="text-sm text-text-muted font-medium">카드 추가</span>
+    <div className="flex flex-col gap-2 pt-4 border-t border-border/50" data-ui-id={UI_IDS.WORK_CARD_POOL}>
+      <span className="text-sm text-muted-foreground font-medium">카드 추가</span>
       <div className="flex flex-wrap gap-2">
         {inactive.map((card) => (
-          <button
+          <Button
             key={card.id}
             type="button"
-            className="inline-flex items-center gap-1 text-sm font-medium text-text-secondary border border-dashed border-border rounded-lg px-3 py-2 bg-transparent transition-all hover:border-solid hover:border-accent-primary hover:text-text-primary hover:bg-bg-tertiary"
+            variant="outline"
+            size="sm"
+            data-ui-id={UI_IDS.WORK_CARD_POOL_ITEM_BTN}
+            data-ui-card-id={card.id}
+            className="border-dashed hover:border-solid hover:border-primary"
             onClick={() => activateCard(card.id)}
             title={card.hint}
           >
-            <Plus size={14} />
+            <Plus data-icon="inline-start" size={14} />
             {card.label}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

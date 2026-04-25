@@ -1,10 +1,10 @@
+import { createCardSession } from '@core/builder/cardSession.js';
+import type { DomainOverlay } from '@core/builder/domain-overlay.js';
+import type { RoleMappings } from '@core/builder/role-resolver.js';
+import type { CardDefinition, TreeConfig } from '@core/types/card.js';
+import type { ScanResult } from '@core/types.js';
 import { useCallback, useEffect } from 'react';
-import { createCardSession } from '../../core/builder/cardSession.js';
-import type { DomainOverlay } from '../../core/builder/domain-overlay.js';
-import type { RoleMappings } from '../../core/builder/role-resolver.js';
-import type { CardDefinition, TreeConfig } from '../../core/types/card.js';
-import type { ScanResult } from '../../core/types.js';
-import { useCardStore } from '../store/cardStore.js';
+import { useCardStore } from '@/store/cardStore.js';
 
 const SESSION_KEY_PREFIX = 'promptcraft:session:';
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24시간

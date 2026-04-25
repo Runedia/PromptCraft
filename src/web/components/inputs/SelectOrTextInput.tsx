@@ -1,7 +1,7 @@
+import type { SelectOption } from '@core/types/card.js';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import type { SelectOption } from '../../../core/types/card.js';
 
 interface SelectOrTextInputProps {
   value: string;

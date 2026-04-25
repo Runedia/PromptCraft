@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { Toaster } from '@/components/ui/sonner.js';
+import { TooltipProvider } from '@/components/ui/tooltip.js';
 import { TreeSelect } from './components/TreeSelect/TreeSelect.js';
 import { WorkspacePage } from './pages/WorkspacePage.js';
 
@@ -30,10 +32,19 @@ export function App() {
     setPage({ type: 'tree-select' });
   };
 
-  switch (page.type) {
-    case 'tree-select':
-      return <TreeSelect onSelect={handleTreeSelect} />;
-    case 'workspace':
-      return <WorkspacePage treeId={page.treeId} projectPath={page.projectPath} onBack={handleBack} />;
-  }
+  const content = (() => {
+    switch (page.type) {
+      case 'tree-select':
+        return <TreeSelect onSelect={handleTreeSelect} />;
+      case 'workspace':
+        return <WorkspacePage treeId={page.treeId} projectPath={page.projectPath} onBack={handleBack} />;
+    }
+  })();
+
+  return (
+    <TooltipProvider>
+      {content}
+      <Toaster richColors position="bottom-right" />
+    </TooltipProvider>
+  );
 }
