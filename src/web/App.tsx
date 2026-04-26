@@ -44,7 +44,7 @@ export function App() {
   return (
     <TooltipProvider>
       {content}
-      <Toaster richColors position="bottom-right" />
+      <Toaster richColors position="bottom-center" />
     </TooltipProvider>
   );
 }

@@ -4,9 +4,10 @@ import { useTemporalStore } from '@/store/cardStore.js';
 interface KeyboardOptions {
   onCopy?: () => void;
   onSave?: () => void;
+  onRunDefault?: () => void;
 }
 
-export function useKeyboard({ onCopy, onSave }: KeyboardOptions = {}) {
+export function useKeyboard({ onCopy, onSave, onRunDefault }: KeyboardOptions = {}) {
   const { undo, redo } = useTemporalStore();
 
   useEffect(() => {
@@ -22,7 +23,8 @@ export function useKeyboard({ onCopy, onSave }: KeyboardOptions = {}) {
         redo();
       } else if (e.key === 'Enter') {
         e.preventDefault();
-        onCopy?.();
+        if (e.shiftKey) onRunDefault?.();
+        else onCopy?.();
       } else if (e.key === 's') {
         e.preventDefault();
         onSave?.();
@@ -31,5 +33,5 @@ export function useKeyboard({ onCopy, onSave }: KeyboardOptions = {}) {
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [undo, redo, onCopy, onSave]);
+  }, [undo, redo, onCopy, onSave, onRunDefault]);
 }

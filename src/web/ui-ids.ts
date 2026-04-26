@@ -3,6 +3,16 @@
  * 자동 생성되는 docs/ui-map.md의 입력.
  */
 export const UI_IDS = {
+  // ── 글로벌 ───────────────────────────────────────────────────────────────
+
+  /**
+   * @screen Global
+   * @region Theme
+   * @description 라이트/다크 테마 토글 버튼
+   * @file src/web/components/ThemeToggle.tsx
+   */
+  THEME_TOGGLE: 'THEME_TOGGLE',
+
   // ── TreeSelect 화면 ──────────────────────────────────────────────────────
 
   /**
@@ -292,6 +302,132 @@ export const UI_IDS = {
    * @file src/web/components/PromptPreview/PromptPreview.tsx
    */
   WORK_PREVIEW_HISTORY_BTN: 'WORK_PREVIEW_HISTORY_BTN',
+
+  // ── ActionBar 컴포넌트 (V2 TopBar 우측) ──────────────────────────────────
+
+  /**
+   * @screen WorkspacePage
+   * @region ActionBar
+   * @description 실행 취소 버튼
+   * @file src/web/components/ActionBar/ActionBar.tsx
+   */
+  WORK_ACTIONBAR_UNDO: 'WORK_ACTIONBAR_UNDO',
+
+  /**
+   * @screen WorkspacePage
+   * @region ActionBar
+   * @description 다시 실행 버튼
+   * @file src/web/components/ActionBar/ActionBar.tsx
+   */
+  WORK_ACTIONBAR_REDO: 'WORK_ACTIONBAR_REDO',
+
+  /**
+   * @screen WorkspacePage
+   * @region ActionBar
+   * @description 템플릿 저장 트리거
+   * @file src/web/components/ActionBar/ActionBar.tsx
+   */
+  WORK_ACTIONBAR_SAVE: 'WORK_ACTIONBAR_SAVE',
+
+  /**
+   * @screen WorkspacePage
+   * @region ActionBar
+   * @description 프롬프트 복사 버튼
+   * @file src/web/components/ActionBar/ActionBar.tsx
+   */
+  WORK_ACTIONBAR_COPY: 'WORK_ACTIONBAR_COPY',
+
+  /**
+   * @screen WorkspacePage
+   * @region ActionBar
+   * @description Run as 드롭다운 트리거 (4 옵션)
+   * @file src/web/components/ActionBar/ActionBar.tsx
+   */
+  WORK_ACTIONBAR_RUN: 'WORK_ACTIONBAR_RUN',
+
+  // ── ScanBanner / V6 Tree-Select ──────────────────────────────────────────
+
+  /**
+   * @screen TreeSelect
+   * @region Scan
+   * @description 스캔 상태 배너 (idle/scanning/scanned)
+   * @file src/web/components/ScanBanner/ScanBanner.tsx
+   */
+  TREE_SCAN_BANNER: 'TREE_SCAN_BANNER',
+
+  /**
+   * @screen TreeSelect
+   * @region Brand
+   * @description V6 진입 화면 브랜드 바 (로고 + 버전 + 테마 토글)
+   * @file src/web/components/TreeSelect/TreeSelect.tsx
+   */
+  TREE_BRAND_BAR: 'TREE_BRAND_BAR',
+
+  /**
+   * @screen TreeSelect
+   * @region CTA
+   * @description V6 진입 화면 취소 버튼
+   * @file src/web/components/TreeSelect/CTARow.tsx
+   */
+  TREE_CTA_CANCEL: 'TREE_CTA_CANCEL',
+
+  /**
+   * @screen TreeSelect
+   * @region CTA
+   * @description V6 진입 화면 계속하기 버튼 (워크스페이스 진입)
+   * @file src/web/components/TreeSelect/CTARow.tsx
+   */
+  TREE_CTA_CONTINUE: 'TREE_CTA_CONTINUE',
+
+  // ── V2 TopBar ────────────────────────────────────────────────────────────
+
+  /**
+   * @screen WorkspacePage
+   * @region TopBar
+   * @description V2 워크스페이스 상단 44px 바 루트
+   * @file src/web/components/TopBar/TopBar.tsx
+   */
+  WORK_TOPBAR: 'WORK_TOPBAR',
+
+  /**
+   * @screen WorkspacePage
+   * @region TopBar
+   * @description 트리 아이콘 + 라벨 + 프로젝트 경로 breadcrumb
+   * @file src/web/components/TopBar/TopBar.tsx
+   */
+  WORK_TOPBAR_BREADCRUMB: 'WORK_TOPBAR_BREADCRUMB',
+
+  /**
+   * @screen WorkspacePage
+   * @region TopBar
+   * @description 추론된 도메인 배지 (scanResult.domainContext.primary)
+   * @file src/web/components/TopBar/TopBar.tsx
+   */
+  WORK_TOPBAR_DOMAIN: 'WORK_TOPBAR_DOMAIN',
+
+  /**
+   * @screen WorkspacePage
+   * @region TopBar
+   * @description 재스캔 popover 트리거
+   * @file src/web/components/TopBar/TopBar.tsx
+   */
+  WORK_TOPBAR_RESCAN: 'WORK_TOPBAR_RESCAN',
+
+  /**
+   * @screen WorkspacePage
+   * @region Left
+   * @description 카드 풀 사이드바 트리/프로젝트 정보 헤더
+   * @file src/web/components/CardPool/CardPoolSidebar.tsx
+   */
+  WORK_TREE_HEADER: 'WORK_TREE_HEADER',
+
+  /**
+   * @screen WorkspacePage
+   * @region Left
+   * @description 카드 풀 사이드바 프로젝트 메타데이터(path/framework/files)
+   * @file src/web/components/CardPool/CardPoolSidebar.tsx
+   */
+  WORK_PROJECT_INFO: 'WORK_PROJECT_INFO',
 } as const;
 
 export type UiId = (typeof UI_IDS)[keyof typeof UI_IDS];

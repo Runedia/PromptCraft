@@ -15,6 +15,7 @@ router.get('/', async (_req, res, next) => {
     const trees = await Promise.all(
       files
         .filter((f) => f.endsWith('.json'))
+        .sort((a, b) => a.localeCompare(b))
         .map(async (f) => {
           const raw = await fs.readFile(path.join(TREES_DIR, f), 'utf-8');
           const tree = JSON.parse(raw);

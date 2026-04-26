@@ -1,15 +1,16 @@
-@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap");
 @import "tailwindcss";
 
 @theme {
   /* Fonts */
-  --font-ui: "Fira Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-code: "Fira Code", "Cascadia Code", "JetBrains Mono", monospace;
+  --font-ui: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: "Geist Mono", "Cascadia Code", "JetBrains Mono", monospace;
+  --font-serif: "Instrument Serif", Georgia, ui-serif, serif;
 
   /* Shadows */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-drag: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.03);
+  --shadow-card-hover: 0 2px 6px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-drag: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 /* ── Base resets ─────────────────────────────── */
@@ -55,30 +56,56 @@
 /* ── shadcn/ui CSS variables ─────────────────── */
 @layer base {
   :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-    --card: #1e293b;
-    --card-foreground: #f8fafc;
-    --popover: #1e293b;
-    --popover-foreground: #f8fafc;
-    --primary: #3b82f6;
+    --background: #ffffff;
+    --foreground: #0a0a0a;
+    --card: #ffffff;
+    --card-foreground: #0a0a0a;
+    --popover: #ffffff;
+    --popover-foreground: #0a0a0a;
+    --primary: #c2410c;
     --primary-foreground: #ffffff;
-    --secondary: #1e293b;
-    --secondary-foreground: #94a3b8;
-    --muted: #334155;
-    --muted-foreground: #64748b;
-    --accent: #253348;
-    --accent-foreground: #f8fafc;
-    --destructive: #ef4444;
+    --secondary: #f4f4f3;
+    --secondary-foreground: #525252;
+    --muted: #fafaf9;
+    --muted-foreground: #8a8a87;
+    --accent: #fff7ed;
+    --accent-foreground: #7c2d12;
+    --destructive: #b91c1c;
     --destructive-foreground: #ffffff;
-    --border: #475569;
-    --input: #475569;
-    --ring: #3b82f6;
+    --border: #e7e5e2;
+    --input: #d4d2cc;
+    --ring: #c2410c;
     --radius: 0.5rem;
-    --success: #22c55e;
+    --success: #047857;
     --success-foreground: #ffffff;
-    --warning: #f59e0b;
-    --warning-foreground: #0f172a;
+    --warning: #b45309;
+    --warning-foreground: #ffffff;
+  }
+
+  .dark {
+    --background: #0a0a0a;
+    --foreground: #f5f5f4;
+    --card: #18181a;
+    --card-foreground: #f5f5f4;
+    --popover: #18181a;
+    --popover-foreground: #f5f5f4;
+    --primary: #fb923c;
+    --primary-foreground: #0a0a0a;
+    --secondary: #161614;
+    --secondary-foreground: #a8a8a4;
+    --muted: #111110;
+    --muted-foreground: #707070;
+    --accent: rgba(251, 146, 60, 0.12);
+    --accent-foreground: #fdba74;
+    --destructive: #ef4444;
+    --destructive-foreground: #f5f5f4;
+    --border: #262624;
+    --input: #3a3a37;
+    --ring: #fb923c;
+    --success: #34d399;
+    --success-foreground: #0a0a0a;
+    --warning: #fbbf24;
+    --warning-foreground: #0a0a0a;
   }
 }
 
@@ -116,7 +143,7 @@
 /* Cannot be expressed purely in Tailwind due to data: URI */
 .select-arrow {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8a87' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2rem;
@@ -146,14 +173,14 @@
 .prose-preview code {
   font-family: var(--font-code);
   font-size: 0.875rem;
-  background: var(--background);
+  background: var(--muted);
   border-radius: 4px;
   padding: 2px 6px;
 }
 .prose-preview pre {
   font-family: var(--font-code);
   font-size: 0.875rem;
-  background: var(--background);
+  background: var(--muted);
   border-radius: 6px;
   padding: 0.75rem;
   overflow-x: auto;

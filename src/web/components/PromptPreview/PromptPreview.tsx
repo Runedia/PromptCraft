@@ -1,119 +1,57 @@
-import { ClipboardCopy, History, Redo2, Save, Undo2 } from 'lucide-react';
-import { useCallback } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button.js';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.js';
-import { useKeyboard } from '@/hooks/useKeyboard.js';
-import { useCardStore, useTemporalStore } from '@/store/cardStore.js';
+import { useCardStore } from '@/store/cardStore.js';
 import { UI_IDS } from '@/ui-ids.js';
 
-interface PromptPreviewProps {
-  onSave?: () => void;
-  onHistory?: () => void;
-}
-
 /**
- * @ui-ids WORK_PREVIEW, WORK_PREVIEW_HEADER, WORK_PREVIEW_UNDO_BTN, WORK_PREVIEW_REDO_BTN,
- *   WORK_PREVIEW_CONTENT, WORK_PREVIEW_ACTION_BAR, WORK_PREVIEW_COPY_BTN,
- *   WORK_PREVIEW_SAVE_BTN, WORK_PREVIEW_HISTORY_BTN
+ * V2 Three-Column 워크스페이스 우측 440px 미리보기 패널.
+ * design/v2-three-column.jsx 의 PreviewMarkdown 자체 mono 렌더 (dense=true) 충실 구현.
+ * - 헤더 36px : 좌 "preview" mono uppercase / 우 토큰 카운트
+ * - 본문 : font-code 12px line-height 1.7
+ *   · active+value 카드 : `## {label}` amber accent 600 12.5px + body whitespace-pre-wrap fg-secondary
+ *   · active+empty 카드 : 회색 헤더 + italic "(비어 있음 — 출력에서 제외)" — opacity 0.4
+ * - 하단 dashed border-top : "{N} sections active" 좌 / "~{N} tokens" 우
+ *
+ * @ui-ids WORK_PREVIEW, WORK_PREVIEW_HEADER, WORK_PREVIEW_CONTENT
  */
-export function PromptPreview({ onSave, onHistory }: PromptPreviewProps) {
-  const { prompt, preview, tokenEstimate } = useCardStore();
-  const { undo, redo } = useTemporalStore();
-
-  const handleCopy = useCallback(async () => {
-    if (!prompt) return;
-    await navigator.clipboard.writeText(prompt);
-    toast.success('복사됨');
-  }, [prompt]);
-
-  useKeyboard({ onCopy: handleCopy, onSave });
+export function PromptPreview() {
+  const { cards, tokenEstimate } = useCardStore();
+  const activeFilled = cards.filter((c) => c.active && c.value && c.value.trim() !== '');
+  const activeEmpty = cards.filter((c) => c.active && (!c.value || c.value.trim() === ''));
+  const isBlank = activeFilled.length === 0 && activeEmpty.length === 0;
 
   return (
-    <div className="flex flex-col h-full bg-card overflow-hidden" data-ui-id={UI_IDS.WORK_PREVIEW}>
-      {/* 헤더 */}
-      <div className="flex-none flex items-center justify-between px-5 py-3 border-b border-border/50" data-ui-id={UI_IDS.WORK_PREVIEW_HEADER}>
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-foreground">미리보기</span>
-          <div className="flex gap-0.5">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  data-ui-id={UI_IDS.WORK_PREVIEW_UNDO_BTN}
-                  className="size-7 text-muted-foreground hover:text-foreground"
-                  onClick={() => undo()}
-                >
-                  <Undo2 size={14} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>실행 취소 (Ctrl+Z)</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  data-ui-id={UI_IDS.WORK_PREVIEW_REDO_BTN}
-                  className="size-7 text-muted-foreground hover:text-foreground"
-                  onClick={() => redo()}
-                >
-                  <Redo2 size={14} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>다시 실행 (Ctrl+Shift+Z)</TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
-        <span className="font-code text-xs text-muted-foreground bg-background px-2 py-1 rounded-md border border-border/50">
-          ~{tokenEstimate.toLocaleString()} tok
-        </span>
+    <div className="flex flex-col h-full overflow-hidden bg-muted" data-ui-id={UI_IDS.WORK_PREVIEW}>
+      {/* 헤더 36px */}
+      <div data-ui-id={UI_IDS.WORK_PREVIEW_HEADER} className="h-9 px-4 border-b border-border flex items-center justify-between shrink-0">
+        <span className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">preview</span>
+        <span className="text-[11px] font-code text-muted-foreground">~{tokenEstimate.toLocaleString()} tokens</span>
       </div>
 
-      {/* 미리보기 콘텐츠 */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 text-sm leading-relaxed text-foreground prose-preview" data-ui-id={UI_IDS.WORK_PREVIEW_CONTENT}>
-        {preview ? (
-          <ReactMarkdown>{preview}</ReactMarkdown>
-        ) : (
+      {/* 본문 — design dense=true (padding 20/24) */}
+      <div data-ui-id={UI_IDS.WORK_PREVIEW_CONTENT} className="flex-1 overflow-y-auto px-6 py-5 font-code text-[12px] leading-[1.7] text-foreground">
+        {isBlank ? (
           <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
-            <p className="text-muted-foreground text-sm">카드를 채우면 프롬프트가 표시됩니다.</p>
+            <p className="text-muted-foreground text-sm font-sans">카드를 채우면 프롬프트가 표시됩니다.</p>
           </div>
+        ) : (
+          <>
+            {activeFilled.map((c) => (
+              <div key={c.id} className="mb-[18px]">
+                <div className="text-primary font-semibold mb-1 text-[12.5px]">## {c.label}</div>
+                <div className="whitespace-pre-wrap text-secondary-foreground">{c.value}</div>
+              </div>
+            ))}
+            {activeEmpty.map((c) => (
+              <div key={c.id} className="mb-[18px] opacity-40">
+                <div className="text-muted-foreground font-semibold mb-1 text-[12.5px]">## {c.label}</div>
+                <div className="italic font-sans text-muted-foreground">(비어 있음 — 출력에서 제외)</div>
+              </div>
+            ))}
+            <div className="mt-8 pt-4 border-t border-dashed border-border flex justify-between text-[11px] text-muted-foreground">
+              <span>{activeFilled.length} sections active</span>
+              <span>~{tokenEstimate.toLocaleString()} tokens</span>
+            </div>
+          </>
         )}
-      </div>
-
-      {/* 액션 바 */}
-      <div className="flex-none flex gap-2 px-5 py-3 border-t border-border/50" data-ui-id={UI_IDS.WORK_PREVIEW_ACTION_BAR}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button type="button" variant="default" data-ui-id={UI_IDS.WORK_PREVIEW_COPY_BTN} onClick={handleCopy} disabled={!prompt}>
-              <ClipboardCopy data-icon="inline-start" size={15} />
-              복사
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>클립보드 복사 (Ctrl+Enter)</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button type="button" variant="outline" data-ui-id={UI_IDS.WORK_PREVIEW_SAVE_BTN} onClick={onSave}>
-              <Save data-icon="inline-start" size={15} />
-              저장
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>템플릿 저장 (Ctrl+S)</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button type="button" variant="outline" data-ui-id={UI_IDS.WORK_PREVIEW_HISTORY_BTN} className="ml-auto" onClick={onHistory}>
-              <History data-icon="inline-start" size={15} />
-              히스토리
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>히스토리</TooltipContent>
-        </Tooltip>
       </div>
     </div>
   );

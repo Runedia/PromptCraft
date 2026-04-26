@@ -2,18 +2,18 @@ import type { RoleMappings } from '@core/builder/role-resolver.js';
 import type { CardDefinition, TreeConfig } from '@core/types/card.js';
 import { closestCenter, DndContext, type DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Scan } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { CardPool } from '@/components/CardPool/CardPool.js';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { ActionBarHandle } from '@/components/ActionBar/ActionBar.js';
+import { CardPoolSidebar } from '@/components/CardPool/CardPoolSidebar.js';
 import { PromptPreview } from '@/components/PromptPreview/PromptPreview.js';
 import { SectionCard } from '@/components/SectionCard/SectionCard.js';
+import { TopBar } from '@/components/TopBar/TopBar.js';
 import { Button } from '@/components/ui/button.js';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog.js';
 import { Input } from '@/components/ui/input.js';
 import { useCardSession } from '@/hooks/useCardSession.js';
+import { useKeyboard } from '@/hooks/useKeyboard.js';
 import { useScan } from '@/hooks/useScan.js';
-import { getTreeCardStyle } from '@/lib/treeCardStyles.js';
-import { cn } from '@/lib/utils.js';
 import { useCardStore } from '@/store/cardStore.js';
 import { UI_IDS } from '@/ui-ids.js';
 
@@ -24,20 +24,16 @@ interface WorkspacePageProps {
 }
 
 /**
- * @ui-ids WORK_RESTORE_DIALOG, WORK_LEFT_PANEL, WORK_LEFT_HEADER, WORK_LEFT_BACK_BTN,
- *   WORK_LEFT_SCAN_BTN, WORK_SCAN_INPUT, WORK_SCAN_EXECUTE_BTN, WORK_SECTION_LIST,
- *   WORK_RIGHT_PANEL
+ * @ui-ids WORK_RESTORE_DIALOG, WORK_SECTION_LIST, WORK_RIGHT_PANEL
  */
 export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePageProps) {
   const { activeCards, reorderCards, scanResult } = useCardStore();
   const { initSession, getSavedSession, restoreSession, clearSavedSession } = useCardSession();
   const { scan, isScanLoading } = useScan();
+  const actionBarRef = useRef<ActionBarHandle | null>(null);
 
   const [treeConfig, setTreeConfig] = useState<TreeConfig | null>(null);
-  const treeCardStyle = treeConfig ? getTreeCardStyle(treeConfig.id) : null;
   const [roleMappings, setRoleMappings] = useState<RoleMappings | null>(null);
-  const [scanPath, setScanPath] = useState(projectPath);
-  const [showScanInput, setShowScanInput] = useState(false);
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
   const [pendingRestore, setPendingRestore] = useState<ReturnType<typeof getSavedSession>>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -100,15 +96,17 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
     [activeCards, reorderCards]
   );
 
-  const handleScan = useCallback(async () => {
-    if (scanPath) await scan(scanPath);
-    setShowScanInput(false);
-  }, [scan, scanPath]);
+  useKeyboard({
+    onCopy: () => actionBarRef.current?.copy(),
+    onSave: () => setShowSaveModal(true),
+    onRunDefault: () => actionBarRef.current?.runDefault(),
+  });
 
   const active = activeCards();
+  const emptyCount = active.filter((c) => !c.value).length;
 
   return (
-    <div className="grid grid-cols-[3fr_2fr] h-screen overflow-hidden">
+    <div className="h-screen flex flex-col bg-background text-foreground">
       {/* 이전 작업 복원 다이얼로그 */}
       <Dialog open={showRestorePrompt}>
         <DialogContent
@@ -128,83 +126,49 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         </DialogContent>
       </Dialog>
 
-      {/* 좌측 패널 */}
-      <div className="flex flex-col border-r border-border/50 overflow-hidden" data-ui-id={UI_IDS.WORK_LEFT_PANEL}>
-        {/* 고정 헤더 */}
-        <div className="flex-none px-5 py-3 border-b border-border/50 bg-background" data-ui-id={UI_IDS.WORK_LEFT_HEADER}>
-          <div className="flex items-center gap-3">
-            <Button type="button" variant="ghost" size="sm" data-ui-id={UI_IDS.WORK_LEFT_BACK_BTN} onClick={onBack}>
-              ← 뒤로
-            </Button>
-            {treeConfig && treeCardStyle && (
-              <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <span className={cn('flex items-center justify-center size-6 rounded-md', treeCardStyle.iconBg, treeCardStyle.iconColor)}>
-                  {treeCardStyle.icon(14)}
-                </span>
-                {treeConfig.label}
+      {/* 상단 44px TopBar */}
+      <TopBar
+        treeConfig={treeConfig}
+        projectPath={scanResult?.path ?? projectPath}
+        scanResult={scanResult}
+        isScanLoading={isScanLoading}
+        onBack={onBack}
+        onRescan={(p) => scan(p)}
+        onSave={() => setShowSaveModal(true)}
+        actionBarRef={actionBarRef}
+      />
+
+      {/* 3열 본문 */}
+      <div className="flex-1 flex min-h-0">
+        <CardPoolSidebar treeConfig={treeConfig} scanResult={scanResult} />
+
+        {/* 중앙 에디터 */}
+        <main className="flex-1 min-w-0 overflow-y-auto px-6 py-6">
+          <div className="max-w-3xl mx-auto">
+            <div className="flex items-baseline gap-2 mb-1">
+              <h1 className="text-[20px] font-semibold tracking-[-0.4px] text-foreground">프롬프트 작성</h1>
+              <span className="text-[11.5px] font-code text-muted-foreground">
+                {active.length} active · {emptyCount} empty
               </span>
-            )}
-            <div className="ml-auto">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                data-ui-id={UI_IDS.WORK_LEFT_SCAN_BTN}
-                className={showScanInput ? 'border-primary text-primary bg-primary/10' : ''}
-                onClick={() => setShowScanInput(!showScanInput)}
-                title="프로젝트 스캔"
-              >
-                <Scan data-icon="inline-start" size={13} />
-                {scanResult ? '재스캔' : '스캔'}
-              </Button>
             </div>
+            {treeConfig && <p className="text-[12.5px] text-secondary-foreground max-w-prose mb-5">{treeConfig.description}</p>}
+
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={active.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+                <div className="flex flex-col gap-2" data-ui-id={UI_IDS.WORK_SECTION_LIST}>
+                  {active.map((card) => (
+                    <SectionCard key={card.id} card={card} variant="filled" scanRoot={scanResult?.path} />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           </div>
+        </main>
 
-          {/* 스캔 입력 (토글) */}
-          {showScanInput && (
-            <div className="mt-3 flex gap-2 items-center">
-              <Input
-                type="text"
-                data-ui-id={UI_IDS.WORK_SCAN_INPUT}
-                className="flex-1 font-code text-sm"
-                value={scanPath}
-                onChange={(e) => setScanPath(e.target.value)}
-                placeholder="프로젝트 경로 (예: C:/my-project)"
-                onKeyDown={(e) => e.key === 'Enter' && handleScan()}
-              />
-              <Button
-                type="button"
-                variant="default"
-                size="sm"
-                data-ui-id={UI_IDS.WORK_SCAN_EXECUTE_BTN}
-                onClick={handleScan}
-                disabled={isScanLoading}
-                className="shrink-0"
-              >
-                {isScanLoading ? '스캔 중...' : '실행'}
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {/* 스크롤 가능한 카드 영역 */}
-        <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-5">
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={active.map((c) => c.id)} strategy={verticalListSortingStrategy}>
-              <div className="flex flex-col gap-4" data-ui-id={UI_IDS.WORK_SECTION_LIST}>
-                {active.map((card) => (
-                  <SectionCard key={card.id} card={card} scanRoot={scanResult?.path} />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-          <CardPool />
-        </div>
-      </div>
-
-      {/* 우측 패널 */}
-      <div className="flex flex-col overflow-hidden" data-ui-id={UI_IDS.WORK_RIGHT_PANEL}>
-        <PromptPreview onSave={() => setShowSaveModal(true)} />
+        {/* 우측 440px Preview */}
+        <aside className="w-[440px] shrink-0 border-l border-border bg-muted flex flex-col min-h-0" data-ui-id={UI_IDS.WORK_RIGHT_PANEL}>
+          <PromptPreview />
+        </aside>
       </div>
 
       {showSaveModal && <SaveTemplateModal treeId={treeId} onClose={() => setShowSaveModal(false)} />}

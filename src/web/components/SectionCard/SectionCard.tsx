@@ -13,12 +13,13 @@ import { CardInput } from './CardInput.js';
 interface SectionCardProps {
   card: SectionCardType;
   scanRoot?: string;
+  variant?: 'outlined' | 'filled';
 }
 
 /**
  * @ui-ids WORK_SECTION_CARD, WORK_SECTION_CARD_DRAG_BTN, WORK_SECTION_CARD_REMOVE_BTN
  */
-export function SectionCard({ card, scanRoot }: SectionCardProps) {
+export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCardProps) {
   const { updateCardValue, deactivateCard } = useCardStore();
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -32,6 +33,8 @@ export function SectionCard({ card, scanRoot }: SectionCardProps) {
     zIndex: isDragging ? 100 : undefined,
   };
 
+  const baseClasses = variant === 'filled' ? 'bg-muted/60 border border-transparent' : 'bg-card border border-border/50 shadow-[var(--shadow-card)]';
+
   return (
     <div
       ref={setNodeRef}
@@ -39,9 +42,9 @@ export function SectionCard({ card, scanRoot }: SectionCardProps) {
       data-ui-id={UI_IDS.WORK_SECTION_CARD}
       data-ui-card-id={card.id}
       className={cn(
-        'border rounded-xl p-5 transition-[border-color,box-shadow] duration-150',
-        'hover:border-border',
-        isDragging ? 'bg-accent shadow-[var(--shadow-drag)] border-primary ring-2 ring-primary/30' : 'bg-card border-border/50 shadow-[var(--shadow-card)]'
+        'rounded-xl p-5 transition-[border-color,box-shadow,background-color] duration-150',
+        'focus-within:ring-2 focus-within:ring-ring focus-within:border-ring',
+        isDragging ? 'bg-accent shadow-[var(--shadow-drag)] border-primary ring-2 ring-primary/30' : baseClasses
       )}
     >
       <div className="flex items-center gap-2 mb-4">
