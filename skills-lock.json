@@ -36,6 +36,11 @@
       "sourceType": "github",
       "computedHash": "67c03a0a0be5bde077e23b32aa41f10e4fc5da54258c53ac9399bfc88e656d9c"
     },
+    "design-taste-frontend": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "computedHash": "9d1e82c5c409d2b0247245a005bc0f7e4447c0999b78dcea60f568c1ba4a6694"
+    },
     "extract": {
       "source": "pbakaus/impeccable",
       "sourceType": "github",
@@ -50,6 +55,11 @@
       "source": "pbakaus/impeccable",
       "sourceType": "github",
       "computedHash": "281b7f9e590e252a6aec3f5f83c5ca548c91e8bccb3fd6eee4cc7d5be0becb4d"
+    },
+    "redesign-existing-projects": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "computedHash": "b405eee0e0e80fc243f731d9aa368bca307e356db7e6157d27101d369dac6726"
     },
     "shadcn": {
       "source": "shadcn/ui",

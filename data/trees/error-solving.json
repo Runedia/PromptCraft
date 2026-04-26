@@ -2,14 +2,7 @@
   "id": "error-solving",
   "label": "에러 해결",
   "description": "런타임/빌드/네트워크 에러 디버깅",
-  "icon": "🔴",
-  "defaultActiveCards": [
-    "role",
-    "goal",
-    "stack-environment",
-    "error-evidence",
-    "tried-methods"
-  ],
+  "defaultActiveCards": ["role", "goal", "stack-environment", "error-evidence", "tried-methods"],
   "cardPool": [
     "expected-behavior",
     "current-situation",

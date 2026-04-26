@@ -11,6 +11,7 @@ const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24시간
 
 interface SavedSession {
   treeId: string;
+  projectPath?: string;
   cards: ReturnType<typeof useCardStore.getState>['cards'];
   savedAt: number;
 }
@@ -19,6 +20,7 @@ export function useCardSession() {
   const setSession = useCardStore((s) => s.setSession);
   const cards = useCardStore((s) => s.cards);
   const treeId = useCardStore((s) => s.treeId);
+  const scanResultPath = useCardStore((s) => s.scanResult?.path);
 
   /** localStorage에 세션 자동 저장 (debounce 1초) */
   useEffect(() => {
@@ -28,7 +30,7 @@ export function useCardSession() {
     if (!hasUserInput) return;
     const timer = setTimeout(() => {
       const key = `${SESSION_KEY_PREFIX}${treeId}`;
-      const payload: SavedSession = { treeId, cards, savedAt: Date.now() };
+      const payload: SavedSession = { treeId, projectPath: scanResultPath, cards, savedAt: Date.now() };
       try {
         localStorage.setItem(key, JSON.stringify(payload));
       } catch {
@@ -36,7 +38,7 @@ export function useCardSession() {
       }
     }, 1000);
     return () => clearTimeout(timer);
-  }, [treeId, cards]);
+  }, [treeId, cards, scanResultPath]);
 
   /** 저장된 세션 조회 (24시간 TTL) */
   const getSavedSession = useCallback((id: string): SavedSession | null => {

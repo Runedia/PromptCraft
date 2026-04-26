@@ -31,16 +31,14 @@
           "운영체제 메모리 관리와 가상 주소 공간 이해",
           "Lock-free 프로그래밍 — 메모리 순서(Ordering)와 happens-before 관계"
         ]
-      }
+      },
+      "hint": "타겟 플랫폼(OS, CPU 아키텍처), 메모리 제약, 안전성 요구사항을 함께 적으면 구현 품질이 좋아집니다."
     },
     "error-evidence": {
       "hint": "다음을 포함하세요: (1) 컴파일러 에러 전문 (rustc E번호 포함) 또는 런타임 panic 메시지 (2) 관련 타입/lifetime 정의 (3) cargo build --verbose 출력 (4) 최소 재현 코드. @파일경로로 관련 파일 참조 가능."
     },
     "profiling-data": {
       "hint": "perf 또는 flamegraph 출력, 메모리 할당 통계(DHAT), 벤치마크 결과(criterion)를 포함하면 좋습니다."
-    },
-    "goal": {
-      "hint": "타겟 플랫폼(OS, CPU 아키텍처), 메모리 제약, 안전성 요구사항을 함께 적으면 구현 품질이 좋아집니다."
     }
   },
   "cardRelevance": {

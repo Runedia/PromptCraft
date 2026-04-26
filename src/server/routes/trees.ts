@@ -23,7 +23,6 @@ router.get('/', async (_req, res, next) => {
             id: tree.id,
             label: tree.label,
             description: tree.description,
-            icon: tree.icon,
           };
         })
     );

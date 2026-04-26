@@ -1,0 +1,52 @@
+{
+  "domain": "desktop",
+  "cardOverrides": {
+    "goal": {
+      "examples": {
+        "error-solving": [
+          "Electron 앱에서 특정 OS에서만 발생하는 IPC 통신 오류 원인 분석",
+          "Tauri 앱의 네이티브 윈도우 이벤트 핸들러 크래시 원인 파악",
+          "WPF 앱의 메모리 누수로 인한 성능 저하 원인 분석 — dotMemory 결과 해석",
+          "Avalonia UI에서 테마 전환 시 렌더링 깨짐 현상 분석",
+          "앱 시작 시 느린 로딩 원인 파악 — 초기화 순서 및 의존성 문제"
+        ],
+        "feature-impl": [
+          "시스템 트레이 아이콘 및 컨텍스트 메뉴 구현",
+          "네이티브 파일 다이얼로그 연동 및 최근 파일 목록 관리",
+          "자동 업데이트(auto-updater) 기능 구현 — Electron/Tauri 업데이터 연동",
+          "글로벌 키보드 단축키 등록 및 관리",
+          "다중 창(multi-window) 관리 및 창 간 상태 동기화 구현"
+        ],
+        "code-review": [
+          "메인 프로세스와 렌더러 프로세스 간 IPC 보안 검토",
+          "네이티브 모듈 의존성 및 크로스 플랫폼 호환성 점검",
+          "앱 패키지 크기 및 번들 최적화 전략 리뷰",
+          "운영체제별(Windows/macOS/Linux) 동작 차이 처리 여부 점검",
+          "앱 시작 성능 — lazy loading 및 코드 스플리팅 적용 여부 리뷰"
+        ],
+        "concept-learn": [
+          "Electron의 메인/렌더러 프로세스 아키텍처와 IPC 패턴 이해",
+          "Tauri의 Rust 백엔드와 웹 프론트엔드 통신 방식 이해",
+          "데스크톱 앱의 크로스 플랫폼 빌드 및 배포 전략",
+          "코드 서명(Code Signing)과 앱 공증(Notarization) 프로세스",
+          "네이티브 OS API 연동 — 알림, 파일 시스템, 클립보드 접근 패턴"
+        ]
+      },
+      "hint": "타겟 OS(Windows/macOS/Linux), 배포 방식(설치 파일/포터블/스토어), 네이티브 API 사용 범위를 함께 적으면 구현 품질이 좋아집니다."
+    },
+    "error-evidence": {
+      "hint": "다음을 포함하세요: (1) 크래시 로그/스택트레이스 (2) 운영체제 및 버전 (3) 재현 단계 (4) 앱 버전 및 빌드 설정. @파일경로로 관련 파일 참조 가능."
+    },
+    "profiling-data": {
+      "hint": "CPU/메모리 프로파일링 결과, 앱 시작 시간(time-to-interactive), 번들 크기 분석 결과를 포함하면 좋습니다."
+    }
+  },
+  "cardRelevance": {
+    "profiling-data": "high",
+    "build-log": "high",
+    "request-log": "low",
+    "security-context": "high",
+    "baseline-metric": "medium",
+    "constraints": "high"
+  }
+}

@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Input } from '@/components/ui/input.js';
 import { useCardSession } from '@/hooks/useCardSession.js';
 import { useScan } from '@/hooks/useScan.js';
+import { getTreeCardStyle } from '@/lib/treeCardStyles.js';
+import { cn } from '@/lib/utils.js';
 import { useCardStore } from '@/store/cardStore.js';
 import { UI_IDS } from '@/ui-ids.js';
 
@@ -32,6 +34,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   const { scan, isScanLoading } = useScan();
 
   const [treeConfig, setTreeConfig] = useState<TreeConfig | null>(null);
+  const treeCardStyle = treeConfig ? getTreeCardStyle(treeConfig.id) : null;
   const [roleMappings, setRoleMappings] = useState<RoleMappings | null>(null);
   const [scanPath, setScanPath] = useState(projectPath);
   const [showScanInput, setShowScanInput] = useState(false);
@@ -48,8 +51,10 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
       .then(async ({ tree, cardDefs, roleMappings: rm }: { tree: TreeConfig; cardDefs: Record<string, CardDefinition>; roleMappings?: RoleMappings }) => {
         setTreeConfig(tree);
         if (rm) setRoleMappings(rm);
+        const normalizePath = (p: string) => p.replace(/\\/g, '/').replace(/\/+$/, '');
         const saved = getSavedSession(treeId);
-        if (saved) {
+        const savedPathMatches = saved?.projectPath === undefined || normalizePath(saved.projectPath) === normalizePath(projectPath);
+        if (saved && savedPathMatches) {
           setPendingRestore(saved);
           setShowRestorePrompt(true);
         } else {
@@ -131,9 +136,12 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
             <Button type="button" variant="ghost" size="sm" data-ui-id={UI_IDS.WORK_LEFT_BACK_BTN} onClick={onBack}>
               ← 뒤로
             </Button>
-            {treeConfig && (
-              <span className="text-sm font-semibold text-foreground">
-                {treeConfig.icon} {treeConfig.label}
+            {treeConfig && treeCardStyle && (
+              <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <span className={cn('flex items-center justify-center size-6 rounded-md', treeCardStyle.iconBg, treeCardStyle.iconColor)}>
+                  {treeCardStyle.icon(14)}
+                </span>
+                {treeConfig.label}
               </span>
             )}
             <div className="ml-auto">

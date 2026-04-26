@@ -2,19 +2,8 @@
   "id": "refactoring",
   "label": "리팩토링",
   "description": "동작 보존 + 구조 개선",
-  "icon": "🛠",
-  "defaultActiveCards": [
-    "role",
-    "goal",
-    "target-code",
-    "modification-scope",
-    "concern-area"
-  ],
-  "cardPool": [
-    "related-code",
-    "constraints",
-    "output-format"
-  ],
+  "defaultActiveCards": ["role", "goal", "target-code", "modification-scope", "concern-area"],
+  "cardPool": ["related-code", "constraints", "output-format"],
   "roleSuffix": "리팩토링 전문가",
   "cardOverrides": {
     "goal": {

@@ -2,13 +2,7 @@
   "id": "feature-impl",
   "label": "기능 구현",
   "description": "신규 기능 추가 또는 수정",
-  "icon": "🟢",
-  "defaultActiveCards": [
-    "role",
-    "goal",
-    "stack-environment",
-    "impl-scope"
-  ],
+  "defaultActiveCards": ["role", "goal", "stack-environment", "impl-scope"],
   "cardPool": [
     "acceptance-criteria",
     "current-situation",

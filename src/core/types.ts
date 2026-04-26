@@ -16,6 +16,7 @@ export interface ScanFramework {
   version: string | null;
   source: string;
   domain?: string;
+  weight?: number;
 }
 
 export interface ScanStructureNode {

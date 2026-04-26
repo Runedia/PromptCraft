@@ -44,43 +44,47 @@ const DOMAIN_PRIORITY: Record<ProgrammingDomain, number> = {
  * 3. 프레임워크 없음 → 언어 휴리스틱 (low confidence)
  */
 export function classifyDomain(frameworks: ScanFramework[], languages: ScanLanguage[]): DomainContext {
-  // testing/devops 보조 도메인은 primary 분류에서 제외
   const AUXILIARY_DOMAINS = new Set<string>(['testing', 'devops', 'data-pipeline']);
 
-  const domainCounts = new Map<ProgrammingDomain, number>();
+  const domainWeights = new Map<ProgrammingDomain, number>();
 
   for (const fw of frameworks) {
     const d = fw.domain;
     if (!d || AUXILIARY_DOMAINS.has(d)) continue;
     const domain = d as ProgrammingDomain;
-    domainCounts.set(domain, (domainCounts.get(domain) ?? 0) + 1);
+    const w = fw.weight ?? 1.0;
+    domainWeights.set(domain, (domainWeights.get(domain) ?? 0) + w);
   }
 
-  if (domainCounts.size === 0) {
+  if (domainWeights.size === 0) {
     return classifyByLanguage(languages);
   }
 
-  // 빈도 내림차순 정렬, 동점 시 우선순위 오름차순
-  const sorted = [...domainCounts.entries()].sort(([da, ca], [db, cb]) => {
-    if (cb !== ca) return cb - ca;
+  // 가중치 합 내림차순 정렬, 동점 시 우선순위 오름차순
+  const sorted = [...domainWeights.entries()].sort(([da, wa], [db, wb]) => {
+    if (wb !== wa) return wb - wa;
     return (DOMAIN_PRIORITY[da] ?? 99) - (DOMAIN_PRIORITY[db] ?? 99);
   });
 
-  const [primaryDomain, primaryCount] = sorted[0];
+  const [primaryDomain, primaryWeight] = sorted[0];
+
+  // 가중치 임계값: >= 1.0 → high 후보, >= 0.5 → medium 후보, < 0.5 → low
+  const baseConfidence = primaryWeight >= 1.0 ? 'high' : primaryWeight >= 0.5 ? 'medium' : 'low';
 
   if (sorted.length === 1) {
-    return { primary: primaryDomain, secondary: null, confidence: 'high' };
+    return { primary: primaryDomain, secondary: null, confidence: baseConfidence };
   }
 
-  const [secondaryDomain, secondaryCount] = sorted[1];
-  const ratio = secondaryCount / primaryCount;
+  const [secondaryDomain, secondaryWeight] = sorted[1];
+  const ratio = secondaryWeight / primaryWeight;
 
   if (ratio >= 0.5) {
     // 두 도메인이 근접: medium confidence, secondary 포함
-    return { primary: primaryDomain, secondary: secondaryDomain, confidence: 'medium' };
+    const conf = baseConfidence === 'low' ? 'low' : 'medium';
+    return { primary: primaryDomain, secondary: secondaryDomain, confidence: conf };
   }
 
-  return { primary: primaryDomain, secondary: null, confidence: 'high' };
+  return { primary: primaryDomain, secondary: null, confidence: baseConfidence };
 }
 
 function classifyByLanguage(languages: ScanLanguage[]): DomainContext {

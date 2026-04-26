@@ -7,6 +7,7 @@ import { getFrameworkRules } from './detection-loader.js';
 interface FrameworkEntry {
   displayName: string;
   domain?: string;
+  weight?: number;
 }
 
 interface EcosystemRule {
@@ -45,7 +46,7 @@ function toEntry(val: FrameworkEntry | string): FrameworkEntry {
 }
 
 function makeFw(entry: FrameworkEntry, version: string | null, source: string): ScanFramework {
-  return { name: entry.displayName, version, source, domain: entry.domain };
+  return { name: entry.displayName, version, source, domain: entry.domain, weight: entry.weight };
 }
 
 function parseJsonManifest(targetPath: string, eco: EcosystemRule): ScanFramework[] {
@@ -184,9 +185,7 @@ function parseTomlDeps(targetPath: string, eco: EcosystemRule): ScanFramework[] 
 
     const sectionContent = sectionMatch[1];
     const lineRegex = /^([\w-]+)\s*=/gm;
-    let m: RegExpExecArray | null;
-    // biome-ignore lint/suspicious/noAssignInExpressions: regex iteration pattern
-    while ((m = lineRegex.exec(sectionContent)) !== null) {
+    for (const m of sectionContent.matchAll(lineRegex)) {
       const crateName = m[1];
       if (seen.has(crateName)) continue;
 
@@ -264,10 +263,7 @@ function parseDslRegex(targetPath: string, eco: EcosystemRule): ScanFramework[] 
     }
 
     const matches: string[] = [];
-    let m: RegExpExecArray | null;
-    pattern.lastIndex = 0;
-    // biome-ignore lint/suspicious/noAssignInExpressions: regex iteration pattern
-    while ((m = pattern.exec(content)) !== null) {
+    for (const m of content.matchAll(pattern)) {
       for (let i = 1; i < m.length; i++) {
         if (m[i]) matches.push(m[i]);
       }
@@ -280,6 +276,39 @@ function parseDslRegex(targetPath: string, eco: EcosystemRule): ScanFramework[] 
           break;
         }
       }
+    }
+  }
+
+  return results;
+}
+
+function parseSolutionFile(targetPath: string, eco: EcosystemRule): ScanFramework[] {
+  const results: ScanFramework[] = [];
+  const manifests = eco.manifests ?? (eco.manifest ? [eco.manifest] : []);
+  const seen = new Set<string>();
+
+  const manifestFiles: string[] = [];
+  for (const pattern of manifests) {
+    if (pattern.includes('*')) {
+      manifestFiles.push(...globSync(pattern, { cwd: targetPath }));
+    } else if (fs.existsSync(path.join(targetPath, pattern))) {
+      manifestFiles.push(pattern);
+    }
+  }
+
+  for (const manifestFile of manifestFiles) {
+    let _content: string;
+    try {
+      _content = fs.readFileSync(path.join(targetPath, manifestFile), 'utf8');
+    } catch {
+      continue;
+    }
+
+    for (const [key, raw] of Object.entries(eco.frameworks)) {
+      if (seen.has(key)) continue;
+      const entry = toEntry(raw);
+      seen.add(key);
+      results.push(makeFw(entry, null, manifestFile));
     }
   }
 
@@ -307,9 +336,7 @@ function parseYamlDeps(targetPath: string, eco: EcosystemRule): ScanFramework[] 
 
     const sectionContent = sectionMatch[1];
     const pkgLineRegex = /^[ \t]+([\w-]+)\s*:/gm;
-    let m: RegExpExecArray | null;
-    // biome-ignore lint/suspicious/noAssignInExpressions: regex iteration pattern
-    while ((m = pkgLineRegex.exec(sectionContent)) !== null) {
+    for (const m of sectionContent.matchAll(pkgLineRegex)) {
       const pkgName = m[1];
       const raw = eco.frameworks[pkgName];
       if (raw !== undefined) {
@@ -329,20 +356,137 @@ const parsers: Record<string, ParserFn> = {
   xml: parseXmlManifest,
   'dsl-regex': parseDslRegex,
   'yaml-deps': parseYamlDeps,
+  'solution-file': parseSolutionFile,
 };
 
 /**
- * 디렉토리에서 프레임워크를 감지한다.
+ * monorepo workspace 후보 디렉토리를 수집한다.
+ * root를 포함하며 최대 MAX_CANDIDATES 개까지 반환한다.
+ */
+function collectCandidates(root: string): string[] {
+  const MAX_CANDIDATES = 30;
+  const candidates = new Set<string>([root]);
+
+  const addGlobs = (patterns: string[]) => {
+    for (const pattern of patterns) {
+      try {
+        const dirs = globSync(pattern, { cwd: root, onlyDirectories: true, deep: 3 });
+        for (const d of dirs) {
+          candidates.add(path.join(root, d));
+          if (candidates.size >= MAX_CANDIDATES) return;
+        }
+      } catch {
+        // glob 실패 무시
+      }
+    }
+  };
+
+  // package.json workspaces
+  const pkgPath = path.join(root, 'package.json');
+  if (fs.existsSync(pkgPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as Record<string, unknown>;
+      const ws = pkg.workspaces;
+      const patterns: string[] = Array.isArray(ws)
+        ? ws
+        : Array.isArray((ws as Record<string, unknown>)?.packages)
+          ? (ws as Record<string, string[]>).packages
+          : [];
+      if (patterns.length > 0) addGlobs(patterns);
+    } catch {
+      // 파싱 실패 무시
+    }
+  }
+
+  if (candidates.size >= MAX_CANDIDATES) return [...candidates].slice(0, MAX_CANDIDATES);
+
+  // pnpm-workspace.yaml
+  const pnpmWs = path.join(root, 'pnpm-workspace.yaml');
+  if (fs.existsSync(pnpmWs)) {
+    try {
+      const content = fs.readFileSync(pnpmWs, 'utf8');
+      const patterns = [...content.matchAll(/^\s*-\s*['"]?([^'"#\n]+?)['"]?\s*$/gm)].map((m) => m[1].trim());
+      if (patterns.length > 0) addGlobs(patterns);
+    } catch {
+      // 파싱 실패 무시
+    }
+  }
+
+  if (candidates.size >= MAX_CANDIDATES) return [...candidates].slice(0, MAX_CANDIDATES);
+
+  // Cargo workspace members
+  const cargoPath = path.join(root, 'Cargo.toml');
+  if (fs.existsSync(cargoPath)) {
+    try {
+      const content = fs.readFileSync(cargoPath, 'utf8');
+      const wsMatch = content.match(/\[workspace\][^[]*members\s*=\s*\[([^\]]+)\]/ms);
+      if (wsMatch) {
+        const members = [...wsMatch[1].matchAll(/["']([^"']+)["']/g)].map((m) => m[1]);
+        addGlobs(members);
+      }
+    } catch {
+      // 파싱 실패 무시
+    }
+  }
+
+  if (candidates.size >= MAX_CANDIDATES) return [...candidates].slice(0, MAX_CANDIDATES);
+
+  // settings.gradle(.kts) include ':module:sub'
+  for (const settingsFile of ['settings.gradle', 'settings.gradle.kts']) {
+    const settingsPath = path.join(root, settingsFile);
+    if (!fs.existsSync(settingsPath)) continue;
+    try {
+      const content = fs.readFileSync(settingsPath, 'utf8');
+      const modules = [...content.matchAll(/include\s*[('"]([^'")\n]+)['"]/g)].map((m) => m[1].replace(/:/g, '/').replace(/^\//, ''));
+      for (const mod of modules) {
+        const absPath = path.join(root, mod);
+        if (fs.existsSync(absPath)) candidates.add(absPath);
+        if (candidates.size >= MAX_CANDIDATES) break;
+      }
+    } catch {
+      // 파싱 실패 무시
+    }
+    break;
+  }
+
+  if (candidates.size >= MAX_CANDIDATES) return [...candidates].slice(0, MAX_CANDIDATES);
+
+  // .sln / .slnx — csproj 디렉토리 추가
+  const slnFiles = globSync('{*.sln,*.slnx}', { cwd: root });
+  for (const slnFile of slnFiles) {
+    try {
+      const content = fs.readFileSync(path.join(root, slnFile), 'utf8');
+      const isSln = slnFile.endsWith('.sln');
+      const pattern = isSln ? /Project\([^)]+\)\s*=\s*"[^"]+"\s*,\s*"([^"]+\.csproj)"/g : /<Project\s+Path="([^"]+\.csproj)"/g;
+      for (const m of content.matchAll(pattern)) {
+        const csprojDir = path.dirname(path.join(root, m[1].replace(/\\/g, '/')));
+        if (fs.existsSync(csprojDir)) candidates.add(csprojDir);
+        if (candidates.size >= MAX_CANDIDATES) break;
+      }
+    } catch {
+      // 파싱 실패 무시
+    }
+    if (candidates.size >= MAX_CANDIDATES) break;
+  }
+
+  return [...candidates].slice(0, MAX_CANDIDATES);
+}
+
+/**
+ * 디렉토리에서 프레임워크를 감지한다. monorepo workspace를 포함한다.
  * @param {string} targetPath 절대 경로
  */
 function detectFrameworks(targetPath: string): ScanFramework[] {
   const rules = getFrameworkRules() as unknown as FrameworkRules;
   const results: ScanFramework[] = [];
+  const candidates = collectCandidates(targetPath);
 
   for (const eco of rules.ecosystems) {
     const parserFn = parsers[eco.parser];
     if (!parserFn) continue;
-    results.push(...parserFn(targetPath, eco));
+    for (const candidate of candidates) {
+      results.push(...parserFn(candidate, eco));
+    }
   }
 
   return results;

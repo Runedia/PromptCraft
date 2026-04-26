@@ -1,0 +1,6 @@
+{
+  "name": "@monorepo/lib",
+  "dependencies": {
+    "react": "^19.0.0"
+  }
+}

@@ -2,20 +2,8 @@
   "id": "code-review",
   "label": "코드 리뷰",
   "description": "보안/성능/스타일 점검",
-  "icon": "🔵",
-  "defaultActiveCards": [
-    "role",
-    "goal",
-    "review-code",
-    "review-focus"
-  ],
-  "cardPool": [
-    "related-code",
-    "security-context",
-    "concern-area",
-    "constraints",
-    "output-format"
-  ],
+  "defaultActiveCards": ["role", "goal", "review-code", "review-focus"],
+  "cardPool": ["related-code", "security-context", "concern-area", "constraints", "output-format"],
   "roleSuffix": "코드 리뷰 전문가",
   "cardOverrides": {
     "goal": {

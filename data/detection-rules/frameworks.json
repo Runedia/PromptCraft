@@ -49,8 +49,8 @@
         "torch": { "displayName": "PyTorch", "domain": "data-ml" },
         "tensorflow": { "displayName": "TensorFlow", "domain": "data-ml" },
         "scikit-learn": { "displayName": "scikit-learn", "domain": "data-ml" },
-        "pandas": { "displayName": "pandas", "domain": "data-ml" },
-        "numpy": { "displayName": "NumPy", "domain": "data-ml" },
+        "pandas": { "displayName": "pandas", "domain": "data-ml", "weight": 0.4 },
+        "numpy": { "displayName": "NumPy", "domain": "data-ml", "weight": 0.4 },
         "streamlit": { "displayName": "Streamlit", "domain": "data-ml" },
         "celery": { "displayName": "Celery", "domain": "web-backend" },
         "sqlalchemy": { "displayName": "SQLAlchemy", "domain": "web-backend" },
@@ -117,7 +117,11 @@
         "hyper": { "displayName": "Hyper", "domain": "systems" },
         "pyo3": { "displayName": "PyO3", "domain": "systems" },
         "nom": { "displayName": "nom", "domain": "systems" },
-        "rayon": { "displayName": "Rayon", "domain": "systems" }
+        "rayon": { "displayName": "Rayon", "domain": "systems" },
+        "wasm-bindgen": { "displayName": "wasm-bindgen", "domain": "web-frontend", "weight": 0.7 },
+        "wasm-pack": { "displayName": "wasm-pack", "domain": "web-frontend" },
+        "web-sys": { "displayName": "web-sys", "domain": "web-frontend", "weight": 0.5 },
+        "js-sys": { "displayName": "js-sys", "domain": "web-frontend", "weight": 0.5 }
       }
     },
     {
@@ -158,6 +162,35 @@
         "kotlinx-coroutines": { "displayName": "Kotlin Coroutines", "domain": "systems" },
         "sqldelight": { "displayName": "SQLDelight", "domain": "mobile" },
         "exposed": { "displayName": "Exposed", "domain": "web-backend" }
+      }
+    },
+    {
+      "id": "java-gradle-plugins",
+      "parser": "dsl-regex",
+      "manifests": ["build.gradle", "build.gradle.kts"],
+      "depsPattern": "id\\s*[('\"](([^'\"]+)['\"])",
+      "frameworks": {
+        "fabric-loom": { "displayName": "Fabric Loom", "domain": "game" },
+        "net.minecraftforge.gradle": { "displayName": "Forge Gradle", "domain": "game" },
+        "org.spongepowered.gradle.plugin": { "displayName": "SpongeGradle", "domain": "game" }
+      }
+    },
+    {
+      "id": "java-fabric",
+      "parser": "json",
+      "manifest": "src/main/resources/fabric.mod.json",
+      "depsFields": ["depends"],
+      "frameworks": {
+        "fabricloader": { "displayName": "Fabric Loader", "domain": "game" },
+        "minecraft": { "displayName": "Minecraft", "domain": "game", "weight": 0.5 }
+      }
+    },
+    {
+      "id": "csharp-solution",
+      "parser": "solution-file",
+      "manifests": ["*.sln", "*.slnx"],
+      "frameworks": {
+        "__solution__": { "displayName": "Visual Studio Solution", "domain": "desktop", "weight": 0.6 }
       }
     },
     {

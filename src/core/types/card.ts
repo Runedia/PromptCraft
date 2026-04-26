@@ -34,7 +34,6 @@ export interface TreeConfig {
   id: string;
   label: string;
   description: string;
-  icon: string;
   defaultActiveCards: string[];
   cardPool: string[];
   cardOverrides?: Record<string, Partial<CardDefinition>>;

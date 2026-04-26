@@ -31,16 +31,14 @@
           "React Native의 New Architecture — JSI와 Hermes 엔진 이해",
           "모바일 앱 보안 — 인증서 피닝, 키체인/키스토어 사용 패턴"
         ]
-      }
+      },
+      "hint": "타겟 플랫폼(iOS/Android/양쪽), 지원 OS 버전 범위, 디자인 가이드라인 준수 여부를 함께 적으면 구현 품질이 좋아집니다."
     },
     "error-evidence": {
       "hint": "다음을 포함하세요: (1) 크래시 로그/스택트레이스 (2) 기기 모델 및 OS 버전 (3) 재현 단계 (4) 앱 버전 및 빌드 환경. @파일경로로 관련 파일 참조 가능."
     },
     "profiling-data": {
       "hint": "기기 메모리 사용량, 프레임 드롭(Jank), 배터리 소모 통계, Xcode Instruments 또는 Android Profiler 결과를 포함하면 좋습니다."
-    },
-    "goal": {
-      "hint": "타겟 플랫폼(iOS/Android/양쪽), 지원 OS 버전 범위, 디자인 가이드라인 준수 여부를 함께 적으면 구현 품질이 좋아집니다."
     }
   },
   "cardRelevance": {

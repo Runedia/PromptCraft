@@ -90,19 +90,19 @@
     }
   },
   "languageRoles": {
-    "Java":       "Java 개발자",
-    "Python":     "Python 개발자",
+    "Java": "Java 개발자",
+    "Python": "Python 개발자",
     "TypeScript": "TypeScript 개발자",
     "JavaScript": "JavaScript 개발자",
-    "C++":        "C++ 개발자",
-    "C":          "C 개발자",
-    "C#":         "C# 개발자",
-    "Go":         "Go 개발자",
-    "Rust":       "Rust 개발자",
-    "Ruby":       "Ruby 개발자",
-    "PHP":        "PHP 개발자",
-    "Swift":      "Swift 개발자",
-    "Kotlin":     "Kotlin 개발자"
+    "C++": "C++ 개발자",
+    "C": "C 개발자",
+    "C#": "C# 개발자",
+    "Go": "Go 개발자",
+    "Rust": "Rust 개발자",
+    "Ruby": "Ruby 개발자",
+    "PHP": "PHP 개발자",
+    "Swift": "Swift 개발자",
+    "Kotlin": "Kotlin 개발자"
   },
   "frameworkRoles": {
     "React": "React 컴포넌트 아키텍트",

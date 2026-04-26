@@ -11,7 +11,7 @@ interface MultilineInputProps {
 export function MultilineInput({ value, hint, onChange, placeholder }: MultilineInputProps) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: value triggers textarea auto-resize
+  // biome-ignore lint/correctness/useExhaustiveDependencies: value is the resize trigger; removing it breaks auto-resize after mount
   useEffect(() => {
     if (!ref.current) return;
     ref.current.style.height = 'auto';

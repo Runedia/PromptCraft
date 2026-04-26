@@ -31,16 +31,14 @@
           "모델 양자화(Quantization)와 지식 증류(Knowledge Distillation) 기초",
           "벡터 데이터베이스와 RAG(Retrieval-Augmented Generation) 아키텍처"
         ]
-      }
+      },
+      "hint": "실무에서 어떤 모델/데이터에 적용할지를 적으면 맞춤 설명이 가능합니다. 에러 발생 시 재현용 시드값도 포함하세요."
     },
     "error-evidence": {
       "hint": "다음을 포함하세요: (1) 전체 트레이스백 (2) 모델 입력 shape 및 dtype (3) GPU 메모리 상태(nvidia-smi 출력) (4) 재현용 시드값. @파일경로로 관련 스크립트 참조 가능."
     },
     "profiling-data": {
       "hint": "GPU 사용률, 학습 step당 시간, 데이터 로딩 대기 시간, 메모리 피크를 포함하세요. torch.profiler 또는 nvprof 출력 권장."
-    },
-    "goal": {
-      "hint": "실무에서 어떤 모델/데이터에 적용할지를 적으면 맞춤 설명이 가능합니다. 에러 발생 시 재현용 시드값도 포함하세요."
     }
   },
   "cardRelevance": {

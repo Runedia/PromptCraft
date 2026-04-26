@@ -31,16 +31,14 @@
           "JavaScript 이벤트 루프와 마이크로태스크 큐 이해",
           "CSS-in-JS vs Tailwind — 스타일링 접근법 트레이드오프 분석"
         ]
-      }
+      },
+      "hint": "컴포넌트의 props 인터페이스와 상태 관리 방식을 함께 적으면 구현 품질이 좋아집니다."
     },
     "error-evidence": {
       "hint": "다음을 포함하세요: (1) 브라우저 콘솔 에러 전문 (2) 컴포넌트 트리 경로 (React DevTools) (3) 재현 사용자 액션 (4) 브라우저/OS 정보. @파일경로로 컴포넌트 파일 참조 가능."
     },
     "profiling-data": {
       "hint": "Lighthouse 점수, Core Web Vitals(LCP/FID/CLS), React Profiler flamegraph, 번들 크기 분석 결과를 포함하면 좋습니다."
-    },
-    "goal": {
-      "hint": "컴포넌트의 props 인터페이스와 상태 관리 방식을 함께 적으면 구현 품질이 좋아집니다."
     }
   },
   "cardRelevance": {

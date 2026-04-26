@@ -2,20 +2,8 @@
   "id": "concept-learn",
   "label": "개념 학습",
   "description": "기술 개념 이해 및 적용",
-  "icon": "🟡",
-  "defaultActiveCards": [
-    "role",
-    "goal",
-    "concept",
-    "skill-level",
-    "output-pref"
-  ],
-  "cardPool": [
-    "constraints",
-    "example-io",
-    "related-code",
-    "output-format"
-  ],
+  "defaultActiveCards": ["role", "goal", "concept", "skill-level", "output-pref"],
+  "cardPool": ["constraints", "example-io", "related-code", "output-format"],
   "cardOverrides": {
     "goal": {
       "hint": "왜 배우는지(실무 적용/면접 준비 등)를 적어주면 답변 품질이 향상됩니다.",

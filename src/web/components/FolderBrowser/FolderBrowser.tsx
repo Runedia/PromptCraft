@@ -83,9 +83,9 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
 
         {/* 목록 */}
         <div className="flex-1 overflow-y-auto p-2">
-          {loading && <div className="py-4 text-center text-sm text-muted-foreground">로딩 중...</div>}
-          {error && <div className="py-4 text-center text-sm text-destructive">{error}</div>}
-          {!loading && !error && data?.dirs.length === 0 && <div className="py-4 text-center text-sm text-muted-foreground">하위 폴더가 없습니다.</div>}
+          {loading && <div className="py-4 text-sm text-muted-foreground">로딩 중...</div>}
+          {error && <div className="py-4 text-sm text-destructive">{error}</div>}
+          {!loading && !error && data?.dirs.length === 0 && <div className="py-4 text-sm text-muted-foreground">하위 폴더가 없습니다.</div>}
           {!loading &&
             !error &&
             data?.dirs.map((dir) => (
@@ -93,7 +93,7 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
                 key={dir}
                 type="button"
                 variant="ghost"
-                className="flex items-center gap-2 w-full justify-start px-3 py-2 h-auto"
+                className="flex items-center gap-2 w-full justify-start text-left px-3 py-2 h-auto"
                 onClick={() => navigate(dir)}
               >
                 <FolderOpen size={15} className="text-primary shrink-0" />

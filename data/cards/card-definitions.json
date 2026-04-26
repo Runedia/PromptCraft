@@ -5,7 +5,16 @@
     "inputType": "select-or-text",
     "template": "## Role\n{{value}}",
     "hint": "AI에게 부여할 전문가 역할을 선택하거나 직접 입력하세요.",
-    "examples": ["TypeScript 개발자", "백엔드 엔지니어", "풀스택 개발자", "DevOps 엔지니어", "프론트엔드 개발자", "React 개발자", "보안 엔지니어", "시니어 개발자"]
+    "examples": [
+      "TypeScript 개발자",
+      "백엔드 엔지니어",
+      "풀스택 개발자",
+      "DevOps 엔지니어",
+      "프론트엔드 개발자",
+      "React 개발자",
+      "보안 엔지니어",
+      "시니어 개발자"
+    ]
   },
   "goal": {
     "label": "목표",
@@ -13,10 +22,7 @@
     "inputType": "text",
     "template": "## Goal\n{{value}}",
     "hint": "달성하려는 목표를 한 문장으로 작성하세요.",
-    "examples": [
-      "배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정",
-      "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환"
-    ]
+    "examples": ["배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정", "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환"]
   },
   "stack-environment": {
     "label": "스택 & 환경",
@@ -50,10 +56,7 @@
     "inputType": "multiline-mention",
     "template": "## Current Situation\n{{value}}",
     "hint": "발생 조건, 재현 단계, 관련 코드 위치를 포함하면 정확도가 높아집니다.",
-    "examples": [
-      "프로세스 재시작 후 첫 요청만 실패하고 이후에는 정상 동작",
-      "특정 사용자 데이터에서만 파싱 에러가 발생"
-    ]
+    "examples": ["프로세스 재시작 후 첫 요청만 실패하고 이후에는 정상 동작", "특정 사용자 데이터에서만 파싱 에러가 발생"]
   },
   "constraints": {
     "label": "제약 조건",
@@ -170,10 +173,7 @@
     "inputType": "text",
     "template": "## Concept\n{{value}}",
     "hint": "배우고 싶은 개념이나 기술을 구체적으로 알려주세요.",
-    "examples": [
-      "JavaScript 이벤트 루프와 마이크로태스크 큐",
-      "트랜잭션 격리 수준과 동시성 문제"
-    ]
+    "examples": ["JavaScript 이벤트 루프와 마이크로태스크 큐", "트랜잭션 격리 수준과 동시성 문제"]
   },
   "skill-level": {
     "label": "현재 수준",
@@ -205,10 +205,7 @@
     "inputType": "multiline",
     "template": "## Expected Behavior\n{{value}}",
     "hint": "정상 동작 시 예상 결과를 작성하세요. '기대 vs 실제' 대비가 디버깅 정확도를 높입니다.",
-    "examples": [
-      "로그인 API 호출 시 200 OK와 JWT 토큰 반환",
-      "빌드 완료 후 dist/ 폴더에 번들 파일 생성"
-    ]
+    "examples": ["로그인 API 호출 시 200 OK와 JWT 토큰 반환", "빌드 완료 후 dist/ 폴더에 번들 파일 생성"]
   },
   "acceptance-criteria": {
     "label": "수락 기준",

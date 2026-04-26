@@ -58,6 +58,7 @@ $RECYCLE.BIN/
 .omc/
 .serena/
 .github/
+.playwright-mcp/
 ui-map.md
 
 # HAM — AI agent scaffolding (local, do not commit)
