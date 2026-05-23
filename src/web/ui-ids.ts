@@ -274,6 +274,22 @@ export const UI_IDS = {
   /**
    * @screen WorkspacePage
    * @region Preview
+   * @description 렌더 모드 토글 — 원문 버튼 (carbon-mono raw text 모드)
+   * @file src/web/components/PromptPreview/PromptPreview.tsx
+   */
+  WORK_PREVIEW_TOGGLE_RAW: 'WORK_PREVIEW_TOGGLE_RAW',
+
+  /**
+   * @screen WorkspacePage
+   * @region Preview
+   * @description 렌더 모드 토글 — 미리보기 버튼 (react-markdown + GFM prose 모드)
+   * @file src/web/components/PromptPreview/PromptPreview.tsx
+   */
+  WORK_PREVIEW_TOGGLE_RENDERED: 'WORK_PREVIEW_TOGGLE_RENDERED',
+
+  /**
+   * @screen WorkspacePage
+   * @region Preview
    * @description 미리보기 액션 바 (복사 · 저장 · 히스토리)
    * @file src/web/components/PromptPreview/PromptPreview.tsx
    */

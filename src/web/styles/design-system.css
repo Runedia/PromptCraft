@@ -184,3 +184,63 @@
   padding: 0.75rem;
   overflow-x: auto;
 }
+.prose-preview pre code {
+  background: transparent;
+  padding: 0;
+}
+.prose-preview ul,
+.prose-preview ol {
+  margin: 0 0 0.75rem 1.25rem;
+  padding-left: 0.5rem;
+}
+.prose-preview ul {
+  list-style: disc;
+}
+.prose-preview ol {
+  list-style: decimal;
+}
+.prose-preview li {
+  margin-bottom: 0.25rem;
+  line-height: 1.6;
+}
+.prose-preview li > input[type="checkbox"] {
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+.prose-preview blockquote {
+  border-left: 3px solid var(--border);
+  margin: 0 0 0.75rem;
+  padding: 0.25rem 0.75rem;
+  color: var(--muted-foreground);
+}
+.prose-preview a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-preview table {
+  border-collapse: collapse;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+.prose-preview th,
+.prose-preview td {
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.6rem;
+  text-align: left;
+}
+.prose-preview th {
+  background: var(--muted);
+  font-weight: 600;
+}
+.prose-preview hr {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin: 1rem 0;
+}
+.prose-preview h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1rem 0 0.4rem;
+  color: var(--foreground);
+}

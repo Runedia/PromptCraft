@@ -66,7 +66,6 @@ function requestChildStop(child) {
   }
 }
 
-
 function forceKillChild(child) {
   if (child.exitCode !== null || child.signalCode !== null) {
     return;

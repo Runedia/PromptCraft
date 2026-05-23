@@ -17,7 +17,9 @@ import templateRouter from './routes/template.js';
 import treesRouter from './routes/trees.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const WEB_DIST = path.join(__dirname, '../../dist/web');
+// 빌드 산출물(`<root>/dist/src/server`)과 개발 소스(`<root>/src/server`)에서 모두 `<root>/dist/web`을 가리키도록 분기.
+const isBuiltLayout = /[\\/]dist[\\/]src[\\/]server[\\/]?$/.test(__dirname);
+const WEB_DIST = isBuiltLayout ? path.join(__dirname, '../../web') : path.join(__dirname, '../../dist/web');
 
 export async function createServer(port: number): Promise<void> {
   await initialize();
