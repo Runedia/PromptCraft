@@ -4,7 +4,7 @@ import ignore from 'ignore';
 import type { IgnoreRules } from '../types.js';
 
 /** 항상 제외할 기본 디렉토리 (gitignore 유무와 무관) */
-const DEFAULT_IGNORE_DIRS = ['.git', 'node_modules', '.cache', '.gradle', '.idea', '.vscode', '.claude'];
+const DEFAULT_IGNORE_DIRS = ['.git', 'node_modules', '.cache', '.gradle', '.idea', '.vscode', '.claude', '.zig-cache', 'zig-cache', 'zig-out', 'zig-pkg'];
 
 /**
  * 대상 경로의 .gitignore + 기본 무시 규칙을 병합한 ignore 인스턴스를 생성한다.

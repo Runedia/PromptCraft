@@ -1,6 +1,6 @@
 import type { TreeConfig } from '@core/types/card.js';
 import { Sparkles } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { FolderBrowser } from '@/components/FolderBrowser/FolderBrowser.js';
 import { ScanBanner, type ScanStatus } from '@/components/ScanBanner/ScanBanner.js';
 import { ThemeToggle } from '@/components/ThemeToggle.js';
@@ -33,7 +33,8 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
   const [projectPath, setProjectPath] = useState(() => sessionStorage.getItem(SESSION_PATH_KEY) ?? '');
   const [showBrowser, setShowBrowser] = useState(false);
   const [scanStatus, setScanStatus] = useState<ScanStatus>('idle');
-  const [suggestedRoles, setSuggestedRoles] = useState<string[]>([]);
+  const [defaultRoles, setDefaultRoles] = useState<string[]>([]);
+  const [rolesByTree, setRolesByTree] = useState<Record<string, string[]>>({});
   const [selectedTreeId, setSelectedTreeId] = useState<string | null>(null);
   const [host, setHost] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,7 +51,8 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
   }, []);
 
   useEffect(() => {
-    setSuggestedRoles([]);
+    setDefaultRoles([]);
+    setRolesByTree({});
     if (projectPath.trim().length < 3) {
       setScanStatus('idle');
       return;
@@ -71,8 +73,8 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
         }
         const result = await res.json();
         setScanResult(result);
-        const roles = (result.roleSuggestions as string[] | undefined) ?? [];
-        setSuggestedRoles(roles);
+        setDefaultRoles((result.roleSuggestions as string[] | undefined) ?? []);
+        setRolesByTree((result.roleSuggestionsByTree as Record<string, string[]> | undefined) ?? {});
         setScanStatus('scanned');
       } catch (e) {
         if ((e as Error).name !== 'AbortError') setScanStatus('idle');
@@ -84,6 +86,11 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
       controller.abort();
     };
   }, [projectPath, setScanResult]);
+
+  const suggestedRoles = useMemo(() => {
+    if (selectedTreeId && rolesByTree[selectedTreeId]?.length) return rolesByTree[selectedTreeId];
+    return defaultRoles;
+  }, [selectedTreeId, rolesByTree, defaultRoles]);
 
   const handlePathChange = (v: string) => {
     setProjectPath(v);

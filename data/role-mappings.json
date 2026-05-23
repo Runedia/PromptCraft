@@ -102,7 +102,8 @@
     "Ruby": "Ruby 개발자",
     "PHP": "PHP 개발자",
     "Swift": "Swift 개발자",
-    "Kotlin": "Kotlin 개발자"
+    "Kotlin": "Kotlin 개발자",
+    "Zig": "Zig 시스템 프로그래머"
   },
   "frameworkRoles": {
     "React": "React 컴포넌트 아키텍트",

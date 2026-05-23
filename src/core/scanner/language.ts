@@ -20,8 +20,10 @@ const EXTENSION_MAP: Record<string, { name: string; role: LangRole }> = {
   '.php': { name: 'PHP', role: 'primary' },
   '.swift': { name: 'Swift', role: 'primary' },
   '.kt': { name: 'Kotlin', role: 'primary' },
+  '.zig': { name: 'Zig', role: 'primary' },
   '.jsp': { name: 'JSP', role: 'template' },
   '.xml': { name: 'XML', role: 'config' },
+  '.zon': { name: 'Zig Object Notation', role: 'config' },
 };
 const KNOWN_EXTENSIONS = Object.keys(EXTENSION_MAP).map((ext) => ext.slice(1));
 const LANGUAGE_GLOB = `**/*.{${KNOWN_EXTENSIONS.join(',')}}`;

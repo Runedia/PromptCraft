@@ -1,0 +1,16 @@
+.{
+    .name = .zig_fixture_app,
+    .version = "0.0.1",
+    .minimum_zig_version = "0.16.0",
+    .dependencies = .{
+        .win32 = .{
+            .url = "git+https://github.com/marlersoft/zigwin32.git#ec98bb4d9eea532320a8551720a9e3ec6de64994",
+            .hash = "win32-25.0.28-preview-fixture",
+        },
+        .mach = .{
+            .url = "git+https://github.com/hexops/mach.git#main",
+            .hash = "mach-fixture",
+        },
+    },
+    .paths = .{ "build.zig", "build.zig.zon", "src" },
+}

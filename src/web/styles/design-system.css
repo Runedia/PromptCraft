@@ -1,9 +1,28 @@
 @import "tailwindcss";
 
+/* ── Self-hosted Korean monospace (D2Coding) ─── */
+/* Hangul-only via unicode-range → 영문 글리프는 Geist Mono 유지 */
+@font-face {
+  font-family: "D2Coding";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/d2coding/D2Coding-Regular.ttf") format("truetype");
+  unicode-range: U+AC00-D7AF, U+1100-11FF, U+3130-318F, U+A960-A97F, U+D7B0-D7FF;
+}
+@font-face {
+  font-family: "D2Coding";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/d2coding/D2Coding-Bold.ttf") format("truetype");
+  unicode-range: U+AC00-D7AF, U+1100-11FF, U+3130-318F, U+A960-A97F, U+D7B0-D7FF;
+}
+
 @theme {
   /* Fonts */
   --font-ui: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-code: "Geist Mono", "Cascadia Code", "JetBrains Mono", monospace;
+  --font-code: "Geist Mono", "D2Coding", "Cascadia Code", "JetBrains Mono", monospace;
   --font-serif: "Instrument Serif", Georgia, ui-serif, serif;
 
   /* Shadows */
@@ -94,7 +113,7 @@
     --secondary-foreground: #a8a8a4;
     --muted: #111110;
     --muted-foreground: #707070;
-    --accent: rgba(251, 146, 60, 0.12);
+    --accent: rgba(251, 146, 60, 0.18);
     --accent-foreground: #fdba74;
     --destructive: #ef4444;
     --destructive-foreground: #f5f5f4;

@@ -10,6 +10,7 @@ const LANGUAGE_DOMAIN_HINTS: Record<string, ProgrammingDomain> = {
   Kotlin: 'mobile',
   Dart: 'mobile',
   Rust: 'systems',
+  Zig: 'systems',
   C: 'systems',
   'C++': 'systems',
   R: 'data-ml',

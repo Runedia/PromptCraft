@@ -202,12 +202,12 @@ describe('createCardSession() — roleMappings 분기', () => {
     },
   };
 
-  test('roleMappings + scanResult → 프레임워크 역할이 options 최우선으로 포함된다', () => {
+  test('roleMappings + scanResult → base 역할이 1번 슬롯, 프레임워크 정제 역할 1개는 후속 슬롯', () => {
     const session = createCardSession(TREE_CONFIG, CARD_DEFS, SCAN, undefined, ROLE_MAPPINGS);
     const role = session.cards.find((c: SectionCard) => c.id === 'role');
     const values = role.options.map((o: SelectOption) => o.value);
-    expect(values[0]).toBe('React 개발자');
-    expect(values).toContain('Node.js 백엔드 개발자');
+    expect(values[0]).toBe('웹 개발자');
+    expect(values).toContain('React 개발자');
     expect(values).toContain('프론트엔드 개발자');
   });
 

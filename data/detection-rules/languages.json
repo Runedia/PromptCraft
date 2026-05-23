@@ -20,5 +20,7 @@
   ".lua": "Lua",
   ".scala": "Scala",
   ".r": "R",
-  ".R": "R"
+  ".R": "R",
+  ".zig": "Zig",
+  ".zon": "Zig Object Notation"
 }

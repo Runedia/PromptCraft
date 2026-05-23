@@ -26,15 +26,15 @@ export function PromptPreview() {
   const activeEmpty = cards.filter((c) => c.active && (!c.value || c.value.trim() === ''));
   const isBlank = activeFilled.length === 0 && activeEmpty.length === 0;
 
-  const toggleBtnBase = 'text-[11px] font-code uppercase tracking-[0.07em] transition-colors';
-  const toggleBtnActive = 'text-foreground';
-  const toggleBtnInactive = 'text-muted-foreground hover:text-foreground';
+  const toggleBtnBase = 'relative h-full flex items-center text-[11px] font-code uppercase tracking-[0.07em] border-b-2 -mb-px transition-colors';
+  const toggleBtnActive = 'border-primary text-foreground';
+  const toggleBtnInactive = 'border-transparent text-muted-foreground hover:text-foreground';
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-muted" data-ui-id={UI_IDS.WORK_PREVIEW}>
       {/* 헤더 36px */}
       <div data-ui-id={UI_IDS.WORK_PREVIEW_HEADER} className="h-9 px-4 border-b border-border flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-5 h-full">
           <button
             type="button"
             data-ui-id={UI_IDS.WORK_PREVIEW_TOGGLE_RAW}
@@ -42,9 +42,8 @@ export function PromptPreview() {
             aria-pressed={previewMode === 'raw'}
             className={cn(toggleBtnBase, previewMode === 'raw' ? toggleBtnActive : toggleBtnInactive)}
           >
-            원문
+            [원본]
           </button>
-          <span className="text-[11px] font-code text-muted-foreground select-none">/</span>
           <button
             type="button"
             data-ui-id={UI_IDS.WORK_PREVIEW_TOGGLE_RENDERED}
@@ -52,7 +51,7 @@ export function PromptPreview() {
             aria-pressed={previewMode === 'rendered'}
             className={cn(toggleBtnBase, previewMode === 'rendered' ? toggleBtnActive : toggleBtnInactive)}
           >
-            미리보기
+            [미리보기]
           </button>
         </div>
         <span className="text-[11px] font-code text-muted-foreground">~{tokenEstimate.toLocaleString()} tokens</span>

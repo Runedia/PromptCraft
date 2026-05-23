@@ -2,6 +2,7 @@
   "id": "concept-learn",
   "label": "개념 학습",
   "description": "기술 개념 이해 및 적용",
+  "roleSuffix": "기술 멘토",
   "defaultActiveCards": ["role", "goal", "concept", "skill-level", "output-pref"],
   "cardPool": ["constraints", "example-io", "related-code", "output-format"],
   "cardOverrides": {

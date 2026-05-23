@@ -246,6 +246,23 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
               </div>
             </div>
           )}
+          <div
+            data-ui-id="WORK_MENTION_HINTS"
+            className="border-t border-border px-3 py-1.5 text-xs text-muted-foreground font-code flex flex-wrap items-center gap-x-3 gap-y-1"
+          >
+            <span>
+              <kbd className="font-code text-foreground">↑↓</kbd> 이동
+            </span>
+            <span>
+              <kbd className="font-code text-foreground">Enter</kbd> 전체
+            </span>
+            <span>
+              <kbd className="font-code text-foreground">Shift+Enter</kbd> <span className="text-foreground">line-range</span> 지원
+            </span>
+            <span>
+              <kbd className="font-code text-foreground">Esc</kbd> 닫기
+            </span>
+          </div>
         </div>
       )}
     </div>

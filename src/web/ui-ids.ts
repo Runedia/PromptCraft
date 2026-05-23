@@ -444,6 +444,16 @@ export const UI_IDS = {
    * @file src/web/components/CardPool/CardPoolSidebar.tsx
    */
   WORK_PROJECT_INFO: 'WORK_PROJECT_INFO',
+
+  // ── MentionInput 컴포넌트 ────────────────────────────────────────────────
+
+  /**
+   * @screen WorkspacePage
+   * @region CardInput
+   * @description Mention 자동완성 popover 하단 단축키 hint 캡션 (↑↓ · Enter · Shift+Enter :line-range · Esc)
+   * @file src/web/components/inputs/MentionInput.tsx
+   */
+  WORK_MENTION_HINTS: 'WORK_MENTION_HINTS',
 } as const;
 
 export type UiId = (typeof UI_IDS)[keyof typeof UI_IDS];

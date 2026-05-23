@@ -302,6 +302,23 @@
         "scalatest": { "displayName": "ScalaTest", "domain": "testing" },
         "slick": { "displayName": "Slick", "domain": "web-backend" }
       }
+    },
+    {
+      "id": "zig",
+      "parser": "dsl-regex",
+      "manifest": "build.zig.zon",
+      "depsPattern": "\\.url\\s*=\\s*\"([^\"]+)\"",
+      "frameworks": {
+        "marlersoft/zigwin32": { "displayName": "zigwin32", "domain": "desktop" },
+        "hexops/mach": { "displayName": "mach", "domain": "game" },
+        "raysan5/raylib": { "displayName": "raylib", "domain": "game" },
+        "kassane/raylib-zig": { "displayName": "raylib (zig)", "domain": "game" },
+        "ziglibs/zig-network": { "displayName": "zig-network", "domain": "web-backend" },
+        "andrewrk/zig-sdl": { "displayName": "SDL (zig)", "domain": "game" },
+        "Hejsil/zig-clap": { "displayName": "zig-clap", "domain": "cli" },
+        "karlseguin/http.zig": { "displayName": "http.zig", "domain": "web-backend" },
+        "kristoff-it/zig-cookbook": { "displayName": "zig-cookbook", "domain": "general" }
+      }
     }
   ]
 }

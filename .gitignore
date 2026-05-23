@@ -76,3 +76,6 @@ temp/
 .ignore/
 *.bak
 *.tmp
+
+# Obsidian 환경설정 제외
+.obsidian
