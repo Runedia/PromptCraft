@@ -1,11 +1,25 @@
 import type { DomainOverlay } from '@core/builder/domain-overlay.js';
 import type { ScanResult } from '@core/types.js';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { useCardStore } from '@/store/cardStore.js';
 
 export interface ScanApiResponse extends ScanResult {
   elapsedMs: number;
   domainOverlay: DomainOverlay | null;
+}
+
+interface ScanOptions {
+  silent?: boolean;
+}
+
+function summarizeScan(result: ScanApiResponse): string {
+  const parts: string[] = [];
+  const domain = result.domainContext?.primary;
+  if (domain) parts.push(domain);
+  if (result.languages.length > 0) parts.push(`언어 ${result.languages.length}개`);
+  if (result.frameworks.length > 0) parts.push(`프레임워크 ${result.frameworks.length}개`);
+  return parts.length > 0 ? parts.join(' · ') : '감지된 항목 없음';
 }
 
 export function useScan() {
@@ -14,7 +28,7 @@ export function useScan() {
   const { setIsScanLoading, setScanResult, cards, updateCardValue: storeUpdate } = useCardStore();
   const isScanLoading = useCardStore((s) => s.isScanLoading);
 
-  const scan = async (scanPath: string): Promise<ScanApiResponse | null> => {
+  const scan = async (scanPath: string, opts: ScanOptions = {}): Promise<ScanApiResponse | null> => {
     setError(null);
     setIsScanLoading(true);
     try {
@@ -40,9 +54,13 @@ export function useScan() {
         if (response.packageManager) parts.push(`패키지 매니저: ${response.packageManager}`);
         storeUpdate('stack-environment', parts.join('\n'));
       }
+
+      if (!opts.silent) toast.success('스캔 완료', { description: summarizeScan(response) });
       return response;
     } catch (err) {
-      setError(err instanceof Error ? err.message : '스캔 중 오류가 발생했습니다.');
+      const message = err instanceof Error ? err.message : '스캔 중 오류가 발생했습니다.';
+      setError(message);
+      if (!opts.silent) toast.error('스캔 실패', { description: message });
       return null;
     } finally {
       setIsScanLoading(false);

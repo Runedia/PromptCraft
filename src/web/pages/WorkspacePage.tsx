@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ActionBarHandle } from '@/components/ActionBar/ActionBar.js';
 import { CardPoolSidebar } from '@/components/CardPool/CardPoolSidebar.js';
 import { PromptPreview } from '@/components/PromptPreview/PromptPreview.js';
-import { SectionCard } from '@/components/SectionCard/SectionCard.js';
+import { PINNED_CARD_IDS, SectionCard } from '@/components/SectionCard/SectionCard.js';
 import { TopBar } from '@/components/TopBar/TopBar.js';
 import { Button } from '@/components/ui/button.js';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog.js';
@@ -57,7 +57,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
           const existingScan = useCardStore.getState().scanResult;
           const scanMatchesPath = existingScan?.path === projectPath;
           initSession(tree, cardDefs, scanMatchesPath ? existingScan : null, undefined, rm ?? null);
-          if (projectPath && !scanMatchesPath) await scan(projectPath);
+          if (projectPath && !scanMatchesPath) await scan(projectPath, { silent: true });
         }
       });
   }, [treeId]);
@@ -85,12 +85,15 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
     (event: DragEndEvent) => {
       const { active, over } = event;
       if (!over || active.id === over.id) return;
+      const activeId = active.id as string;
+      const overId = over.id as string;
+      if (PINNED_CARD_IDS.has(activeId) || PINNED_CARD_IDS.has(overId)) return;
       const active_ids = activeCards().map((c) => c.id);
-      const oldIdx = active_ids.indexOf(active.id as string);
-      const newIdx = active_ids.indexOf(over.id as string);
+      const oldIdx = active_ids.indexOf(activeId);
+      const newIdx = active_ids.indexOf(overId);
       const reordered = [...active_ids];
       reordered.splice(oldIdx, 1);
-      reordered.splice(newIdx, 0, active.id as string);
+      reordered.splice(newIdx, 0, activeId);
       reorderCards(reordered);
     },
     [activeCards, reorderCards]

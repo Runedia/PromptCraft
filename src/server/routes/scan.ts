@@ -53,9 +53,13 @@ router.post('/', async (req, res, next) => {
 });
 
 router.get('/last', async (_req, res, _next) => {
+  const file = Bun.file(LAST_SCAN_PATH);
+  if (!(await file.exists())) {
+    res.status(404).json({ error: '이전 스캔 결과가 없습니다.' });
+    return;
+  }
   try {
-    const raw = await fs.readFile(LAST_SCAN_PATH, 'utf-8');
-    res.json(JSON.parse(raw));
+    res.json(await file.json());
   } catch {
     res.status(404).json({ error: '이전 스캔 결과가 없습니다.' });
   }

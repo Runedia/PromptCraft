@@ -1,7 +1,7 @@
 import type { SectionCard as SectionCardType } from '@core/types/card.js';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Lock, X } from 'lucide-react';
+import { GripVertical, Lock, Pin, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.js';
@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { useCardStore } from '@/store/cardStore.js';
 import { UI_IDS } from '@/ui-ids.js';
 import { CardInput } from './CardInput.js';
+
+export const PINNED_CARD_IDS: ReadonlySet<string> = new Set(['role', 'goal']);
 
 interface SectionCardProps {
   card: SectionCardType;
@@ -21,9 +23,11 @@ interface SectionCardProps {
  */
 export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCardProps) {
   const { updateCardValue, deactivateCard } = useCardStore();
+  const isPinned = PINNED_CARD_IDS.has(card.id);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card.id,
+    disabled: isPinned,
   });
 
   const style = {
@@ -48,16 +52,33 @@ export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCar
       )}
     >
       <div className="flex items-center gap-2 mb-4">
-        <button
-          type="button"
-          data-ui-id={UI_IDS.WORK_SECTION_CARD_DRAG_BTN}
-          className="text-muted-foreground p-1 rounded-md flex items-center transition-colors hover:text-secondary-foreground cursor-grab active:cursor-grabbing"
-          {...attributes}
-          {...listeners}
-          aria-label="드래그로 순서 변경"
-        >
-          <GripVertical size={16} />
-        </button>
+        {isPinned ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                disabled
+                data-ui-id={UI_IDS.WORK_SECTION_CARD_DRAG_BTN}
+                className="text-muted-foreground/60 p-1 rounded-md flex items-center cursor-not-allowed"
+                aria-label="고정된 카드 — 이동 불가"
+              >
+                <Pin size={16} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>고정 — 이동 불가</TooltipContent>
+          </Tooltip>
+        ) : (
+          <button
+            type="button"
+            data-ui-id={UI_IDS.WORK_SECTION_CARD_DRAG_BTN}
+            className="text-muted-foreground p-1 rounded-md flex items-center transition-colors hover:text-secondary-foreground cursor-grab active:cursor-grabbing"
+            {...attributes}
+            {...listeners}
+            aria-label="드래그로 순서 변경"
+          >
+            <GripVertical size={16} />
+          </button>
+        )}
         <span className="text-lg font-semibold text-foreground flex-1">{card.label}</span>
         {card.required && (
           <Badge variant="secondary" className="gap-1">

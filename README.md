@@ -50,3 +50,9 @@ bun test:coverage
 ## 데이터 저장 위치
 
 - DB, 설정: `~/.promptcraft/`
+
+## dev 서버 포트 할당 실패 시 (UAC 필요)
+
+```powershell
+Restart-Service WinNAT
+```

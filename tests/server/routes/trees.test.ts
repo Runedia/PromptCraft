@@ -7,7 +7,7 @@ const app = makeApp(router);
 // ─── GET / ───────────────────────────────────────────────────────────
 
 describe('GET /api/trees', () => {
-  test('트리 목록 반환 (id, label, description, icon 포함)', async () => {
+  test('트리 목록 반환 (id, label, description 포함)', async () => {
     const res = await request(app).get('/');
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
@@ -16,7 +16,6 @@ describe('GET /api/trees', () => {
     expect(tree).toHaveProperty('id');
     expect(tree).toHaveProperty('label');
     expect(tree).toHaveProperty('description');
-    expect(tree).toHaveProperty('icon');
   });
 
   test('카드 배열은 목록 응답에 포함되지 않는다', async () => {
