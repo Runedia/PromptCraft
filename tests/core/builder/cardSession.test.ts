@@ -1,4 +1,12 @@
-import { activateCard, applyAnswers, createCardSession, deactivateCard, formatTsConstraints, reorderCards, updateCardValue } from '../../../src/core/builder/cardSession.js';
+import {
+  activateCard,
+  applyAnswers,
+  createCardSession,
+  deactivateCard,
+  formatTsConstraints,
+  reorderCards,
+  updateCardValue,
+} from '../../../src/core/builder/cardSession.js';
 import type { RoleMappings } from '../../../src/core/builder/role-resolver.js';
 import type { CardDefinition, SectionCard, SelectOption } from '../../../src/core/types/card.js';
 import type { ScanResult } from '../../../src/core/types.js';

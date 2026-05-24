@@ -2,10 +2,10 @@
 
 ## 책임
 - 좌측: 진입화면으로 돌아가는 뒤로 버튼, 로고, 트리 breadcrumb (트리 아이콘 + 라벨), 프로젝트 경로 (mono, truncate)
-- 우측: domain badge (scanResult.domainContext.primary), 재스캔 popover, ActionBar (Undo/Redo/Copy/Run/Save), ThemeToggle
+- 우측: domain badge (scanResult.domainContext.primary), 재스캔 popover, ActionBar (Undo/Redo/Copy/Run/History/Settings), ThemeToggle
 
 ## 의존성
-- `@/components/ActionBar/ActionBar.js` — Run as / Copy / Undo·Redo / Save
+- `@/components/ActionBar/ActionBar.js` — Run as / Copy / Undo·Redo / History / Settings
 - `@/components/ThemeToggle.js`
 - `@/components/ui/popover.js` — 재스캔 입력 컨테이너
 - `@/lib/treeCardStyles.js` — 트리 아이콘/색상

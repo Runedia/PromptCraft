@@ -1,5 +1,5 @@
 import { PROVIDERS, RUN_TARGETS, type RunTarget } from '@core/run/providers.js';
-import { ChevronDown, Copy, History, Play, Redo2, Undo2 } from 'lucide-react';
+import { ChevronDown, Copy, History, Play, Redo2, Settings, Undo2 } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button.js';
@@ -21,6 +21,7 @@ const DEFAULT_TARGET: RunTarget = 'claude-code';
 
 interface ActionBarProps {
   onHistory?: () => void;
+  onSettings?: () => void;
   projectPath?: string;
 }
 
@@ -31,9 +32,9 @@ export interface ActionBarHandle {
 
 /**
  * @ui-ids WORK_ACTIONBAR_UNDO, WORK_ACTIONBAR_REDO,
- *   WORK_ACTIONBAR_COPY, WORK_ACTIONBAR_RUN, WORK_ACTIONBAR_HISTORY
+ *   WORK_ACTIONBAR_COPY, WORK_ACTIONBAR_RUN, WORK_ACTIONBAR_HISTORY, WORK_ACTIONBAR_SETTINGS
  */
-export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistory, projectPath }, ref) => {
+export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistory, onSettings, projectPath }, ref) => {
   const prompt = useCardStore((s) => s.prompt);
   const treeId = useCardStore((s) => s.treeId);
   const cards = useCardStore((s) => s.cards);
@@ -170,6 +171,25 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistor
             </Button>
           </TooltipTrigger>
           <TooltipContent>히스토리</TooltipContent>
+        </Tooltip>
+      )}
+
+      {onSettings && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              data-ui-id={UI_IDS.WORK_ACTIONBAR_SETTINGS}
+              onClick={onSettings}
+              aria-label="설정"
+              className="size-8"
+            >
+              <Settings size={15} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>설정</TooltipContent>
         </Tooltip>
       )}
 

@@ -100,14 +100,28 @@ export function HistorySheet({ open, onClose, currentTreeId }: HistorySheetProps
                   <p className="text-[11px] text-muted-foreground truncate mb-2 font-code">{rec.prompt.replace(/\n+/g, ' ')}</p>
                   <div className="flex items-center gap-1.5">
                     {restorable ? (
-                      <Button type="button" variant="outline" size="sm" data-ui-id={UI_IDS.WORK_HISTORY_RESTORE_BTN} onClick={() => handleRestore(rec)} className="h-7 gap-1 text-[11px]">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        data-ui-id={UI_IDS.WORK_HISTORY_RESTORE_BTN}
+                        onClick={() => handleRestore(rec)}
+                        className="h-7 gap-1 text-[11px]"
+                      >
                         <RotateCcw size={12} /> 복원
                       </Button>
                     ) : (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <span>
-                            <Button type="button" variant="outline" size="sm" disabled data-ui-id={UI_IDS.WORK_HISTORY_RESTORE_BTN} className="h-7 gap-1 text-[11px]">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              disabled
+                              data-ui-id={UI_IDS.WORK_HISTORY_RESTORE_BTN}
+                              className="h-7 gap-1 text-[11px]"
+                            >
                               <RotateCcw size={12} /> 복원
                             </Button>
                           </span>
@@ -115,10 +129,25 @@ export function HistorySheet({ open, onClose, currentTreeId }: HistorySheetProps
                         <TooltipContent>다른 워크플로우 — 복사만 가능</TooltipContent>
                       </Tooltip>
                     )}
-                    <Button type="button" variant="ghost" size="sm" data-ui-id={UI_IDS.WORK_HISTORY_COPY_BTN} onClick={() => handleCopy(rec)} className="h-7 gap-1 text-[11px]">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      data-ui-id={UI_IDS.WORK_HISTORY_COPY_BTN}
+                      onClick={() => handleCopy(rec)}
+                      className="h-7 gap-1 text-[11px]"
+                    >
                       <Copy size={12} /> 복사
                     </Button>
-                    <Button type="button" variant="ghost" size="icon" data-ui-id={UI_IDS.WORK_HISTORY_DELETE_BTN} onClick={() => handleDelete(rec.id)} aria-label="삭제" className="size-7 ml-auto text-destructive">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      data-ui-id={UI_IDS.WORK_HISTORY_DELETE_BTN}
+                      onClick={() => handleDelete(rec.id)}
+                      aria-label="삭제"
+                      className="size-7 ml-auto text-destructive"
+                    >
                       <Trash2 size={13} />
                     </Button>
                   </div>

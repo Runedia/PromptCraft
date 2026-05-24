@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import type { PromptAnswers } from '../../core/types.js';
 import { history, initialize } from '../../core/db/index.js';
+import type { PromptAnswers } from '../../core/types.js';
 
 const router = Router();
 

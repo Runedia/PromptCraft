@@ -297,6 +297,14 @@ export const UI_IDS = {
    */
   WORK_ACTIONBAR_HISTORY: 'WORK_ACTIONBAR_HISTORY',
 
+  /**
+   * @screen WorkspacePage
+   * @region ActionBar
+   * @description 설정 Sheet 열기 버튼
+   * @file src/web/components/ActionBar/ActionBar.tsx
+   */
+  WORK_ACTIONBAR_SETTINGS: 'WORK_ACTIONBAR_SETTINGS',
+
   // ── HistorySheet ─────────────────────────────────────────────────────────
 
   /**
@@ -341,6 +349,30 @@ export const UI_IDS = {
    * @file src/web/components/HistorySheet/HistorySheet.tsx
    */
   WORK_HISTORY_EMPTY: 'WORK_HISTORY_EMPTY',
+
+  // ── SettingsSheet ────────────────────────────────────────────────────────
+
+  /**
+   * @screen WorkspacePage
+   * @region Settings
+   * @description 설정 Sheet 루트
+   * @file src/web/components/SettingsSheet/SettingsSheet.tsx
+   */
+  WORK_SETTINGS_SHEET: 'WORK_SETTINGS_SHEET',
+  /**
+   * @screen WorkspacePage
+   * @region Settings
+   * @description 테마 선택 RadioGroup (시스템/라이트/다크)
+   * @file src/web/components/SettingsSheet/SettingsSheet.tsx
+   */
+  WORK_SETTINGS_THEME_GROUP: 'WORK_SETTINGS_THEME_GROUP',
+  /**
+   * @screen WorkspacePage
+   * @region Settings
+   * @description 기본 셸 선택 RadioGroup (cmd/powershell/pwsh)
+   * @file src/web/components/SettingsSheet/SettingsSheet.tsx
+   */
+  WORK_SETTINGS_SHELL_GROUP: 'WORK_SETTINGS_SHELL_GROUP',
 
   // ── ScanBanner / V6 Tree-Select ──────────────────────────────────────────
 

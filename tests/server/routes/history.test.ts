@@ -96,7 +96,9 @@ describe('POST /api/history', () => {
 
   test('다른 트리면 동일 prompt라도 저장', async () => {
     await request(app).post('/').send(POST_BODY);
-    const res = await request(app).post('/').send({ ...POST_BODY, treeId: 'refactoring' });
+    const res = await request(app)
+      .post('/')
+      .send({ ...POST_BODY, treeId: 'refactoring' });
     expect(res.status).toBe(201);
     expect(db.history.findAll()).toHaveLength(2);
   });

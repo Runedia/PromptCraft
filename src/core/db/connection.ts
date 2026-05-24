@@ -20,7 +20,7 @@ function getConnection(): Database {
 function initialize(dbPath?: string): Database {
   if (_db) return _db;
 
-  const resolvedPath = dbPath || DB_PATH;
+  const resolvedPath = dbPath || process.env.PROMPTCRAFT_DB_PATH || DB_PATH;
 
   if (resolvedPath !== ':memory:') {
     const dir = path.dirname(resolvedPath);

@@ -4,6 +4,7 @@
 - Undo/Redo (zundo의 `useTemporalStore`)
 - 프롬프트 클립보드 복사 (단축키 `⌘↵` hint 표시)
 - 히스토리 Sheet 열기 트리거 (선택, `onHistory` prop)
+- 설정 Sheet 열기 트리거 (선택, `onSettings` prop)
 - Run as 드롭다운 — `@core/run/providers.js` 레지스트리 기반. 미설치(`GET /api/prompt/providers`) provider는 비활성화('미설치' 표기).
 
 ## Imperative API (외부 단축키 연동용)
@@ -27,6 +28,7 @@ body: `{ treeId, prompt, situation(goal 카드 value), answers }` → `POST /api
 
 ## Props
 - `onHistory?: () => void` — 선택적 히스토리 트리거 (없으면 History 버튼 숨김)
+- `onSettings?: () => void` — 선택적 설정 트리거 (없으면 Settings 버튼 숨김)
 - `projectPath?: string` — 실행 시 cwd로 전달. 없으면 Run 시 경고 toast. TopBar가 WorkspacePage에서 주입.
 
 ## 사용 위치

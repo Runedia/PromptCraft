@@ -8,6 +8,7 @@ import { CardPoolSidebar } from '@/components/CardPool/CardPoolSidebar.js';
 import { HistorySheet } from '@/components/HistorySheet/HistorySheet.js';
 import { PromptPreview } from '@/components/PromptPreview/PromptPreview.js';
 import { PINNED_CARD_IDS, SectionCard } from '@/components/SectionCard/SectionCard.js';
+import { SettingsSheet } from '@/components/SettingsSheet/SettingsSheet.js';
 import { TopBar } from '@/components/TopBar/TopBar.js';
 import { Button } from '@/components/ui/button.js';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog.js';
@@ -37,6 +38,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
   const [pendingRestore, setPendingRestore] = useState<ReturnType<typeof getSavedSession>>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
@@ -137,6 +139,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         onBack={onBack}
         onRescan={(p) => scan(p)}
         onHistory={() => setShowHistory(true)}
+        onSettings={() => setShowSettings(true)}
         actionBarRef={actionBarRef}
       />
 
@@ -174,6 +177,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
       </div>
 
       <HistorySheet open={showHistory} onClose={() => setShowHistory(false)} currentTreeId={treeId} />
+      <SettingsSheet open={showSettings} onClose={() => setShowSettings(false)} />
     </div>
   );
 }
