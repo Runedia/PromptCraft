@@ -37,6 +37,12 @@ function findById(id: number): HistoryRecord | null {
   return row ? _parse(row) : null;
 }
 
+function findLatestByTree(treeId: string): HistoryRecord | null {
+  const db = getConnection();
+  const row = db.prepare(`SELECT * FROM history WHERE treeId = ? ORDER BY id DESC LIMIT 1`).get(treeId) as HistoryRow | undefined;
+  return row ? _parse(row) : null;
+}
+
 function deleteById(id: number): number {
   const db = getConnection();
   const result = db.prepare(`DELETE FROM history WHERE id = ?`).run(id);
@@ -59,4 +65,4 @@ function _parse(row: HistoryRow): HistoryRecord {
   return { ...row, answers: JSON.parse(row.answers) };
 }
 
-export { clearAll, count, deleteById as delete, findAll, findById, save };
+export { clearAll, count, deleteById as delete, findAll, findById, findLatestByTree, save };

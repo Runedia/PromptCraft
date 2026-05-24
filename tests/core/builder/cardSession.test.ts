@@ -1,4 +1,4 @@
-import { activateCard, createCardSession, deactivateCard, formatTsConstraints, reorderCards, updateCardValue } from '../../../src/core/builder/cardSession.js';
+import { activateCard, applyAnswers, createCardSession, deactivateCard, formatTsConstraints, reorderCards, updateCardValue } from '../../../src/core/builder/cardSession.js';
 import type { RoleMappings } from '../../../src/core/builder/role-resolver.js';
 import type { CardDefinition, SectionCard, SelectOption } from '../../../src/core/types/card.js';
 import type { ScanResult } from '../../../src/core/types.js';
@@ -324,5 +324,66 @@ describe('createCardSession() — domainOverlay 분기', () => {
     const stackIdx = session.cards.findIndex((c: SectionCard) => c.id === 'stack-environment');
     const constraintsIdx = session.cards.findIndex((c: SectionCard) => c.id === 'constraints');
     expect(stackIdx).toBeLessThan(constraintsIdx);
+  });
+});
+
+// ─── applyAnswers ────────────────────────────────────────────────────
+
+function card(id: string, over: Partial<SectionCard> = {}): SectionCard {
+  return {
+    id,
+    label: id,
+    required: false,
+    active: false,
+    order: 0,
+    inputType: 'multiline',
+    value: '',
+    template: '## {{label}}\n\n{{value}}',
+    scanSuggested: false,
+    ...over,
+  };
+}
+
+describe('applyAnswers', () => {
+  test('비공백 값 카드는 answers 키 순서대로 활성화·order 부여', () => {
+    const cards = [card('role'), card('goal'), card('constraints')];
+    const result = applyAnswers(cards, { goal: '목표 작성', role: '백엔드 개발자', constraints: '' });
+    const role = result.find((c) => c.id === 'role');
+    const goal = result.find((c) => c.id === 'goal');
+    const constraints = result.find((c) => c.id === 'constraints');
+    expect(role?.active).toBe(true);
+    expect(goal?.active).toBe(true);
+    expect(role?.value).toBe('백엔드 개발자');
+    expect(goal?.order).toBe(1);
+    expect(role?.order).toBe(2);
+    expect(constraints?.active).toBe(false);
+    expect(constraints?.order).toBe(0);
+  });
+
+  test('빈 값이라도 required 카드는 활성 유지', () => {
+    const cards = [card('goal', { required: true, active: true, order: 1 })];
+    const result = applyAnswers(cards, { goal: '' });
+    expect(result[0].active).toBe(true);
+  });
+
+  test('answers에 없는 카드 id는 기존 값 유지', () => {
+    const cards = [card('role', { value: '기존값', active: true, order: 1 })];
+    const result = applyAnswers(cards, { goal: '신규 목표' });
+    expect(result.find((c) => c.id === 'role')?.value).toBe('기존값');
+  });
+
+  test('answers에 없는 required 카드는 기존 값·활성 유지', () => {
+    const cards = [card('goal', { required: true, active: true, order: 1, value: '기존 목표' })];
+    const result = applyAnswers(cards, { role: '백엔드 개발자' });
+    const goal = result.find((c) => c.id === 'goal');
+    expect(goal?.value).toBe('기존 목표');
+    expect(goal?.active).toBe(true);
+  });
+
+  test('새 배열을 반환한다(불변성)', () => {
+    const cards = [card('goal')];
+    const result = applyAnswers(cards, { goal: 'x' });
+    expect(result).not.toBe(cards);
+    expect(result[0]).not.toBe(cards[0]);
   });
 });

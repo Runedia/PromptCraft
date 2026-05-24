@@ -102,6 +102,20 @@ describe('template repository', () => {
   });
 });
 
+describe('history.findLatestByTree', () => {
+  test('해당 트리의 최신 레코드 반환', () => {
+    db.history.save({ treeId: 'feature-impl', situation: 's1', prompt: 'p1', scanPath: null, answers: {} });
+    db.history.save({ treeId: 'feature-impl', situation: 's2', prompt: 'p2', scanPath: null, answers: {} });
+    db.history.save({ treeId: 'refactoring', situation: 's3', prompt: 'p3', scanPath: null, answers: {} });
+    const latest = db.history.findLatestByTree('feature-impl');
+    expect(latest?.prompt).toBe('p2');
+  });
+
+  test('레코드 없는 트리 → null', () => {
+    expect(db.history.findLatestByTree('feature-impl')).toBeNull();
+  });
+});
+
 describe('config repository', () => {
   test('set → get', () => {
     db.config.set('theme', 'dark');

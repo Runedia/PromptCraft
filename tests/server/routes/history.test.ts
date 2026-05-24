@@ -73,3 +73,42 @@ describe('DELETE /api/history/:id', () => {
     expect(res.body.success).toBe(true);
   });
 });
+
+// ─── POST / ──────────────────────────────────────────────────────────
+
+describe('POST /api/history', () => {
+  const POST_BODY = { treeId: 'feature-impl', situation: '기능 구현', prompt: '새 엔드포인트 추가', answers: { goal: '새 엔드포인트 추가' } };
+
+  test('유효 입력 → 201 + historyId', async () => {
+    const res = await request(app).post('/').send(POST_BODY);
+    expect(res.status).toBe(201);
+    expect(typeof res.body.historyId).toBe('number');
+    expect(db.history.findAll()).toHaveLength(1);
+  });
+
+  test('동일 트리 최신과 prompt 동일 → 200 skipped, 저장 안 됨', async () => {
+    await request(app).post('/').send(POST_BODY);
+    const res = await request(app).post('/').send(POST_BODY);
+    expect(res.status).toBe(200);
+    expect(res.body.skipped).toBe(true);
+    expect(db.history.findAll()).toHaveLength(1);
+  });
+
+  test('다른 트리면 동일 prompt라도 저장', async () => {
+    await request(app).post('/').send(POST_BODY);
+    const res = await request(app).post('/').send({ ...POST_BODY, treeId: 'refactoring' });
+    expect(res.status).toBe(201);
+    expect(db.history.findAll()).toHaveLength(2);
+  });
+
+  test('treeId 없으면 400', async () => {
+    const res = await request(app).post('/').send({ prompt: 'p', answers: {} });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBeDefined();
+  });
+
+  test('prompt 비면 400', async () => {
+    const res = await request(app).post('/').send({ treeId: 'feature-impl', prompt: '   ', answers: {} });
+    expect(res.status).toBe(400);
+  });
+});

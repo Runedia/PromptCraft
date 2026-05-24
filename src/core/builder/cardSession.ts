@@ -1,5 +1,5 @@
 import type { CardDefinition, CardSession, SectionCard, SelectOption, TreeConfig } from '../types/card.js';
-import type { ScanResult, TsCompilerConstraints } from '../types.js';
+import type { PromptAnswers, ScanResult, TsCompilerConstraints } from '../types.js';
 import { applyDomainOverrides, type DomainOverlay, reorderCardPool } from './domain-overlay.js';
 import { type RoleMappings, resolveRoleSuggestions } from './role-resolver.js';
 
@@ -158,4 +158,27 @@ function buildRoleOptions(scan: ScanResult): SelectOption[] {
   }
 
   return roles.map((r) => ({ value: r, label: r }));
+}
+
+/**
+ * 히스토리 answers(카드 id→값)를 현재 카드 배열에 적용한다.
+ * 비공백 값 카드는 answers 키 순서대로 활성화·order 부여, 빈 값 카드는 비활성화(required 보호).
+ * buildPrompt(active·비공백 filter + order sort)가 저장 시점 프롬프트를 재현하도록 한다.
+ * 새 배열을 반환하므로 zundo temporal에서 undo 가능하다.
+ */
+export function applyAnswers(cards: SectionCard[], answers: PromptAnswers): SectionCard[] {
+  let nextOrder = 1;
+  const orderMap = new Map<string, number>();
+  // answers 키 순서 = 저장 시점 활성화 순서. JSON.stringify/parse가 삽입 순서를 보존하므로 복원 순서가 일치한다.
+  for (const id of Object.keys(answers)) {
+    if ((answers[id] ?? '').trim() !== '') orderMap.set(id, nextOrder++);
+  }
+  return cards.map((c) => {
+    const value = Object.hasOwn(answers, c.id) ? answers[c.id] : c.value;
+    if ((value ?? '').trim() !== '') {
+      return { ...c, value, active: true, order: orderMap.get(c.id) ?? c.order };
+    }
+    if (c.required) return { ...c, value, active: true, order: nextOrder++ };
+    return { ...c, value, active: false, order: 0 };
+  });
 }

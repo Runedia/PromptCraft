@@ -5,6 +5,7 @@ import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrate
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ActionBarHandle } from '@/components/ActionBar/ActionBar.js';
 import { CardPoolSidebar } from '@/components/CardPool/CardPoolSidebar.js';
+import { HistorySheet } from '@/components/HistorySheet/HistorySheet.js';
 import { PromptPreview } from '@/components/PromptPreview/PromptPreview.js';
 import { PINNED_CARD_IDS, SectionCard } from '@/components/SectionCard/SectionCard.js';
 import { TopBar } from '@/components/TopBar/TopBar.js';
@@ -37,6 +38,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
   const [pendingRestore, setPendingRestore] = useState<ReturnType<typeof getSavedSession>>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
@@ -138,6 +140,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         onBack={onBack}
         onRescan={(p) => scan(p)}
         onSave={() => setShowSaveModal(true)}
+        onHistory={() => setShowHistory(true)}
         actionBarRef={actionBarRef}
       />
 
@@ -175,6 +178,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
       </div>
 
       {showSaveModal && <SaveTemplateModal treeId={treeId} onClose={() => setShowSaveModal(false)} />}
+      <HistorySheet open={showHistory} onClose={() => setShowHistory(false)} currentTreeId={treeId} />
     </div>
   );
 }

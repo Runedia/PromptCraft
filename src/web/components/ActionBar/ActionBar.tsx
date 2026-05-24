@@ -1,5 +1,5 @@
 import { PROVIDERS, RUN_TARGETS, type RunTarget } from '@core/run/providers.js';
-import { BookmarkPlus, ChevronDown, Copy, Play, Redo2, Undo2 } from 'lucide-react';
+import { BookmarkPlus, ChevronDown, Copy, History, Play, Redo2, Undo2 } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button.js';
@@ -21,6 +21,7 @@ const DEFAULT_TARGET: RunTarget = 'claude-code';
 
 interface ActionBarProps {
   onSave?: () => void;
+  onHistory?: () => void;
   projectPath?: string;
 }
 
@@ -31,10 +32,12 @@ export interface ActionBarHandle {
 
 /**
  * @ui-ids WORK_ACTIONBAR_UNDO, WORK_ACTIONBAR_REDO, WORK_ACTIONBAR_SAVE,
- *   WORK_ACTIONBAR_COPY, WORK_ACTIONBAR_RUN
+ *   WORK_ACTIONBAR_COPY, WORK_ACTIONBAR_RUN, WORK_ACTIONBAR_HISTORY
  */
-export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave, projectPath }, ref) => {
+export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave, onHistory, projectPath }, ref) => {
   const prompt = useCardStore((s) => s.prompt);
+  const treeId = useCardStore((s) => s.treeId);
+  const cards = useCardStore((s) => s.cards);
   const { undo, redo, pastStates, futureStates } = useTemporalStore();
   const canUndo = pastStates.length > 0;
   const canRedo = futureStates.length > 0;
@@ -51,6 +54,21 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave, 
     return () => ac.abort();
   }, []);
 
+  const saveHistory = useCallback(() => {
+    if (!prompt || !treeId) return;
+    // fire-and-forget — 복사/실행 성공은 저장 결과와 무관
+    fetch('/api/history', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        treeId,
+        prompt,
+        situation: cards.find((c) => c.id === 'goal')?.value ?? '',
+        answers: Object.fromEntries(cards.map((c) => [c.id, c.value])),
+      }),
+    }).catch(() => {});
+  }, [prompt, treeId, cards]);
+
   const copy = useCallback(async () => {
     if (!prompt) {
       toast.warning('복사할 프롬프트가 없습니다.');
@@ -58,7 +76,8 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave, 
     }
     await navigator.clipboard.writeText(prompt);
     toast.success('클립보드에 복사됨');
-  }, [prompt]);
+    saveHistory();
+  }, [prompt, saveHistory]);
 
   const run = useCallback(
     async (target: RunTarget) => {
@@ -84,11 +103,12 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave, 
           throw new Error(`HTTP ${res.status}`);
         }
         toast.success(`${PROVIDERS[target].label} 실행됨 · 프롬프트 복사됨, 새 창에서 Ctrl+V`);
+        saveHistory();
       } catch (err) {
         toast.error(`실행 실패: ${(err as Error).message}`);
       }
     },
-    [prompt, projectPath]
+    [prompt, projectPath, saveHistory]
   );
 
   const runDefault = useCallback(() => run(DEFAULT_TARGET), [run]);
@@ -151,6 +171,25 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave, 
             </Button>
           </TooltipTrigger>
           <TooltipContent>템플릿 저장 (⌘S)</TooltipContent>
+        </Tooltip>
+      )}
+
+      {onHistory && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              data-ui-id={UI_IDS.WORK_ACTIONBAR_HISTORY}
+              onClick={onHistory}
+              aria-label="히스토리"
+              className="size-8"
+            >
+              <History size={15} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>히스토리</TooltipContent>
         </Tooltip>
       )}
 

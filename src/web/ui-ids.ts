@@ -287,38 +287,6 @@ export const UI_IDS = {
    */
   WORK_PREVIEW_TOGGLE_RENDERED: 'WORK_PREVIEW_TOGGLE_RENDERED',
 
-  /**
-   * @screen WorkspacePage
-   * @region Preview
-   * @description 미리보기 액션 바 (복사 · 저장 · 히스토리)
-   * @file src/web/components/PromptPreview/PromptPreview.tsx
-   */
-  WORK_PREVIEW_ACTION_BAR: 'WORK_PREVIEW_ACTION_BAR',
-
-  /**
-   * @screen WorkspacePage
-   * @region Preview
-   * @description 프롬프트 클립보드 복사 버튼
-   * @file src/web/components/PromptPreview/PromptPreview.tsx
-   */
-  WORK_PREVIEW_COPY_BTN: 'WORK_PREVIEW_COPY_BTN',
-
-  /**
-   * @screen WorkspacePage
-   * @region Preview
-   * @description 템플릿 저장 트리거 버튼 (모달 열기)
-   * @file src/web/components/PromptPreview/PromptPreview.tsx
-   */
-  WORK_PREVIEW_SAVE_BTN: 'WORK_PREVIEW_SAVE_BTN',
-
-  /**
-   * @screen WorkspacePage
-   * @region Preview
-   * @description 히스토리 패널 열기 버튼
-   * @file src/web/components/PromptPreview/PromptPreview.tsx
-   */
-  WORK_PREVIEW_HISTORY_BTN: 'WORK_PREVIEW_HISTORY_BTN',
-
   // ── ActionBar 컴포넌트 (V2 TopBar 우측) ──────────────────────────────────
 
   /**
@@ -360,6 +328,59 @@ export const UI_IDS = {
    * @file src/web/components/ActionBar/ActionBar.tsx
    */
   WORK_ACTIONBAR_RUN: 'WORK_ACTIONBAR_RUN',
+
+  /**
+   * @screen WorkspacePage
+   * @region ActionBar
+   * @description 히스토리 Sheet 열기 버튼
+   * @file src/web/components/ActionBar/ActionBar.tsx
+   */
+  WORK_ACTIONBAR_HISTORY: 'WORK_ACTIONBAR_HISTORY',
+
+  // ── HistorySheet ─────────────────────────────────────────────────────────
+
+  /**
+   * @screen WorkspacePage
+   * @region History
+   * @description 히스토리 Sheet 루트
+   * @file src/web/components/HistorySheet/HistorySheet.tsx
+   */
+  WORK_HISTORY_SHEET: 'WORK_HISTORY_SHEET',
+  /**
+   * @screen WorkspacePage
+   * @region History
+   * @description 히스토리 항목 행
+   * @file src/web/components/HistorySheet/HistorySheet.tsx
+   */
+  WORK_HISTORY_ITEM: 'WORK_HISTORY_ITEM',
+  /**
+   * @screen WorkspacePage
+   * @region History
+   * @description 항목 복원 버튼
+   * @file src/web/components/HistorySheet/HistorySheet.tsx
+   */
+  WORK_HISTORY_RESTORE_BTN: 'WORK_HISTORY_RESTORE_BTN',
+  /**
+   * @screen WorkspacePage
+   * @region History
+   * @description 항목 복사 버튼
+   * @file src/web/components/HistorySheet/HistorySheet.tsx
+   */
+  WORK_HISTORY_COPY_BTN: 'WORK_HISTORY_COPY_BTN',
+  /**
+   * @screen WorkspacePage
+   * @region History
+   * @description 항목 삭제 버튼
+   * @file src/web/components/HistorySheet/HistorySheet.tsx
+   */
+  WORK_HISTORY_DELETE_BTN: 'WORK_HISTORY_DELETE_BTN',
+  /**
+   * @screen WorkspacePage
+   * @region History
+   * @description 빈 상태 안내
+   * @file src/web/components/HistorySheet/HistorySheet.tsx
+   */
+  WORK_HISTORY_EMPTY: 'WORK_HISTORY_EMPTY',
 
   // ── ScanBanner / V6 Tree-Select ──────────────────────────────────────────
 

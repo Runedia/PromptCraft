@@ -1,8 +1,8 @@
-import { activateCard, deactivateCard, reorderCards, updateCardValue } from '@core/builder/cardSession.js';
+import { activateCard, applyAnswers, deactivateCard, reorderCards, updateCardValue } from '@core/builder/cardSession.js';
 import { buildPreview, buildPrompt } from '@core/builder/promptBuilder.js';
 import { estimateTokens } from '@core/builder/tokenEstimator.js';
 import type { CardSession, SectionCard } from '@core/types/card.js';
-import type { ScanResult } from '@core/types.js';
+import type { PromptAnswers, ScanResult } from '@core/types.js';
 import { temporal } from 'zundo';
 import { create, useStore } from 'zustand';
 
@@ -23,6 +23,7 @@ interface CardStore {
   reorderCards: (orderedActiveIds: string[]) => void;
   setIsScanLoading: (loading: boolean) => void;
   reset: () => void;
+  restoreAnswers: (answers: PromptAnswers) => void;
 
   activeCards: () => SectionCard[];
   inactiveCards: () => SectionCard[];
@@ -93,6 +94,11 @@ export const useCardStore = create<CardStore>()(
           preview: '',
           tokenEstimate: 0,
         }),
+
+      restoreAnswers: (answers) => {
+        const cards = applyAnswers(get().cards, answers);
+        set({ cards, ...derivePromptState(cards) });
+      },
 
       activeCards: () =>
         get()
