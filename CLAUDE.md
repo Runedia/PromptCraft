@@ -5,6 +5,7 @@
 → server: src/server/CLAUDE.md
 → shared: src/shared/CLAUDE.md
 → web: src/web/CLAUDE.md
+→ prd: docs/PRD/PRD_2.5/CLAUDE.md
 
 ## Agent Memory System
 
