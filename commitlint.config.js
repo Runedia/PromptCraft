@@ -9,5 +9,6 @@ export default {
     'header-max-length': [2, 'always', 72],
     'subject-full-stop': [2, 'never', '.'],
     'subject-case': [0], // 한국어 대응
+    'body-max-line-length': [0], // 본문 줄 길이 제한 해제
   },
 };

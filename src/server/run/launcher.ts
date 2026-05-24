@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { config } from '../../core/db/index.js';
 import { PROVIDERS, type RunTarget } from '../../core/run/providers.js';
 import { buildArgv } from '../../core/run/shells.js';
+import { resolveLaunchEnv } from './env.js';
 
 /** provider 바이너리 설치 여부 (Bun.which) */
 export function isInstalled(target: RunTarget): boolean {
@@ -43,7 +44,8 @@ export function launch(target: RunTarget, cwd: string): { launched: string } {
   }
 
   const argv = buildArgv(shellId, overrides, provider.launch, cwd);
-  const proc = Bun.spawn(argv, { cwd, stdio: ['ignore', 'ignore', 'ignore'] });
+  const env = resolveLaunchEnv();
+  const proc = Bun.spawn(argv, { cwd, env, stdio: ['ignore', 'ignore', 'ignore'] });
   proc.unref();
   return { launched: provider.bin };
 }

@@ -1,7 +1,7 @@
+import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test';
 import os from 'node:os';
 import path from 'node:path';
 import request from 'supertest';
-import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test';
 import * as connection from '../../../src/core/db/connection.js';
 import * as db from '../../../src/core/db/index.js';
 import type { SectionCard } from '../../../src/core/types/card.js';
@@ -91,7 +91,9 @@ describe('POST /api/prompt/run', () => {
   });
 
   test('존재하지 않는 cwd → 400 invalid_cwd', async () => {
-    const res = await request(app).post('/run').send({ target: 'claude-code', cwd: path.join(os.tmpdir(), `__pc_nonexistent_${Date.now()}`) });
+    const res = await request(app)
+      .post('/run')
+      .send({ target: 'claude-code', cwd: path.join(os.tmpdir(), `__pc_nonexistent_${Date.now()}`) });
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('invalid_cwd');
   });

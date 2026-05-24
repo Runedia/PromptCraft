@@ -1,14 +1,29 @@
-import os from 'node:os';
 import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test';
+import os from 'node:os';
 import * as connection from '../../../src/core/db/connection.js';
 import { config } from '../../../src/core/db/index.js';
 import { isValidCwd, launch, providerAvailability } from '../../../src/server/run/launcher.js';
 
-beforeEach(() => connection.initialize(':memory:'));
-afterEach(() => connection.closeConnection());
+let spawnSyncSpy: ReturnType<typeof spyOn>;
+
+beforeEach(() => {
+  connection.initialize(':memory:');
+  // resolveLaunchEnv 내부 PowerShell 호출을 차단 → 폴백(process.env) 경로로 동작
+  spawnSyncSpy = spyOn(Bun, 'spawnSync').mockReturnValue({
+    success: false,
+    exitCode: 1,
+    stdout: new Uint8Array(),
+    stderr: new Uint8Array(),
+  } as never);
+});
+
+afterEach(() => {
+  spawnSyncSpy.mockRestore();
+  connection.closeConnection();
+});
 
 describe('launch()', () => {
-  test('기본 셸(cmd)로 새 창 spawn + cwd 전달', () => {
+  test('기본 셸(cmd)로 새 창 spawn + cwd + env 전달', () => {
     let unrefCalls = 0;
     const spawnSpy = spyOn(Bun, 'spawn').mockReturnValue({
       unref() {
@@ -21,6 +36,7 @@ describe('launch()', () => {
     const [argv, opts] = spawnSpy.mock.calls[0];
     expect(argv).toEqual(['cmd.exe', '/c', 'start', '', 'cmd', '/k', 'claude']);
     expect((opts as { cwd: string }).cwd).toBe(os.tmpdir());
+    expect((opts as { env: Record<string, string> }).env).toBeDefined();
     expect(unrefCalls).toBe(1);
     spawnSpy.mockRestore();
   });

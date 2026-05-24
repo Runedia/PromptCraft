@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { PROVIDERS, RUN_TARGETS, isRunTarget } from '../../../src/core/run/providers.js';
+import { isRunTarget, PROVIDERS, RUN_TARGETS } from '../../../src/core/run/providers.js';
 
 describe('PROVIDERS', () => {
   test('4종 provider가 정의된다', () => {

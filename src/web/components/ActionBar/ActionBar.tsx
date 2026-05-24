@@ -1,7 +1,7 @@
+import { PROVIDERS, RUN_TARGETS, type RunTarget } from '@core/run/providers.js';
 import { BookmarkPlus, ChevronDown, Copy, Play, Redo2, Undo2 } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { toast } from 'sonner';
-import { PROVIDERS, RUN_TARGETS, type RunTarget } from '@core/run/providers.js';
 import { Button } from '@/components/ui/button.js';
 import {
   DropdownMenu,
