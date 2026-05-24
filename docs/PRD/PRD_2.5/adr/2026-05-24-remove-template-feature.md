@@ -5,6 +5,7 @@ status: completed
 scope:
   - "Feature #26"
   - "§3 Features (API 표 /api/templates)"
+  - "§4.3.4 (ActionBar Save template)"
 related:
   - "[[2026-05-24-run-as-simplified]]"
 tags:
@@ -33,4 +34,5 @@ up: "[[DECISIONS]]"
 - Feature #26 행 제거, 번호는 결번 유지(재번호 금지).
 - `§3 Features` API 표의 `/api/templates` 행(GET/POST/DELETE) 제거.
 - `3.Features.md:261`의 "History·Template 목록·Settings UI 보강" 문구에서 Template 항목 정정.
+- (2026-05-24 전수조사 후속) [[4.UI-Design|§4.3.4]] ActionBar 표의 "Save template"(`BookmarkPlus`·`⌘S`·`onSave` prop) 행 제거 — 코드에서 이미 제거됨(`SaveTemplate`/`onSave`/`WORK_ACTIONBAR_SAVE`/`BookmarkPlus` `src/web` 잔존 0건 확인). scope에 §4.3.4 추가.
 - Feature #29(마이그레이션) 상태를 "미구현"으로 정정할지는 별도 결정.

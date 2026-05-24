@@ -3,8 +3,14 @@ title: "§3.2.8 Run as... — fire-and-forget 파이프라인 보류, 새 터미
 date: 2026-05-24
 status: active
 scope:
+  - "§2.2"
   - "§3.2.8"
   - "§3.2.10"
+  - "§5.1"
+  - "§5.5.2"
+  - "§5.5.3"
+  - "§5.5.4"
+  - "§4.5.4"
 related:
   - "[[2026-05-22-feat-staged-commits-removed]]"
 tags:
@@ -28,3 +34,4 @@ up: "[[DECISIONS]]"
 - §3.2.8은 단순화 버전으로 living spec 재작성(본 ADR이 보류 trail 보존).
 - §3.2.10 표: `/api/prompt/run` 상태 정정, `/api/prompt/providers` 신설, `/api/runs/:runId/log` 보류 표기.
 - 보류된 파이프라인은 하네스의 프롬프트 직접 실행 지원이 확인되면 후속 사이클에서 재검토.
+- (2026-05-24 후속 정합화) §2.2 김개발 시나리오·§5.5.2 데이터 흐름 도식·§5.5.3 호출 타이밍·§5.5.4 영속화 표·§4.5.4 Run dropdown 흐름이 보류된 fire-and-forget 모델(`/api/prompts/build`·`/api/run`·`runId`·`.prompt.md`·`.log`·`runs.sqlite`)을 잔존시키고 있었음을 전수조사에서 발견하여 단순화 모델(`POST /api/prompt/run` `{target,cwd}`→`{ok,launched}`, 클립보드 전용)로 정정. 본 ADR scope에 §2.2·§5.5.2·§5.5.3·§5.5.4·§4.5.4를 추가하여 적용 범위를 확정한다. 추가로 §5.1 계층 도식·표가 Run as를 "`src/cli`가 Provider CLI spawn(detach)"로 기술하던 것을 코드 사실(launch 주체 = `src/server/run/launcher`, 새 터미널 실행, detach 잔재 제거)에 맞게 정정하고 scope에 §5.1을 추가한다 — `src/cli`는 `promptcraft serve` 진입점으로 명확화.
