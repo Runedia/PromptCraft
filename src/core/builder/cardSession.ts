@@ -1,5 +1,5 @@
 import type { CardDefinition, CardSession, SectionCard, SelectOption, TreeConfig } from '../types/card.js';
-import type { ScanResult } from '../types.js';
+import type { ScanResult, TsCompilerConstraints } from '../types.js';
 import { applyDomainOverrides, type DomainOverlay, reorderCardPool } from './domain-overlay.js';
 import { type RoleMappings, resolveRoleSuggestions } from './role-resolver.js';
 
@@ -104,7 +104,33 @@ function formatScanToStackEnv(scan: ScanResult): string {
   if (scan.packageManager) {
     parts.push(`패키지 매니저: ${scan.packageManager}`);
   }
+  if (scan.tsCompilerConstraints) {
+    const line = formatTsConstraints(scan.tsCompilerConstraints);
+    if (line) parts.push(`타입/문법 제약: ${line}`);
+  }
   return parts.join('\n');
+}
+
+const ESM_MODULE_RE = /^(es|node16|nodenext|preserve)/i;
+
+/** tsconfig 컴파일러 제약을 자연어 행동 지침 한 줄로 정규화한다(조각 0개면 빈 문자열). */
+export function formatTsConstraints(c: TsCompilerConstraints): string {
+  const parts: string[] = [];
+  if (c.strict) {
+    parts.push('strict(null·undefined 명시, 암묵 any 금지)');
+  } else {
+    if (c.strictNullChecks) parts.push('strictNullChecks(null·undefined 명시 처리)');
+    if (c.noImplicitAny) parts.push('암묵 any 금지');
+  }
+  if (c.noUncheckedIndexedAccess) parts.push('noUncheckedIndexedAccess(인덱스 결과 undefined 체크)');
+  if (c.module) {
+    if (/commonjs/i.test(c.module)) parts.push('CommonJS require');
+    else if (ESM_MODULE_RE.test(c.module)) parts.push('ESM import 구문');
+  }
+  if (c.verbatimModuleSyntax) parts.push('type-only는 import type');
+  if (c.target) parts.push(`target ${c.target}`);
+  if (c.jsx) parts.push('JSX 사용');
+  return parts.join('; ');
 }
 
 function buildRoleOptions(scan: ScanResult): SelectOption[] {

@@ -9,6 +9,7 @@ import { detectFrameworks } from './framework.js';
 import { loadIgnoreRules, shouldIgnore, toGlobIgnorePatterns } from './gitignore.js';
 import { detectLanguages } from './language.js';
 import { buildTree } from './structure.js';
+import { extractTsConfig } from './tsconfig.js';
 
 const CONFIG_PATTERNS = ['package.json', '.eslintrc*', 'tsconfig.json', '*.config.js', '*.config.ts', '.prettierrc*'];
 
@@ -91,6 +92,9 @@ async function scan(inputPath: string, options: { depth?: number; metrics?: bool
   // .env 존재 여부
   const hasEnv = fs.existsSync(path.join(absolutePath, '.env'));
 
+  // tsconfig 컴파일러 제약 추출 (TypeScript 프로젝트에서만 값 존재)
+  const tsCompilerConstraints = extractTsConfig(absolutePath);
+
   // 설정 파일 목록 (basename만)
   let configFilesList = globSync(CONFIG_PATTERNS, {
     cwd: absolutePath,
@@ -111,6 +115,7 @@ async function scan(inputPath: string, options: { depth?: number; metrics?: bool
     ignoreSource: ignoreRules.source,
     scannedAt: nowISO(),
     domainContext,
+    tsCompilerConstraints,
   };
 
   if (options.metrics === true) {

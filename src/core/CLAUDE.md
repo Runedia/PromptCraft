@@ -8,5 +8,5 @@
 - **Commander.js / Express import 금지** — 프레임워크 종속 없는 순수 TS
 - **DB:** `bun:sqlite` 내장 모듈 사용 (`better-sqlite3` 아님). 경로는 `DB_PATH`(shared/constants) 사용
 - 반환값은 직렬화 가능한 순수 객체
-- 모든 I/O는 인터페이스 레이어(server)에서 처리
+- I/O 원칙: 런타임 I/O(DB·네트워크·요청 처리)는 인터페이스 레이어(server)에서 처리. **단 scanner는 예외** — 파일시스템 분석이 본질이므로 core 내에서 직접 `node:fs`로 읽는다(`scanner/index.ts`, `framework.ts`, `language.ts`, `tsconfig.ts` 등). scanner 외 core 모듈은 직접 I/O를 두지 않는다.
 - 성능 기준: 스캔 5초 이내, 프롬프트 빌드 5초 이내

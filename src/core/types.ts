@@ -37,6 +37,17 @@ export interface IgnoreRules {
   rawPatterns: string[];
 }
 
+export interface TsCompilerConstraints {
+  strict?: boolean;
+  strictNullChecks?: boolean;
+  noImplicitAny?: boolean;
+  noUncheckedIndexedAccess?: boolean;
+  module?: string;
+  target?: string;
+  verbatimModuleSyntax?: boolean;
+  jsx?: string;
+}
+
 export interface ScanResult {
   path: string;
   languages: ScanLanguage[];
@@ -48,6 +59,7 @@ export interface ScanResult {
   configFiles: string[];
   ignoreSource: IgnoreRules['source'];
   scannedAt: string;
+  tsCompilerConstraints?: TsCompilerConstraints;
   timings?: ScanTimings;
 }
 

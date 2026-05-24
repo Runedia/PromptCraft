@@ -1,4 +1,4 @@
-import { activateCard, createCardSession, deactivateCard, reorderCards, updateCardValue } from '../../../src/core/builder/cardSession.js';
+import { activateCard, createCardSession, deactivateCard, formatTsConstraints, reorderCards, updateCardValue } from '../../../src/core/builder/cardSession.js';
 import type { RoleMappings } from '../../../src/core/builder/role-resolver.js';
 import type { CardDefinition, SectionCard, SelectOption } from '../../../src/core/types/card.js';
 import type { ScanResult } from '../../../src/core/types.js';
@@ -165,6 +165,45 @@ describe('createCardSession()', () => {
     const badTree = { ...TREE_CONFIG, defaultActiveCards: ['nonexistent'] };
     expect(() => createCardSession(badTree, CARD_DEFS, null)).toThrow('카드 정의를 찾을 수 없습니다: nonexistent');
   });
+
+  test('tsCompilerConstraints가 있으면 stack-environment에 타입/문법 제약 라인 추가', () => {
+    const scan: ScanResult = {
+      path: '/tmp/fixture',
+      languages: [{ name: 'TypeScript', extension: '.ts', count: 1, percentage: 100, role: 'primary' }],
+      frameworks: [],
+      structure: { name: 'root', children: [] },
+      packageManager: 'bun',
+      hasEnv: false,
+      configFiles: [],
+      ignoreSource: 'gitignore',
+      scannedAt: '2026-04-21T00:00:00.000Z',
+      domainContext: { primary: 'web-frontend', secondary: null, confidence: 'high' },
+      tsCompilerConstraints: { strict: true, module: 'ESNext' },
+    };
+    const session = createCardSession(TREE_CONFIG, CARD_DEFS, scan);
+    const stack = session.cards.find((c: SectionCard) => c.id === 'stack-environment');
+    expect(stack.value).toContain('타입/문법 제약:');
+    expect(stack.value).toContain('strict(null·undefined 명시, 암묵 any 금지)');
+    expect(stack.value).toContain('ESM import 구문');
+  });
+
+  test('tsCompilerConstraints가 없으면 타입/문법 제약 라인이 없다', () => {
+    const scan: ScanResult = {
+      path: '/tmp/fixture',
+      languages: [{ name: 'Go', extension: '.go', count: 1, percentage: 100, role: 'primary' }],
+      frameworks: [],
+      structure: { name: 'root', children: [] },
+      packageManager: null,
+      hasEnv: false,
+      configFiles: [],
+      ignoreSource: 'gitignore',
+      scannedAt: '2026-04-21T00:00:00.000Z',
+      domainContext: { primary: 'systems', secondary: null, confidence: 'low' },
+    };
+    const session = createCardSession(TREE_CONFIG, CARD_DEFS, scan);
+    const stack = session.cards.find((c: SectionCard) => c.id === 'stack-environment');
+    expect(stack.value).not.toContain('타입/문법 제약');
+  });
 });
 
 // ─── createCardSession — roleMappings 분기 ───────────────────────────
@@ -217,6 +256,42 @@ describe('createCardSession() — roleMappings 분기', () => {
     const roleValues = role.options.map((o: SelectOption) => o.value);
     expect(roleValues[0]).toBe('TypeScript 개발자');
     expect(roleValues).toContain('React 개발자');
+  });
+});
+
+// ─── formatTsConstraints ─────────────────────────────────────────────
+
+describe('formatTsConstraints()', () => {
+  test('strict:true이면 하위 플래그를 흡수하여 strict 조각 1개만', () => {
+    const line = formatTsConstraints({ strict: true, strictNullChecks: true, noImplicitAny: true });
+    expect(line).toBe('strict(null·undefined 명시, 암묵 any 금지)');
+  });
+
+  test('strict 미설정 시 개별 플래그를 각각 투영', () => {
+    const line = formatTsConstraints({ strictNullChecks: true, noImplicitAny: true });
+    expect(line).toBe('strictNullChecks(null·undefined 명시 처리); 암묵 any 금지');
+  });
+
+  test('module ESM 계열 → ESM 구문, CommonJS → require', () => {
+    expect(formatTsConstraints({ module: 'ESNext' })).toBe('ESM import 구문');
+    expect(formatTsConstraints({ module: 'NodeNext' })).toBe('ESM import 구문');
+    expect(formatTsConstraints({ module: 'Node16' })).toBe('ESM import 구문');
+    expect(formatTsConstraints({ module: 'CommonJS' })).toBe('CommonJS require');
+  });
+
+  test('module이 ESM·CommonJS 어느 쪽도 아니면 조각 미생성', () => {
+    expect(formatTsConstraints({ module: 'AMD' })).toBe('');
+    expect(formatTsConstraints({ module: 'UMD' })).toBe('');
+    expect(formatTsConstraints({ module: 'None' })).toBe('');
+  });
+
+  test('verbatimModuleSyntax·target·jsx 투영', () => {
+    const line = formatTsConstraints({ verbatimModuleSyntax: true, target: 'ES2022', jsx: 'react-jsx' });
+    expect(line).toBe('type-only는 import type; target ES2022; JSX 사용');
+  });
+
+  test('제약 조각이 0개면 빈 문자열', () => {
+    expect(formatTsConstraints({})).toBe('');
   });
 });
 
