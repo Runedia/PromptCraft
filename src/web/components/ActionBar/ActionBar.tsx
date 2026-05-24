@@ -1,6 +1,7 @@
 import { BookmarkPlus, ChevronDown, Copy, Play, Redo2, Undo2 } from 'lucide-react';
-import { forwardRef, useCallback, useImperativeHandle } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { toast } from 'sonner';
+import { PROVIDERS, RUN_TARGETS, type RunTarget } from '@core/run/providers.js';
 import { Button } from '@/components/ui/button.js';
 import {
   DropdownMenu,
@@ -14,19 +15,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useCardStore, useTemporalStore } from '@/store/cardStore.js';
 import { UI_IDS } from '@/ui-ids.js';
 
-export type RunTarget = 'claude-code' | 'gemini' | 'copilot' | 'codex';
-
-const TARGETS: { id: RunTarget; label: string; cmd: string }[] = [
-  { id: 'claude-code', label: 'Claude Code', cmd: 'claude' },
-  { id: 'gemini', label: 'Gemini', cmd: 'gemini' },
-  { id: 'copilot', label: 'GitHub Copilot', cmd: 'gh copilot' },
-  { id: 'codex', label: 'Codex', cmd: 'codex' },
-];
+export type { RunTarget };
 
 const DEFAULT_TARGET: RunTarget = 'claude-code';
 
 interface ActionBarProps {
   onSave?: () => void;
+  projectPath?: string;
 }
 
 export interface ActionBarHandle {
@@ -38,11 +33,23 @@ export interface ActionBarHandle {
  * @ui-ids WORK_ACTIONBAR_UNDO, WORK_ACTIONBAR_REDO, WORK_ACTIONBAR_SAVE,
  *   WORK_ACTIONBAR_COPY, WORK_ACTIONBAR_RUN
  */
-export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave }, ref) => {
+export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave, projectPath }, ref) => {
   const prompt = useCardStore((s) => s.prompt);
   const { undo, redo, pastStates, futureStates } = useTemporalStore();
   const canUndo = pastStates.length > 0;
   const canRedo = futureStates.length > 0;
+  const [available, setAvailable] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const ac = new AbortController();
+    fetch('/api/prompt/providers', { signal: ac.signal })
+      .then((r) => (r.ok ? r.json() : {}))
+      .then((data) => setAvailable(data as Record<string, boolean>))
+      .catch((e) => {
+        if ((e as Error).name !== 'AbortError') setAvailable({});
+      });
+    return () => ac.abort();
+  }, []);
 
   const copy = useCallback(async () => {
     if (!prompt) {
@@ -50,7 +57,7 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave }
       return;
     }
     await navigator.clipboard.writeText(prompt);
-    toast.success('Copied to clipboard');
+    toast.success('클립보드에 복사됨');
   }, [prompt]);
 
   const run = useCallback(
@@ -59,21 +66,29 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave }
         toast.warning('실행할 프롬프트가 없습니다.');
         return;
       }
+      if (!projectPath) {
+        toast.warning('프로젝트 경로가 없습니다.');
+        return;
+      }
       try {
+        await navigator.clipboard.writeText(prompt);
         const res = await fetch('/api/prompt/run', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, target }),
+          body: JSON.stringify({ target, cwd: projectPath }),
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const { runId } = (await res.json()) as { runId?: string };
-        const label = TARGETS.find((t) => t.id === target)?.label ?? target;
-        toast.success(`${label} run started${runId ? ` · ${runId.slice(0, 4)}` : ''}`);
+        if (!res.ok) {
+          const body = (await res.json().catch(() => ({}))) as { error?: string; bin?: string };
+          if (res.status === 409) throw new Error(`${body.bin ?? PROVIDERS[target].bin}이(가) 설치되어 있지 않습니다`);
+          if (body.error === 'invalid_cwd') throw new Error('프로젝트 경로가 올바르지 않습니다');
+          throw new Error(`HTTP ${res.status}`);
+        }
+        toast.success(`${PROVIDERS[target].label} 실행됨 · 프롬프트 복사됨, 새 창에서 Ctrl+V`);
       } catch (err) {
         toast.error(`실행 실패: ${(err as Error).message}`);
       }
     },
-    [prompt]
+    [prompt, projectPath]
   );
 
   const runDefault = useCallback(() => run(DEFAULT_TARGET), [run]);
@@ -156,12 +171,15 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave }
         <DropdownMenuContent align="end" className="min-w-[220px]">
           <DropdownMenuLabel className="text-[10.5px] font-code uppercase tracking-[0.07em] text-muted-foreground">대상 선택</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {TARGETS.map((t) => (
-            <DropdownMenuItem key={t.id} onSelect={() => run(t.id)} className="flex items-center justify-between gap-4">
-              <span>{t.label}</span>
-              <span className="text-[11px] font-code text-muted-foreground">{t.cmd}</span>
-            </DropdownMenuItem>
-          ))}
+          {RUN_TARGETS.map((t) => {
+            const installed = available[t] !== false;
+            return (
+              <DropdownMenuItem key={t} disabled={!installed} onSelect={() => run(t)} className="flex items-center justify-between gap-4">
+                <span>{PROVIDERS[t].label}</span>
+                <span className="text-[11px] font-code text-muted-foreground">{installed ? PROVIDERS[t].launch.join(' ') : '미설치'}</span>
+              </DropdownMenuItem>
+            );
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

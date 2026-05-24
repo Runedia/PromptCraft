@@ -130,7 +130,7 @@ export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onB
           </PopoverContent>
         </Popover>
 
-        <ActionBar ref={actionBarRef} onSave={onSave} />
+        <ActionBar ref={actionBarRef} onSave={onSave} projectPath={projectPath} />
 
         <ThemeToggle />
       </div>

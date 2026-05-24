@@ -21,6 +21,8 @@
 | `GET`    | `/api/scan/last`        | 마지막 스캔 결과                |
 | `GET`    | `/api/browse`           | 서버 사이드 폴더 탐색           |
 | `POST`   | `/api/prompt/build`     | 프롬프트 빌드 + 히스토리 저장   |
+| `POST`   | `/api/prompt/run`       | Run as — 새 터미널 창 실행      |
+| `GET`    | `/api/prompt/providers` | provider 설치 여부 맵           |
 | `GET`    | `/api/history`          | 히스토리 목록 조회              |
 | `GET`    | `/api/history/:id`      | 히스토리 단건 조회              |
 | `DELETE` | `/api/history/:id`      | 히스토리 삭제                   |

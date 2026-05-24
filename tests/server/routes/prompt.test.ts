@@ -1,4 +1,7 @@
+import os from 'node:os';
+import path from 'node:path';
 import request from 'supertest';
+import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test';
 import * as connection from '../../../src/core/db/connection.js';
 import * as db from '../../../src/core/db/index.js';
 import type { SectionCard } from '../../../src/core/types/card.js';
@@ -64,5 +67,65 @@ describe('POST /api/prompt/build', () => {
     const res = await request(app).post('/build').send({ cards, treeId: 'feature-impl', saveToHistory: false });
     expect(res.body.prompt).toContain('포함');
     expect(res.body.prompt).not.toContain('제외');
+  });
+});
+
+// ─── GET /providers ───────────────────────────────────────────────────
+describe('GET /api/prompt/providers', () => {
+  test('provider별 설치 여부 맵 반환', async () => {
+    const whichSpy = spyOn(Bun, 'which').mockImplementation((b: string) => (b === 'claude' ? '/x/claude' : null));
+    const res = await request(app).get('/providers');
+    expect(res.status).toBe(200);
+    expect(res.body['claude-code']).toBe(true);
+    expect(res.body.gemini).toBe(false);
+    whichSpy.mockRestore();
+  });
+});
+
+// ─── POST /run ────────────────────────────────────────────────────────
+describe('POST /api/prompt/run', () => {
+  test('화이트리스트 외 target → 400 invalid_target', async () => {
+    const res = await request(app).post('/run').send({ target: 'evil', cwd: os.tmpdir() });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('invalid_target');
+  });
+
+  test('존재하지 않는 cwd → 400 invalid_cwd', async () => {
+    const res = await request(app).post('/run').send({ target: 'claude-code', cwd: path.join(os.tmpdir(), `__pc_nonexistent_${Date.now()}`) });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('invalid_cwd');
+  });
+
+  test('미설치 → 409 not_installed', async () => {
+    const whichSpy = spyOn(Bun, 'which').mockReturnValue(null);
+    const res = await request(app).post('/run').send({ target: 'claude-code', cwd: os.tmpdir() });
+    expect(res.status).toBe(409);
+    expect(res.body.error).toBe('not_installed');
+    expect(res.body.bin).toBe('claude');
+    whichSpy.mockRestore();
+  });
+
+  test('정상 → 200 ok + spawn 호출', async () => {
+    const whichSpy = spyOn(Bun, 'which').mockReturnValue('/x/claude');
+    const spawnSpy = spyOn(Bun, 'spawn').mockReturnValue({ unref() {} } as unknown as never);
+    const res = await request(app).post('/run').send({ target: 'claude-code', cwd: os.tmpdir() });
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true, launched: 'claude' });
+    expect(spawnSpy).toHaveBeenCalledTimes(1);
+    expect(spawnSpy.mock.calls[0][0]).toEqual(['cmd.exe', '/c', 'start', '', 'cmd', '/k', 'claude']);
+    whichSpy.mockRestore();
+    spawnSpy.mockRestore();
+  });
+
+  test('spawn 예외 시 → 500 launch_failed', async () => {
+    const whichSpy = spyOn(Bun, 'which').mockReturnValue('/x/claude');
+    const spawnSpy = spyOn(Bun, 'spawn').mockImplementation(() => {
+      throw new Error('boom');
+    });
+    const res = await request(app).post('/run').send({ target: 'claude-code', cwd: os.tmpdir() });
+    expect(res.status).toBe(500);
+    expect(res.body.error).toBe('launch_failed');
+    whichSpy.mockRestore();
+    spawnSpy.mockRestore();
   });
 });
