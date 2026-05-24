@@ -11,7 +11,6 @@ import { PINNED_CARD_IDS, SectionCard } from '@/components/SectionCard/SectionCa
 import { TopBar } from '@/components/TopBar/TopBar.js';
 import { Button } from '@/components/ui/button.js';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog.js';
-import { Input } from '@/components/ui/input.js';
 import { useCardSession } from '@/hooks/useCardSession.js';
 import { useKeyboard } from '@/hooks/useKeyboard.js';
 import { useScan } from '@/hooks/useScan.js';
@@ -37,7 +36,6 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   const [roleMappings, setRoleMappings] = useState<RoleMappings | null>(null);
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
   const [pendingRestore, setPendingRestore] = useState<ReturnType<typeof getSavedSession>>(null);
-  const [showSaveModal, setShowSaveModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
@@ -103,7 +101,6 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
 
   useKeyboard({
     onCopy: () => actionBarRef.current?.copy(),
-    onSave: () => setShowSaveModal(true),
     onRunDefault: () => actionBarRef.current?.runDefault(),
   });
 
@@ -139,7 +136,6 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         isScanLoading={isScanLoading}
         onBack={onBack}
         onRescan={(p) => scan(p)}
-        onSave={() => setShowSaveModal(true)}
         onHistory={() => setShowHistory(true)}
         actionBarRef={actionBarRef}
       />
@@ -177,56 +173,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         </aside>
       </div>
 
-      {showSaveModal && <SaveTemplateModal treeId={treeId} onClose={() => setShowSaveModal(false)} />}
       <HistorySheet open={showHistory} onClose={() => setShowHistory(false)} currentTreeId={treeId} />
     </div>
-  );
-}
-
-/**
- * @ui-ids WORK_SAVE_TEMPLATE_MODAL, WORK_SAVE_TEMPLATE_INPUT,
- *   WORK_SAVE_TEMPLATE_SAVE_BTN, WORK_SAVE_TEMPLATE_CANCEL_BTN
- */
-function SaveTemplateModal({ treeId, onClose }: { treeId: string; onClose: () => void }) {
-  const [name, setName] = useState('');
-  const { cards } = useCardStore();
-
-  const handleSave = async () => {
-    if (!name.trim()) return;
-    await fetch('/api/templates', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: name.trim(),
-        treeId,
-        answers: Object.fromEntries(cards.map((c) => [c.id, c.value])),
-      }),
-    });
-    onClose();
-  };
-
-  return (
-    <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent data-ui-id={UI_IDS.WORK_SAVE_TEMPLATE_MODAL} className="w-[400px]">
-        <DialogTitle>템플릿 저장</DialogTitle>
-        <Input
-          type="text"
-          data-ui-id={UI_IDS.WORK_SAVE_TEMPLATE_INPUT}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="템플릿 이름"
-          onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-          autoFocus
-        />
-        <div className="flex gap-2 justify-end">
-          <Button type="button" variant="default" data-ui-id={UI_IDS.WORK_SAVE_TEMPLATE_SAVE_BTN} onClick={handleSave} disabled={!name.trim()}>
-            저장
-          </Button>
-          <Button type="button" variant="outline" data-ui-id={UI_IDS.WORK_SAVE_TEMPLATE_CANCEL_BTN} onClick={onClose}>
-            취소
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }

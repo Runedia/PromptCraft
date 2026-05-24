@@ -26,9 +26,6 @@
 | `GET`    | `/api/history`          | 히스토리 목록 조회              |
 | `GET`    | `/api/history/:id`      | 히스토리 단건 조회              |
 | `DELETE` | `/api/history/:id`      | 히스토리 삭제                   |
-| `GET`    | `/api/templates`        | 템플릿 목록 조회                |
-| `POST`   | `/api/templates`        | 템플릿 생성/수정                |
-| `DELETE` | `/api/templates/:id`    | 템플릿 삭제                     |
 | `GET`    | `/api/config`           | 설정 조회                       |
 | `PUT`    | `/api/config`           | 설정 수정                       |
 | `GET`    | `/api/mention/suggest`  | @멘션 파일 자동완성             |

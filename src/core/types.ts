@@ -82,24 +82,3 @@ export interface HistoryRecord {
   answers: PromptAnswers;
   createdAt: string;
 }
-
-export interface TemplateSaveInput {
-  name: string;
-  treeId: string;
-  answers: PromptAnswers;
-}
-
-export interface TemplateUpdateInput {
-  name?: string;
-  treeId?: string;
-  answers?: PromptAnswers;
-}
-
-export interface TemplateRecord {
-  id: number;
-  name: string;
-  treeId: string;
-  answers: PromptAnswers;
-  createdAt: string;
-  updatedAt: string;
-}

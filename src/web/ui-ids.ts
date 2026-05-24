@@ -153,38 +153,6 @@ export const UI_IDS = {
    */
   WORK_RIGHT_PANEL: 'WORK_RIGHT_PANEL',
 
-  /**
-   * @screen WorkspacePage
-   * @region SaveTemplate
-   * @description 템플릿 저장 모달
-   * @file src/web/pages/WorkspacePage.tsx
-   */
-  WORK_SAVE_TEMPLATE_MODAL: 'WORK_SAVE_TEMPLATE_MODAL',
-
-  /**
-   * @screen WorkspacePage
-   * @region SaveTemplate
-   * @description 템플릿 이름 텍스트 입력
-   * @file src/web/pages/WorkspacePage.tsx
-   */
-  WORK_SAVE_TEMPLATE_INPUT: 'WORK_SAVE_TEMPLATE_INPUT',
-
-  /**
-   * @screen WorkspacePage
-   * @region SaveTemplate
-   * @description 템플릿 저장 확인 버튼
-   * @file src/web/pages/WorkspacePage.tsx
-   */
-  WORK_SAVE_TEMPLATE_SAVE_BTN: 'WORK_SAVE_TEMPLATE_SAVE_BTN',
-
-  /**
-   * @screen WorkspacePage
-   * @region SaveTemplate
-   * @description 템플릿 저장 취소 버튼
-   * @file src/web/pages/WorkspacePage.tsx
-   */
-  WORK_SAVE_TEMPLATE_CANCEL_BTN: 'WORK_SAVE_TEMPLATE_CANCEL_BTN',
-
   // ── SectionCard 컴포넌트 ─────────────────────────────────────────────────
 
   /**
@@ -304,14 +272,6 @@ export const UI_IDS = {
    * @file src/web/components/ActionBar/ActionBar.tsx
    */
   WORK_ACTIONBAR_REDO: 'WORK_ACTIONBAR_REDO',
-
-  /**
-   * @screen WorkspacePage
-   * @region ActionBar
-   * @description 템플릿 저장 트리거
-   * @file src/web/components/ActionBar/ActionBar.tsx
-   */
-  WORK_ACTIONBAR_SAVE: 'WORK_ACTIONBAR_SAVE',
 
   /**
    * @screen WorkspacePage

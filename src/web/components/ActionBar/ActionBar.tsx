@@ -1,5 +1,5 @@
 import { PROVIDERS, RUN_TARGETS, type RunTarget } from '@core/run/providers.js';
-import { BookmarkPlus, ChevronDown, Copy, History, Play, Redo2, Undo2 } from 'lucide-react';
+import { ChevronDown, Copy, History, Play, Redo2, Undo2 } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button.js';
@@ -20,7 +20,6 @@ export type { RunTarget };
 const DEFAULT_TARGET: RunTarget = 'claude-code';
 
 interface ActionBarProps {
-  onSave?: () => void;
   onHistory?: () => void;
   projectPath?: string;
 }
@@ -31,10 +30,10 @@ export interface ActionBarHandle {
 }
 
 /**
- * @ui-ids WORK_ACTIONBAR_UNDO, WORK_ACTIONBAR_REDO, WORK_ACTIONBAR_SAVE,
+ * @ui-ids WORK_ACTIONBAR_UNDO, WORK_ACTIONBAR_REDO,
  *   WORK_ACTIONBAR_COPY, WORK_ACTIONBAR_RUN, WORK_ACTIONBAR_HISTORY
  */
-export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave, onHistory, projectPath }, ref) => {
+export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistory, projectPath }, ref) => {
   const prompt = useCardStore((s) => s.prompt);
   const treeId = useCardStore((s) => s.treeId);
   const cards = useCardStore((s) => s.cards);
@@ -154,25 +153,6 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onSave, 
       </Tooltip>
 
       <div className="h-5 w-px bg-border mx-1" aria-hidden />
-
-      {onSave && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              data-ui-id={UI_IDS.WORK_ACTIONBAR_SAVE}
-              onClick={onSave}
-              aria-label="템플릿 저장"
-              className="size-8"
-            >
-              <BookmarkPlus size={15} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>템플릿 저장 (⌘S)</TooltipContent>
-        </Tooltip>
-      )}
 
       {onHistory && (
         <Tooltip>

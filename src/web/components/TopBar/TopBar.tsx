@@ -19,7 +19,6 @@ interface TopBarProps {
   isScanLoading: boolean;
   onBack: () => void;
   onRescan: (path: string) => void;
-  onSave: () => void;
   onHistory: () => void;
   actionBarRef: RefObject<ActionBarHandle | null>;
 }
@@ -27,7 +26,7 @@ interface TopBarProps {
 /**
  * @ui-ids WORK_TOPBAR, WORK_TOPBAR_BREADCRUMB, WORK_TOPBAR_DOMAIN, WORK_TOPBAR_RESCAN, WORK_LEFT_BACK_BTN
  */
-export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onBack, onRescan, onSave, onHistory, actionBarRef }: TopBarProps) {
+export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onBack, onRescan, onHistory, actionBarRef }: TopBarProps) {
   const treeStyle = treeConfig ? getTreeCardStyle(treeConfig.id) : null;
   const [scanInput, setScanInput] = useState(projectPath);
   const [scanOpen, setScanOpen] = useState(false);
@@ -131,7 +130,7 @@ export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onB
           </PopoverContent>
         </Popover>
 
-        <ActionBar ref={actionBarRef} onSave={onSave} onHistory={onHistory} projectPath={projectPath} />
+        <ActionBar ref={actionBarRef} onHistory={onHistory} projectPath={projectPath} />
 
         <ThemeToggle />
       </div>

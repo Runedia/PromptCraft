@@ -60,48 +60,6 @@ describe('history repository', () => {
   });
 });
 
-describe('template repository', () => {
-  const sample = {
-    name: 'my-template',
-    treeId: 'feature-impl',
-    answers: { q1: 'ans1' },
-  };
-
-  test('save → findByName', () => {
-    const id = db.template.save(sample);
-    expect(typeof id).toBe('number');
-    const row = db.template.findByName('my-template');
-    expect(row.treeId).toBe(sample.treeId);
-    expect(row.answers).toEqual(sample.answers);
-  });
-
-  test('update → findById reflects changes', () => {
-    const id = db.template.save(sample);
-    db.template.update(id, { treeId: 'code-review', answers: { q1: 'updated' } });
-    const row = db.template.findById(id);
-    expect(row.treeId).toBe('code-review');
-    expect(row.answers).toEqual({ q1: 'updated' });
-  });
-
-  test('delete', () => {
-    const id = db.template.save(sample);
-    db.template.delete(id);
-    expect(db.template.findById(id)).toBeNull();
-  });
-
-  test('duplicate name throws DBError', () => {
-    const { DBError } = require('../src/shared/errors');
-    db.template.save(sample);
-    expect(() => db.template.save(sample)).toThrow(DBError);
-  });
-
-  test('findAll returns all templates', () => {
-    db.template.save(sample);
-    db.template.save({ ...sample, name: 'other' });
-    expect(db.template.findAll()).toHaveLength(2);
-  });
-});
-
 describe('history.findLatestByTree', () => {
   test('해당 트리의 최신 레코드 반환', () => {
     db.history.save({ treeId: 'feature-impl', situation: 's1', prompt: 'p1', scanPath: null, answers: {} });

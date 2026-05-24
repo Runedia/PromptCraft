@@ -3,7 +3,7 @@
 ## 책임
 - Undo/Redo (zundo의 `useTemporalStore`)
 - 프롬프트 클립보드 복사 (단축키 `⌘↵` hint 표시)
-- 템플릿 저장 트리거 (선택, `onSave` prop)
+- 히스토리 Sheet 열기 트리거 (선택, `onHistory` prop)
 - Run as 드롭다운 — `@core/run/providers.js` 레지스트리 기반. 미설치(`GET /api/prompt/providers`) provider는 비활성화('미설치' 표기).
 
 ## Imperative API (외부 단축키 연동용)
@@ -26,7 +26,6 @@ body: `{ treeId, prompt, situation(goal 카드 value), answers }` → `POST /api
 - 백엔드 `POST /api/prompt/run` (body `{ target, cwd }`, 응답 `{ ok, launched }`) — 클립보드 복사 후 호출, 새 터미널 창 실행. `GET /api/prompt/providers` — 설치 여부. `POST /api/history` — 히스토리 자동 저장.
 
 ## Props
-- `onSave?: () => void` — 선택적 저장 트리거 (없으면 저장 버튼 숨김)
 - `onHistory?: () => void` — 선택적 히스토리 트리거 (없으면 History 버튼 숨김)
 - `projectPath?: string` — 실행 시 cwd로 전달. 없으면 Run 시 경고 toast. TopBar가 WorkspacePage에서 주입.
 

@@ -13,7 +13,6 @@ import historyRouter from './routes/history.js';
 import mentionRouter from './routes/mention.js';
 import promptRouter from './routes/prompt.js';
 import scanRouter from './routes/scan.js';
-import templateRouter from './routes/template.js';
 import treesRouter from './routes/trees.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -37,7 +36,6 @@ export async function createServer(port: number): Promise<void> {
   app.use('/api/cards', cardsRouter);
   app.use('/api/prompt', promptRouter);
   app.use('/api/history', historyRouter);
-  app.use('/api/templates', templateRouter);
   app.use('/api/config', configRouter);
   app.use('/api/mention', mentionRouter);
 
