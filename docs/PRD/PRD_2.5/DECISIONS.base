@@ -1,0 +1,73 @@
+filters:
+  and:
+    - file.hasTag("adr")
+    - file.hasTag("prd/2-5")
+    - file.folder == "adr"
+formulas:
+  status_icon: if(status == "active", "🟢", if(status == "completed", "✅", if(status == "superseded", "⚠️", "—")))
+properties:
+  title:
+    displayName: 제목
+  date:
+    displayName: 결정일
+  status:
+    displayName: 상태
+  scope:
+    displayName: 범위
+  related:
+    displayName: 관련
+  superseded_by:
+    displayName: 대체됨
+  file.basename:
+    displayName: ADR
+views:
+  - type: table
+    name: 전체 (최신순)
+    order:
+      - formula.status_icon
+      - file.basename
+      - title
+      - date
+      - status
+      - scope
+    sort:
+      - property: file.basename
+        direction: DESC
+      - property: date
+        direction: DESC
+  - type: table
+    name: 상태별
+    groupBy:
+      property: status
+      direction: ASC
+    order:
+      - file.basename
+      - title
+      - date
+      - scope
+      - related
+    sort:
+      - property: date
+        direction: DESC
+  - type: table
+    name: 범위별 (스캔용)
+    order:
+      - file.basename
+      - title
+      - scope
+      - status
+      - date
+    sort:
+      - property: date
+        direction: DESC
+  - type: cards
+    name: 카드
+    order:
+      - title
+      - date
+      - status
+      - scope
+      - related
+    sort:
+      - property: date
+        direction: DESC
