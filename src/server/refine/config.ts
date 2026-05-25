@@ -9,7 +9,7 @@ export function getRefineConfig(): RefineConfig {
   const model = config.get('refine.model');
   const apiKey = config.get('refine.apiKey') ?? DEFAULTS.apiKey;
   // Number(null) === 0 이라 null이 isFinite를 통과해 0이 되는 것을 막기 위해 명시적으로 분기한다.
-  // threshold 0은 유효값(완성도가 항상 임계값 이상 → 항상 polish)으로 의도적으로 허용한다.
+  // threshold 0은 유효값(완성도가 항상 임계값 이상 → belowThreshold 항상 false, advisory note 미표시)으로 의도적으로 허용한다.
   const rawThreshold = config.get('refine.threshold');
   const parsed = rawThreshold === null ? Number.NaN : Number(rawThreshold);
   const threshold = Number.isFinite(parsed) ? parsed : DEFAULTS.threshold;

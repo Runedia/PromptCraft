@@ -24,7 +24,7 @@
 | `POST`   | `/api/prompt/run`       | Run as — 새 터미널 창 실행      |
 | `GET`    | `/api/prompt/providers` | provider 설치 여부 맵           |
 | `POST`   | `/api/prompt/structural`| 구조 휴리스틱 완성도 점수(LLM 없음) |
-| `POST`   | `/api/prompt/refine`    | 로컬 LLM 다듬기/코칭(사용자 트리거)  |
+| `POST`   | `/api/prompt/refine`    | 로컬 LLM 다듬기(재작성+보강제안, 사용자 트리거; 409 no_model·422 parse_failed·503 unreachable) |
 | `GET`    | `/api/history`          | 히스토리 목록 조회              |
 | `GET`    | `/api/history/:id`      | 히스토리 단건 조회              |
 | `DELETE` | `/api/history/:id`      | 히스토리 삭제                   |

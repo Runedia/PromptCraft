@@ -12,19 +12,18 @@ interface RefineSheetProps {
   onClose: () => void;
 }
 
+interface Status {
+  available: boolean;
+  configuredModel: string | null;
+}
 interface Structural {
   completeness: number;
   belowThreshold: boolean;
   missing: string[];
 }
 interface Assessment {
-  mode: 'coach' | 'polish';
-  completeness: number;
-  level: string;
-  quality: number;
-  verdict: 'polished' | 'needs-improvement';
-  refined?: string;
-  coaching?: string[];
+  refined: string;
+  suggestions: string[];
   rationale?: string;
 }
 
@@ -35,7 +34,7 @@ export function RefineSheet({ open, onClose }: RefineSheetProps) {
   const t = useT();
   const { lang } = useLocale();
   const cards = useCardStore((s) => s.cards);
-  const [status, setStatus] = useState<{ available: boolean; configuredModel: string | null } | null>(null);
+  const [status, setStatus] = useState<Status | null>(null);
   const [structural, setStructural] = useState<Structural | null>(null);
   const [result, setResult] = useState<Assessment | null>(null);
   const [running, setRunning] = useState(false);
@@ -66,14 +65,14 @@ export function RefineSheet({ open, onClose }: RefineSheetProps) {
     setRunning(true);
     setResult(null);
     try {
-      const mode = structural?.belowThreshold ? 'coach' : 'polish';
       const res = await fetch('/api/prompt/refine', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cards, lang, mode }),
+        body: JSON.stringify({ cards, lang }),
       });
       if (!res.ok) {
         if (res.status === 409) toast.warning(t('web.refine.noModel'));
+        else if (res.status === 422) toast.error(t('web.refine.parseFailed'));
         else toast.error(t('web.refine.unavailable'));
         return;
       }
@@ -95,6 +94,7 @@ export function RefineSheet({ open, onClose }: RefineSheetProps) {
   };
 
   const noModel = status && !status.configuredModel;
+  const unreachable = status?.configuredModel && !status.available;
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
@@ -105,42 +105,34 @@ export function RefineSheet({ open, onClose }: RefineSheetProps) {
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {status === null ? null : noModel ? (
             <p className="text-[13px] text-muted-foreground">{t('web.refine.noModel')}</p>
+          ) : unreachable ? (
+            <p className="text-[13px] text-warning">{t('web.refine.unavailable')}</p>
           ) : (
             <>
-              {structural?.belowThreshold && <p className="text-[13px] text-warning">{t('web.refine.insufficient')}</p>}
+              {structural?.belowThreshold && <p className="text-[13px] text-muted-foreground">{t('web.refine.advisory')}</p>}
               <Button type="button" data-ui-id={UI_IDS.WORK_REFINE_RUN_BTN} onClick={run} disabled={running} className="w-full h-9">
-                {running ? t('web.refine.running') : structural?.belowThreshold ? t('web.refine.runCoach') : t('web.refine.runPolish')}
+                {running ? t('web.refine.running') : t('web.refine.run')}
               </Button>
 
               {result && (
                 <div data-ui-id={UI_IDS.WORK_REFINE_RESULT} className="space-y-3">
-                  <div className="flex gap-3 text-[12px] font-code">
-                    <span className="px-2 py-0.5 rounded bg-primary/10 text-primary">
-                      {t('web.refine.level')} {result.level}
-                    </span>
-                    <span className="px-2 py-0.5 rounded bg-muted text-muted-foreground">
-                      {t('web.refine.quality')} {result.quality}
-                    </span>
-                  </div>
                   {result.rationale && <p className="text-[12.5px] text-secondary-foreground">{result.rationale}</p>}
-                  {result.verdict === 'polished' && result.refined && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">{t('web.refine.refinedTitle')}</span>
-                        <Button type="button" variant="outline" size="sm" className="h-7" onClick={() => copyRefined(result.refined as string)}>
-                          {t('web.refine.copy')}
-                        </Button>
-                      </div>
-                      <pre className="whitespace-pre-wrap font-code text-[12px] bg-muted rounded p-3 text-secondary-foreground">{result.refined}</pre>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">{t('web.refine.refinedTitle')}</span>
+                      <Button type="button" variant="outline" size="sm" className="h-7" onClick={() => copyRefined(result.refined)}>
+                        {t('web.refine.copy')}
+                      </Button>
                     </div>
-                  )}
-                  {result.verdict === 'needs-improvement' && result.coaching && (
+                    <pre className="whitespace-pre-wrap font-code text-[12px] bg-muted rounded p-3 text-secondary-foreground">{result.refined}</pre>
+                  </div>
+                  {result.suggestions.length > 0 && (
                     <div className="space-y-1">
-                      <span className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">{t('web.refine.coachingTitle')}</span>
+                      <span className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">{t('web.refine.suggestionsTitle')}</span>
                       <ul className="list-disc pl-5 text-[12.5px] text-secondary-foreground space-y-1">
-                        {result.coaching.map((c, i) => (
+                        {result.suggestions.map((s, i) => (
                           // biome-ignore lint/suspicious/noArrayIndexKey: 서버 응답 일회성 렌더, 재정렬 없음
-                          <li key={i}>{c}</li>
+                          <li key={i}>{s}</li>
                         ))}
                       </ul>
                     </div>

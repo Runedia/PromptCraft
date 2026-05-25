@@ -14,23 +14,35 @@ function clientReturning(content: string): LlmClient {
 
 describe('assessPrompt', () => {
   test('LLM 응답을 RefineAssessment로 반환', async () => {
-    const raw = JSON.stringify({
-      level: 'L3',
-      quality: 70,
-      dimensions: [{ dimension: 'DECOMP', level: 'L3', note: 'ok' }],
-      verdict: 'polished',
-      refined: '다듬음',
-    });
-    const r = await assessPrompt({ cfg, promptText: 'p', lang: 'ko', mode: 'polish', createClient: () => clientReturning(raw) });
-    expect(r.level).toBe('L3');
-    expect(r.verdict).toBe('polished');
+    const raw = JSON.stringify({ refined: '다듬음', suggestions: ['보강'], rationale: '요지' });
+    const r = await assessPrompt({ cfg, promptText: 'p', lang: 'ko', createClient: () => clientReturning(raw) });
     expect(r.refined).toBe('다듬음');
+    expect(r.suggestions).toEqual(['보강']);
+    expect(r.rationale).toBe('요지');
+  });
+
+  test('create 호출 시 response_format=json_object와 max_tokens 전달', async () => {
+    let captured: { response_format?: { type: string }; max_tokens?: number } | null = null;
+    const recording: LlmClient = {
+      chat: {
+        completions: {
+          create: async (args) => {
+            captured = { response_format: args.response_format, max_tokens: args.max_tokens };
+            return { choices: [{ message: { content: JSON.stringify({ refined: 'x', suggestions: [] }) } }] };
+          },
+        },
+      },
+      models: { list: async () => ({ data: [] }) },
+    };
+    await assessPrompt({ cfg, promptText: 'p', lang: 'ko', createClient: () => recording });
+    expect(captured?.response_format).toEqual({ type: 'json_object' });
+    expect(captured?.max_tokens).toBe(4096);
   });
 
   test('model 미설정 시 throw', async () => {
-    expect(
-      assessPrompt({ cfg: { ...cfg, model: null }, promptText: 'p', lang: 'ko', mode: 'polish', createClient: () => clientReturning('{}') })
-    ).rejects.toThrow('refine model not configured');
+    expect(assessPrompt({ cfg: { ...cfg, model: null }, promptText: 'p', lang: 'ko', createClient: () => clientReturning('{}') })).rejects.toThrow(
+      'refine model not configured'
+    );
   });
 });
 

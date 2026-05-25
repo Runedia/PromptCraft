@@ -172,22 +172,20 @@
       "daysAgo": "{{n}}d ago"
     },
     "refine": {
-      "actionLabel": "AI Refine",
-      "tooltip": "Assess/refine prompt with local LLM",
-      "title": "AI Refine",
+      "actionLabel": "Refine with AI",
+      "tooltip": "Refine the prompt with a local LLM",
+      "title": "Refine with AI",
       "noModel": "Select a local LLM model in Settings first.",
       "unavailable": "Cannot reach the local LLM endpoint. Start LM Studio/vllm/Ollama and check the baseURL.",
-      "insufficient": "Not enough data for LLM post-processing.",
-      "runPolish": "Assess + Refine",
-      "runCoach": "Auto-generate",
-      "running": "Assessing…",
-      "level": "Level",
-      "quality": "Quality",
+      "parseFailed": "The model did not follow the response format. Try a different model.",
+      "advisory": "Filling in more cards yields a more accurate refinement.",
+      "run": "Refine with AI",
+      "running": "Refining…",
       "refinedTitle": "Refined prompt",
-      "coachingTitle": "Suggestions",
+      "suggestionsTitle": "Suggestions",
       "copy": "Copy",
       "copied": "Copied",
-      "failed": "Refine failed"
+      "failed": "Refinement failed"
     },
     "settingsRefine": {
       "section": "AI Refine",
@@ -240,11 +238,10 @@
       "jsx": "JSX enabled"
     },
     "refine": {
-      "systemIntro": "You are a prompt quality assessor. Evaluate the user's prompt against the rubric below (6 capability dimensions x L1-L5). One strong axis does not raise the overall level — aggregate conservatively.",
-      "polishDirective": "If the content is sufficient, set verdict to 'polished' and put a clearer, more structured prompt in 'refined'. If it is weak, set verdict to 'needs-improvement' and put improvement guidance in the 'coaching' array.",
-      "coachDirective": "The content is insufficient. Set verdict to 'needs-improvement' and put concrete items to strengthen toward the next level in the 'coaching' array.",
-      "schema": "Output ONLY this JSON (no code fences): {\"level\":\"L1-L5\",\"quality\":0-100,\"dimensions\":[{\"dimension\":\"DECOMP|VERIFY|ORCH|FAIL|CTX|META\",\"level\":\"L1-L5\",\"note\":\"...\"}],\"verdict\":\"polished|needs-improvement\",\"refined\":\"only when polished\",\"coaching\":[\"only when needs-improvement\"],\"rationale\":\"...\"}",
-      "userIntro": "Prompt to assess:"
+      "systemIntro": "You are an assistant that refines prompts meant for a coding agent. Rewrite the prompt below to be clearer, more structured, and more actionable while preserving its intent. Do not fabricate information; leave anything uncertain or missing as a suggestion.",
+      "directive": "Put the full rewritten prompt in 'refined'. Put concrete items the user could add to improve the result in 'suggestions' (empty array if none), and a 1-2 sentence summary of what you changed in 'rationale'.",
+      "schema": "Output ONLY this JSON (no code fences): {\"refined\":\"full refined prompt\",\"suggestions\":[\"item\"],\"rationale\":\"summary\"}",
+      "userIntro": "Prompt to refine:"
     }
   }
 }

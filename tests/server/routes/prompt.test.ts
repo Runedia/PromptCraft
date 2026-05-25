@@ -155,7 +155,7 @@ describe('POST /api/prompt/refine', () => {
   test('모델 미설정 → 409 no_model', async () => {
     const res = await request(app)
       .post('/refine')
-      .send({ cards: [makeCard({ value: 'x' })], treeId: 't', lang: 'ko' });
+      .send({ cards: [makeCard({ value: 'x' })], lang: 'ko' });
     expect(res.status).toBe(409);
     expect(res.body.error).toBe('no_model');
   });
@@ -163,14 +163,41 @@ describe('POST /api/prompt/refine', () => {
   test('모델 설정 시 assessPrompt 결과 반환', async () => {
     const { config } = await import('../../../src/core/db/index.js');
     config.set('refine.model', 'm1');
-    const spy = spyOn(refineService, 'assessPrompt').mockResolvedValue({ level: 'L3', quality: 70, dimensions: [], verdict: 'polished', refined: '다듬음' });
+    const spy = spyOn(refineService, 'assessPrompt').mockResolvedValue({ refined: '다듬음', suggestions: ['보강'], rationale: '요지' });
     const res = await request(app)
       .post('/refine')
-      .send({ cards: [makeCard({ value: 'x' })], treeId: 't', lang: 'ko' });
+      .send({ cards: [makeCard({ value: 'x' })], lang: 'ko' });
     expect(res.status).toBe(200);
-    expect(res.body.verdict).toBe('polished');
     expect(res.body.refined).toBe('다듬음');
+    expect(res.body.suggestions).toEqual(['보강']);
+    expect(res.body.available).toBe(true);
     expect(typeof res.body.completeness).toBe('number');
+    spy.mockRestore();
+  });
+
+  test('파싱 실패 → 422 refine_parse_failed', async () => {
+    const { config } = await import('../../../src/core/db/index.js');
+    config.set('refine.model', 'm1');
+    const { RefineParseError } = await import('../../../src/core/refine/parse.js');
+    const spy = spyOn(refineService, 'assessPrompt').mockRejectedValue(new RefineParseError('bad'));
+    const res = await request(app)
+      .post('/refine')
+      .send({ cards: [makeCard({ value: 'x' })], lang: 'ko' });
+    expect(res.status).toBe(422);
+    expect(res.body.error).toBe('refine_parse_failed');
+    spy.mockRestore();
+  });
+
+  test('네트워크 실패 → 503 refine_unreachable', async () => {
+    const { config } = await import('../../../src/core/db/index.js');
+    config.set('refine.model', 'm1');
+    const spy = spyOn(refineService, 'assessPrompt').mockRejectedValue(new Error('ECONNREFUSED'));
+    const res = await request(app)
+      .post('/refine')
+      .send({ cards: [makeCard({ value: 'x' })], lang: 'ko' });
+    expect(res.status).toBe(503);
+    expect(res.body.error).toBe('refine_unreachable');
+    expect(res.body.available).toBe(false);
     spy.mockRestore();
   });
 });

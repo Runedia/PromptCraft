@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { buildPrompt } from '../../core/builder/promptBuilder.js';
 import { estimateTokens } from '../../core/builder/tokenEstimator.js';
 import { history, initialize } from '../../core/db/index.js';
+import { RefineParseError } from '../../core/refine/parse.js';
 import { structuralScore } from '../../core/refine/structuralScore.js';
 import { isRunTarget, PROVIDERS } from '../../core/run/providers.js';
 import type { SectionCard } from '../../core/types/card.js';
@@ -86,7 +87,7 @@ router.post('/structural', (req, res) => {
 
 router.post('/refine', async (req, res, next) => {
   try {
-    const { cards, lang, mode } = req.body as { cards: SectionCard[]; lang?: Locale; mode?: 'coach' | 'polish' };
+    const { cards, lang } = req.body as { cards: SectionCard[]; lang?: Locale };
     if (!Array.isArray(cards)) {
       res.status(400).json({ error: 'cards 배열이 필요합니다.' });
       return;
@@ -97,14 +98,17 @@ router.post('/refine', async (req, res, next) => {
       return;
     }
     const score = structuralScore(cards);
-    const resolvedMode = mode ?? (score.completeness < cfg.threshold ? 'coach' : 'polish');
     const promptText = buildPrompt(cards);
     const resolvedLang: Locale = LOCALES.includes(lang as Locale) ? (lang as Locale) : 'ko';
     try {
-      const assessment = await refineService.assessPrompt({ cfg, promptText, lang: resolvedLang, mode: resolvedMode });
-      res.json({ mode: resolvedMode, completeness: score.completeness, available: true, ...assessment });
+      const assessment = await refineService.assessPrompt({ cfg, promptText, lang: resolvedLang });
+      res.json({ available: true, completeness: score.completeness, ...assessment });
     } catch (err) {
-      res.status(503).json({ error: 'refine_unavailable', available: false, message: (err as Error).message });
+      if (err instanceof RefineParseError) {
+        res.status(422).json({ error: 'refine_parse_failed', message: err.message });
+      } else {
+        res.status(503).json({ error: 'refine_unreachable', available: false, message: (err as Error).message });
+      }
     }
   } catch (err) {
     next(err);

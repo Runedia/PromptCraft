@@ -8,8 +8,6 @@ export class RefineParseError extends Error {
 }
 
 const FENCE_RE = /```(?:json)?\s*([\s\S]*?)```/i;
-const LEVELS = ['L1', 'L2', 'L3', 'L4', 'L5'];
-const VERDICTS = ['polished', 'needs-improvement'];
 
 /** LLM 원시 응답(코드펜스 가능)을 RefineAssessment로 파싱·검증한다. 실패 시 RefineParseError. */
 export function parseRefineResponse(raw: string): RefineAssessment {
@@ -25,26 +23,13 @@ export function parseRefineResponse(raw: string): RefineAssessment {
   }
   if (!obj || typeof obj !== 'object' || Array.isArray(obj)) throw new RefineParseError('not an object');
 
-  const { level, quality, dimensions, verdict } = obj;
-  if (typeof level !== 'string' || !LEVELS.includes(level)) throw new RefineParseError('bad level');
-  if (typeof quality !== 'number' || quality < 0 || quality > 100) throw new RefineParseError('bad quality');
-  if (!Array.isArray(dimensions) || dimensions.length === 0) throw new RefineParseError('bad dimensions');
-  if (typeof verdict !== 'string' || !VERDICTS.includes(verdict)) throw new RefineParseError('bad verdict');
+  const { refined, suggestions } = obj;
+  if (typeof refined !== 'string' || refined.trim() === '') throw new RefineParseError('refined required');
+  if (!Array.isArray(suggestions)) throw new RefineParseError('suggestions must be array');
 
-  const result: RefineAssessment = {
-    level: level as RefineAssessment['level'],
-    quality,
-    dimensions: dimensions as RefineAssessment['dimensions'],
-    verdict: verdict as RefineAssessment['verdict'],
+  return {
+    refined,
+    suggestions: suggestions.map((x) => String(x)),
     rationale: typeof obj.rationale === 'string' ? obj.rationale : undefined,
   };
-
-  if (verdict === 'polished') {
-    if (typeof obj.refined !== 'string' || obj.refined.trim() === '') throw new RefineParseError('polished requires refined');
-    result.refined = obj.refined;
-  } else {
-    if (!Array.isArray(obj.coaching) || obj.coaching.length === 0) throw new RefineParseError('needs-improvement requires coaching');
-    result.coaching = obj.coaching.map((x) => String(x));
-  }
-  return result;
 }

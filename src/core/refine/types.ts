@@ -1,8 +1,3 @@
-export type VibeLevel = 'L1' | 'L2' | 'L3' | 'L4' | 'L5';
-export type RefineMode = 'coach' | 'polish';
-export type RefineVerdict = 'polished' | 'needs-improvement';
-export type VibeDimension = 'DECOMP' | 'VERIFY' | 'ORCH' | 'FAIL' | 'CTX' | 'META';
-
 export interface StructuralScore {
   completeness: number; // 0..100
   filledCards: string[];
@@ -15,19 +10,9 @@ export interface ChatMessage {
   content: string;
 }
 
-export interface DimensionScore {
-  dimension: VibeDimension;
-  level: VibeLevel;
-  note: string;
-}
-
 export interface RefineAssessment {
-  level: VibeLevel;
-  quality: number; // 0..100
-  dimensions: DimensionScore[];
-  verdict: RefineVerdict;
-  refined?: string; // verdict === 'polished'
-  coaching?: string[]; // verdict === 'needs-improvement'
+  refined: string;
+  suggestions: string[];
   rationale?: string;
 }
 
