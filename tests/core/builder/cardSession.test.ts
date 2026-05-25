@@ -114,15 +114,34 @@ describe('updateCardValue()', () => {
 // ─── createCardSession ───────────────────────────────────────────────
 
 const CARD_DEFS: Record<string, CardDefinition> = {
-  role: { label: '역할', required: true, inputType: 'text', template: '## 역할\n{{value}}', defaultValue: '' },
-  goal: { label: '목표', required: false, inputType: 'text', template: '## 목표\n{{value}}', defaultValue: '' },
-  'stack-environment': { label: '스택', required: false, inputType: 'text', template: '## 스택\n{{value}}', defaultValue: '', scanSuggested: true },
+  role: {
+    label: { ko: '역할', en: 'Role' },
+    required: true,
+    inputType: 'text',
+    template: { ko: '## 역할\n{{value}}', en: '## Role\n{{value}}' },
+    defaultValue: { ko: '', en: '' },
+  },
+  goal: {
+    label: { ko: '목표', en: 'Goal' },
+    required: false,
+    inputType: 'text',
+    template: { ko: '## 목표\n{{value}}', en: '## Goal\n{{value}}' },
+    defaultValue: { ko: '', en: '' },
+  },
+  'stack-environment': {
+    label: { ko: '스택', en: 'Stack' },
+    required: false,
+    inputType: 'text',
+    template: { ko: '## 스택\n{{value}}', en: '## Stack\n{{value}}' },
+    defaultValue: { ko: '', en: '' },
+    scanSuggested: true,
+  },
 };
 
 const TREE_CONFIG = {
   id: 'feature-dev',
-  label: '기능 개발',
-  description: '기능 개발 트리',
+  label: { ko: '기능 개발', en: 'Feature Dev' },
+  description: { ko: '기능 개발 트리', en: 'Feature dev tree' },
   icon: '🛠',
   defaultActiveCards: ['role', 'goal'],
   cardPool: ['stack-environment'],
@@ -236,16 +255,16 @@ describe('createCardSession() — roleMappings 분기', () => {
   const ROLE_MAPPINGS: RoleMappings = {
     domainRoles: {
       'web-frontend': {
-        default: ['웹 개발자'],
-        'feature-dev': ['프론트엔드 개발자'],
+        default: [{ ko: '웹 개발자', en: 'Web Developer' }],
+        'feature-dev': [{ ko: '프론트엔드 개발자', en: 'Frontend Developer' }],
       },
       general: {
-        default: ['소프트웨어 엔지니어'],
+        default: [{ ko: '소프트웨어 엔지니어', en: 'Software Engineer' }],
       },
     },
     frameworkRoles: {
-      React: 'React 개발자',
-      Express: 'Node.js 백엔드 개발자',
+      React: { ko: 'React 개발자', en: 'React Developer' },
+      Express: { ko: 'Node.js 백엔드 개발자', en: 'Node.js Backend Developer' },
     },
   };
 
@@ -308,13 +327,19 @@ describe('formatTsConstraints()', () => {
 describe('createCardSession() — domainOverlay 분기', () => {
   const CARD_DEFS_EXTENDED: Record<string, CardDefinition> = {
     ...CARD_DEFS,
-    constraints: { label: '제약', required: false, inputType: 'text', template: '{{value}}', defaultValue: '' },
+    constraints: {
+      label: { ko: '제약', en: 'Constraints' },
+      required: false,
+      inputType: 'text',
+      template: { ko: '{{value}}', en: '{{value}}' },
+      defaultValue: { ko: '', en: '' },
+    },
   };
 
   test('domainOverlay.cardOverrides가 카드 label에 반영된다', () => {
     const overlay = {
       domain: 'web',
-      cardOverrides: { role: { label: '웹 개발 역할' } },
+      cardOverrides: { role: { label: { ko: '웹 개발 역할', en: 'Web Dev Role' } } },
     };
     const session = createCardSession(TREE_CONFIG, CARD_DEFS, null, undefined, undefined, overlay);
     const role = session.cards.find((c: SectionCard) => c.id === 'role');

@@ -1,4 +1,4 @@
-import { activateCard, applyAnswers, deactivateCard, reorderCards, updateCardValue } from '@core/builder/cardSession.js';
+import { activateCard, applyAnswers, deactivateCard, remapResolvedCards, reorderCards, updateCardValue } from '@core/builder/cardSession.js';
 import { buildPreview, buildPrompt } from '@core/builder/promptBuilder.js';
 import { estimateTokens } from '@core/builder/tokenEstimator.js';
 import type { CardSession, SectionCard } from '@core/types/card.js';
@@ -16,6 +16,7 @@ interface CardStore {
   isScanLoading: boolean;
 
   setSession: (session: CardSession) => void;
+  reresolveCards: (resolved: SectionCard[]) => void;
   setScanResult: (result: ScanResult) => void;
   updateCardValue: (cardId: string, value: string) => void;
   activateCard: (cardId: string) => void;
@@ -57,6 +58,13 @@ export const useCardStore = create<CardStore>()(
           preview,
           tokenEstimate,
         });
+      },
+
+      // 언어 전환: 새 lang으로 해소된 카드(resolved)의 정의 필드를 받아들이되 현재 카드의
+      // value/active/order는 보존한다(remapResolvedCards). 사용자 입력 손실 금지가 불변식.
+      reresolveCards: (resolved) => {
+        const cards = remapResolvedCards(resolved, get().cards);
+        set({ cards, ...derivePromptState(cards) });
       },
 
       setScanResult: (result) => {

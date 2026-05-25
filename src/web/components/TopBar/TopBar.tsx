@@ -1,4 +1,3 @@
-import type { TreeConfig } from '@core/types/card.js';
 import type { ScanResult } from '@core/types.js';
 import { ChevronLeft, Scan, Sparkles } from 'lucide-react';
 import { type RefObject, useState } from 'react';
@@ -9,11 +8,13 @@ import { Button } from '@/components/ui/button.js';
 import { Input } from '@/components/ui/input.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.js';
+import { useT } from '@/i18n/useT.js';
 import { getTreeCardStyle } from '@/lib/treeCardStyles.js';
+import type { ResolvedTree } from '@/types/tree.js';
 import { UI_IDS } from '@/ui-ids.js';
 
 interface TopBarProps {
-  treeConfig: TreeConfig | null;
+  treeConfig: ResolvedTree | null;
   projectPath: string;
   scanResult: ScanResult | null;
   isScanLoading: boolean;
@@ -28,6 +29,7 @@ interface TopBarProps {
  * @ui-ids WORK_TOPBAR, WORK_TOPBAR_BREADCRUMB, WORK_TOPBAR_DOMAIN, WORK_TOPBAR_RESCAN, WORK_LEFT_BACK_BTN
  */
 export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onBack, onRescan, onHistory, onSettings, actionBarRef }: TopBarProps) {
+  const t = useT();
   const treeStyle = treeConfig ? getTreeCardStyle(treeConfig.id) : null;
   const [scanInput, setScanInput] = useState(projectPath);
   const [scanOpen, setScanOpen] = useState(false);
@@ -52,12 +54,12 @@ export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onB
               data-ui-id={UI_IDS.WORK_LEFT_BACK_BTN}
               onClick={onBack}
               className="size-7"
-              aria-label="진입 화면으로"
+              aria-label={t('web.topBar.backLabel')}
             >
               <ChevronLeft size={16} />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>진입 화면으로</TooltipContent>
+          <TooltipContent>{t('web.topBar.backTooltip')}</TooltipContent>
         </Tooltip>
 
         <div className="size-[18px] rounded-[4px] bg-foreground text-background flex items-center justify-center shrink-0">
@@ -104,16 +106,16 @@ export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onB
                   data-ui-id={UI_IDS.WORK_TOPBAR_RESCAN}
                   className="size-8"
                   onClick={() => setScanInput(projectPath)}
-                  aria-label="재스캔"
+                  aria-label={t('web.topBar.rescanLabel')}
                 >
                   <Scan size={15} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>경로 재스캔</TooltipContent>
+              <TooltipContent>{t('web.topBar.rescanTooltip')}</TooltipContent>
             </Tooltip>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-[360px] p-3 space-y-2">
-            <span className="text-[10.5px] font-code uppercase tracking-[0.07em] text-muted-foreground">스캔 경로</span>
+            <span className="text-[10.5px] font-code uppercase tracking-[0.07em] text-muted-foreground">{t('web.topBar.scanPath')}</span>
             <Input
               data-ui-id={UI_IDS.WORK_SCAN_INPUT}
               value={scanInput}
@@ -125,7 +127,7 @@ export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onB
             />
             <div className="flex justify-end">
               <Button type="button" size="sm" data-ui-id={UI_IDS.WORK_SCAN_EXECUTE_BTN} onClick={handleRescan} disabled={isScanLoading || !scanInput.trim()}>
-                {isScanLoading ? '스캔 중...' : '실행'}
+                {isScanLoading ? t('web.topBar.scanning') : t('web.topBar.scanRun')}
               </Button>
             </div>
           </PopoverContent>

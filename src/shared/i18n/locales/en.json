@@ -1,0 +1,217 @@
+{
+  "test": { "greeting": "Hi {{name}}", "onlyEn": "EN only" },
+  "web": {
+    "actionBar": {
+      "noCopyPrompt": "No prompt to copy.",
+      "copied": "Copied to clipboard",
+      "noRunPrompt": "No prompt to run.",
+      "noProjectPath": "No project path set.",
+      "notInstalled": "{{bin}} is not installed",
+      "invalidCwd": "Project path is invalid",
+      "runSuccess": "{{label}} launched · Prompt copied, paste with Ctrl+V in new window",
+      "runFailed": "Run failed: {{message}}",
+      "undoLabel": "Undo",
+      "undoTooltip": "Undo (⌘Z)",
+      "redoLabel": "Redo",
+      "redoTooltip": "Redo (⌘⇧Z)",
+      "historyLabel": "History",
+      "historyTooltip": "History",
+      "settingsLabel": "Settings",
+      "settingsTooltip": "Settings",
+      "copy": "Copy",
+      "selectTarget": "Select target",
+      "notInstalledShort": "Not installed"
+    },
+    "settingsSheet": {
+      "loadError": "Failed to load settings.",
+      "shellChanged": "Default shell updated.",
+      "saveError": "Failed to save settings.",
+      "title": "Settings",
+      "appearance": "Appearance",
+      "theme": "Theme",
+      "themeSystem": "System",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "run": "Run",
+      "defaultShell": "Default shell (Run as)",
+      "shellHint": "Shell used to launch provider CLI in a new terminal window.",
+      "language": "Language",
+      "languageLabel": "Display language",
+      "langSystem": "Follow system",
+      "langKo": "Korean",
+      "langEn": "English",
+      "langChanged": "Language updated.",
+      "langHint": "Language for the UI and card definitions. 'Follow system' uses your OS setting."
+    },
+    "historySheet": {
+      "loadError": "Failed to load history.",
+      "restoreSuccess": "Prompt restored.",
+      "copySuccess": "Copied to clipboard",
+      "copyError": "Copy failed",
+      "deleteError": "Delete failed",
+      "title": "Recent prompts",
+      "loading": "Loading…",
+      "empty": "No prompts used yet.",
+      "noTitle": "(untitled)",
+      "restore": "Restore",
+      "otherWorkflow": "Different workflow — copy only",
+      "copy": "Copy",
+      "deleteLabel": "Delete"
+    },
+    "folderBrowser": {
+      "browseError": "Browse failed",
+      "genericError": "An error occurred.",
+      "title": "Browse folders",
+      "description": "Browse folders and select a project path",
+      "upTitle": "Parent folder",
+      "driveSelect": "Select drive",
+      "loading": "Loading...",
+      "empty": "No subfolders.",
+      "cancel": "Cancel",
+      "selectFolder": "Select this folder"
+    },
+    "workspacePage": {
+      "restoreTitle": "Continue previous session?",
+      "restoreDesc": "A saved session was found.",
+      "restoreYes": "Continue",
+      "restoreNo": "Start fresh",
+      "pageTitle": "Build prompt"
+    },
+    "topBar": {
+      "backLabel": "Back to home",
+      "backTooltip": "Back to home",
+      "rescanLabel": "Re-scan",
+      "rescanTooltip": "Re-scan path",
+      "scanPath": "Scan path",
+      "scanning": "Scanning...",
+      "scanRun": "Run"
+    },
+    "cardPool": {
+      "addCard": "Add card"
+    },
+    "sectionCard": {
+      "pinnedLabel": "Pinned card — cannot move",
+      "pinnedTooltip": "Pinned — cannot move",
+      "dragLabel": "Drag to reorder",
+      "required": "Required",
+      "removeLabel": "Remove card",
+      "removeTooltip": "Remove"
+    },
+    "cardInput": {
+      "selectPlaceholder": "Select..."
+    },
+    "promptPreview": {
+      "raw": "[Raw]",
+      "rendered": "[Preview]",
+      "blank": "Fill in cards to see the prompt.",
+      "empty": "(empty — excluded from output)"
+    },
+    "scanBanner": {
+      "idle": "Enter a path to trigger auto-scan.",
+      "scanning": "Scanning…",
+      "analyzing": "Analyzing: {{n}} files",
+      "done": "Scan complete"
+    },
+    "treeSelect": {
+      "loading": "Loading...",
+      "hero": "What can I help you with?",
+      "heroDesc": "Choose a situation type and the matching card layout with domain-adaptive role suggestions will be prepared automatically.",
+      "projectPath": "Project path",
+      "autoScan": "· auto-scans 800ms after input",
+      "selectType": "Select situation type",
+      "hintScanFirst": "Activated once path is entered and scan completes.",
+      "hintSelectTree": "Select a tree."
+    },
+    "ctaRow": {
+      "cancel": "Cancel",
+      "continue": "Continue"
+    },
+    "pathInputRow": {
+      "placeholder": "e.g. C:/my-project",
+      "clearLabel": "Clear path",
+      "browse": "Browse"
+    },
+    "suggestedRoles": {
+      "header": "Suggested roles"
+    },
+    "selectOrTextInput": {
+      "backToList": "← Back to list",
+      "placeholder": "Select...",
+      "custom": "Enter custom..."
+    },
+    "textInput": {
+      "exampleTitle": "Use this example"
+    },
+    "mentionInput": {
+      "placeholder": "Type @filepath to attach a file.",
+      "lines": "{{n}} lines",
+      "moreLines": "... ({{n}} more lines)",
+      "insertFull": "Full file",
+      "insertRange": "Set line range",
+      "hintNav": "navigate",
+      "hintFull": "full",
+      "hintRange": "line-range support",
+      "hintClose": "close"
+    },
+    "themeToggle": {
+      "toLightMode": "Switch to light mode",
+      "toDarkMode": "Switch to dark mode"
+    },
+    "useScan": {
+      "langs": "{{n}} languages",
+      "frameworks": "{{n}} frameworks",
+      "noDetected": "Nothing detected",
+      "scanFailed": "Scan failed",
+      "scanError": "An error occurred while scanning.",
+      "scanDone": "Scan complete",
+      "stackLangs": "Languages: {{names}}",
+      "stackFrameworks": "Frameworks: {{names}}",
+      "stackPkg": "Package manager: {{name}}"
+    },
+    "relativeTime": {
+      "justNow": "just now",
+      "minutesAgo": "{{n}}m ago",
+      "hoursAgo": "{{n}}h ago",
+      "yesterday": "yesterday",
+      "daysAgo": "{{n}}d ago"
+    }
+  },
+  "cli": {
+    "description": "Local prompt design tool for coding",
+    "unknownCommand": "Unknown command: {{cmd}}",
+    "portInUse": "Port {{start}} is in use. Starting on port {{port}} instead.",
+    "serveDescription": "Start the web UI (localhost only)",
+    "portOption": "Port number",
+    "noOpenOption": "Disable auto-open browser",
+    "runUrl": "PromptCraft UI: {{url}}",
+    "portNotFound": "No available port found in range {{start}}–{{end}}."
+  },
+  "core": {
+    "stackEnv": {
+      "languages": "Languages",
+      "frameworks": "Frameworks",
+      "packageManager": "Package Manager",
+      "constraints": "Type/Syntax Constraints"
+    },
+    "role": {
+      "developerSuffix": "{{name}} Developer",
+      "softwareEngineer": "Software Engineer",
+      "fullstack": "Full-Stack Developer",
+      "backend": "Backend Engineer"
+    },
+    "preview": {
+      "waiting": "_Waiting for input..._"
+    },
+    "constraints": {
+      "strict": "strict (explicit null·undefined, no implicit any)",
+      "strictNullChecks": "strictNullChecks (explicit null·undefined handling)",
+      "noImplicitAny": "no implicit any",
+      "noUncheckedIndexedAccess": "noUncheckedIndexedAccess (check undefined on index access)",
+      "commonjs": "CommonJS require",
+      "esm": "ESM import syntax",
+      "verbatim": "type-only imports use import type",
+      "target": "target {{target}}",
+      "jsx": "JSX enabled"
+    }
+  }
+}

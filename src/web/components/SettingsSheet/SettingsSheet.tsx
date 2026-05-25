@@ -1,9 +1,12 @@
+import type { Locale } from '@shared/i18n/types.js';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Label } from '@/components/ui/label.js';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.js';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet.js';
+import { useLocale } from '@/i18n/LocaleContext.js';
+import { useT } from '@/i18n/useT.js';
 import { UI_IDS } from '@/ui-ids.js';
 
 interface SettingsSheetProps {
@@ -11,26 +14,34 @@ interface SettingsSheetProps {
   onClose: () => void;
 }
 
-const THEME_OPTIONS = [
-  { value: 'system', label: '시스템 설정 따름' },
-  { value: 'light', label: '라이트' },
-  { value: 'dark', label: '다크' },
-] as const;
-
 const SHELL_OPTIONS = [
   { value: 'cmd', label: 'Command Prompt (cmd)' },
   { value: 'powershell', label: 'Windows PowerShell' },
   { value: 'pwsh', label: 'PowerShell 7+ (pwsh)' },
 ] as const;
 
+const LANG_KEY = 'ui.language';
+type LangSetting = 'system' | Locale;
+
 /**
- * @ui-ids WORK_SETTINGS_SHEET, WORK_SETTINGS_THEME_GROUP, WORK_SETTINGS_SHELL_GROUP
+ * @ui-ids WORK_SETTINGS_SHEET, WORK_SETTINGS_THEME_GROUP, WORK_SETTINGS_SHELL_GROUP, WORK_SETTINGS_LANG_GROUP
  */
 export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
+  const t = useT();
+  const { setLang } = useLocale();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [shell, setShell] = useState('cmd');
+  const [langSetting, setLangSetting] = useState<LangSetting>('system');
   const pendingRef = useRef(false);
+  const langPendingRef = useRef(false);
+
+  // THEME_OPTIONS labels resolved inside component via t()
+  const themeOptions = [
+    { value: 'system', label: t('web.settingsSheet.themeSystem') },
+    { value: 'light', label: t('web.settingsSheet.themeLight') },
+    { value: 'dark', label: t('web.settingsSheet.themeDark') },
+  ] as const;
 
   useEffect(() => {
     setMounted(true);
@@ -41,12 +52,16 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
     const ac = new AbortController();
     fetch('/api/config', { signal: ac.signal })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then((cfg: Record<string, string>) => setShell(cfg['run.shell'] ?? 'cmd'))
+      .then((cfg: Record<string, string>) => {
+        setShell(cfg['run.shell'] ?? 'cmd');
+        const stored = cfg[LANG_KEY];
+        setLangSetting(stored === 'ko' || stored === 'en' ? stored : 'system');
+      })
       .catch((e) => {
-        if ((e as Error).name !== 'AbortError') toast.error('설정을 불러오지 못했습니다.');
+        if ((e as Error).name !== 'AbortError') toast.error(t('web.settingsSheet.loadError'));
       });
     return () => ac.abort();
-  }, [open]);
+  }, [open, t]);
 
   const handleShellChange = async (value: string) => {
     if (pendingRef.current) return;
@@ -60,29 +75,71 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
         body: JSON.stringify({ 'run.shell': value }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      toast.success('기본 셸이 변경되었습니다.');
+      toast.success(t('web.settingsSheet.shellChanged'));
     } catch {
       setShell(prev);
-      toast.error('설정 저장에 실패했습니다.');
+      toast.error(t('web.settingsSheet.saveError'));
     } finally {
       pendingRef.current = false;
     }
   };
 
+  const handleLangChange = async (value: string) => {
+    if (langPendingRef.current) return;
+    langPendingRef.current = true;
+    const next = value as LangSetting;
+    const prev = langSetting;
+    setLangSetting(next);
+    try {
+      if (next === 'system') {
+        // ui.language 삭제 → 서버가 OS 감지로 복귀. GET /api/locale로 실제 해소값을 받아 즉시 반영.
+        const del = await fetch(`/api/config/${LANG_KEY}`, { method: 'DELETE' });
+        if (!del.ok) throw new Error(`HTTP ${del.status}`);
+        // locale 해소 실패는 catch/rollback으로 보낸다 — setLang 미호출 상태로 success toast가 뜨면
+        // RadioGroup(system)과 LocaleContext.lang이 desync된다(I3).
+        const loc = await fetch('/api/locale');
+        if (!loc.ok) throw new Error(`HTTP ${loc.status}`);
+        const { lang } = (await loc.json()) as { lang?: unknown };
+        if (lang !== 'ko' && lang !== 'en') throw new Error(`invalid lang: ${String(lang)}`);
+        setLang(lang);
+      } else {
+        const res = await fetch('/api/config', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ [LANG_KEY]: next }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        setLang(next);
+      }
+      toast.success(t('web.settingsSheet.langChanged'));
+    } catch {
+      setLangSetting(prev);
+      toast.error(t('web.settingsSheet.saveError'));
+    } finally {
+      langPendingRef.current = false;
+    }
+  };
+
+  const langOptions = [
+    { value: 'system', label: t('web.settingsSheet.langSystem') },
+    { value: 'ko', label: t('web.settingsSheet.langKo') },
+    { value: 'en', label: t('web.settingsSheet.langEn') },
+  ] as const;
+
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent side="right" data-ui-id={UI_IDS.WORK_SETTINGS_SHEET} className="w-[420px] sm:max-w-[420px] p-0 flex flex-col gap-0">
         <SheetHeader className="px-4 py-3 border-b border-border text-left">
-          <SheetTitle className="text-sm">설정</SheetTitle>
+          <SheetTitle className="text-sm">{t('web.settingsSheet.title')}</SheetTitle>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           {/* 모양 */}
           <section className="space-y-3">
-            <h3 className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">모양</h3>
+            <h3 className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">{t('web.settingsSheet.appearance')}</h3>
             <div className="space-y-2">
               <Label id="settings-theme-label" className="text-[13px]">
-                테마
+                {t('web.settingsSheet.theme')}
               </Label>
               {/* mounted 가드는 load-bearing: theme이 undefined일 때 RadioGroup value에 전달되면 전체 미선택됨 — 제거 금지 */}
               {mounted && (
@@ -93,7 +150,7 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
                   data-ui-id={UI_IDS.WORK_SETTINGS_THEME_GROUP}
                   className="gap-2"
                 >
-                  {THEME_OPTIONS.map((opt) => (
+                  {themeOptions.map((opt) => (
                     <div key={opt.value} className="flex items-center gap-2">
                       <RadioGroupItem value={opt.value} id={`theme-${opt.value}`} />
                       <Label htmlFor={`theme-${opt.value}`} className="text-[13px] font-normal cursor-pointer">
@@ -106,12 +163,39 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
             </div>
           </section>
 
+          {/* 언어 */}
+          <section className="space-y-3">
+            <h3 className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">{t('web.settingsSheet.language')}</h3>
+            <div className="space-y-2">
+              <Label id="settings-lang-label" className="text-[13px]">
+                {t('web.settingsSheet.languageLabel')}
+              </Label>
+              <RadioGroup
+                value={langSetting}
+                onValueChange={handleLangChange}
+                aria-labelledby="settings-lang-label"
+                data-ui-id={UI_IDS.WORK_SETTINGS_LANG_GROUP}
+                className="gap-2"
+              >
+                {langOptions.map((opt) => (
+                  <div key={opt.value} className="flex items-center gap-2">
+                    <RadioGroupItem value={opt.value} id={`lang-${opt.value}`} />
+                    <Label htmlFor={`lang-${opt.value}`} className="text-[13px] font-normal cursor-pointer">
+                      {opt.label}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+              <p className="text-[11px] text-muted-foreground">{t('web.settingsSheet.langHint')}</p>
+            </div>
+          </section>
+
           {/* 실행 */}
           <section className="space-y-3">
-            <h3 className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">실행</h3>
+            <h3 className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">{t('web.settingsSheet.run')}</h3>
             <div className="space-y-2">
               <Label id="settings-shell-label" className="text-[13px]">
-                기본 셸 (Run as)
+                {t('web.settingsSheet.defaultShell')}
               </Label>
               <RadioGroup
                 value={shell}
@@ -129,7 +213,7 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
                   </div>
                 ))}
               </RadioGroup>
-              <p className="text-[11px] text-muted-foreground">새 터미널 창에서 provider CLI를 실행할 셸입니다.</p>
+              <p className="text-[11px] text-muted-foreground">{t('web.settingsSheet.shellHint')}</p>
             </div>
           </section>
         </div>

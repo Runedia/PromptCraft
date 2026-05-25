@@ -1,252 +1,441 @@
 {
   "role": {
-    "label": "역할",
+    "label": { "ko": "역할", "en": "Role" },
     "required": true,
     "inputType": "select-or-text",
-    "template": "## Role\n{{value}}",
-    "hint": "AI에게 부여할 전문가 역할을 선택하거나 직접 입력하세요.",
-    "examples": [
-      "TypeScript 개발자",
-      "백엔드 엔지니어",
-      "풀스택 개발자",
-      "DevOps 엔지니어",
-      "프론트엔드 개발자",
-      "React 개발자",
-      "보안 엔지니어",
-      "시니어 개발자"
-    ]
+    "template": { "ko": "## 역할\n{{value}}", "en": "## Role\n{{value}}" },
+    "hint": {
+      "ko": "AI에게 부여할 전문가 역할을 선택하거나 직접 입력하세요.",
+      "en": "Select or enter the expert role to assign to the AI."
+    },
+    "examples": {
+      "ko": ["TypeScript 개발자", "백엔드 엔지니어", "풀스택 개발자", "DevOps 엔지니어", "프론트엔드 개발자", "React 개발자", "보안 엔지니어", "시니어 개발자"],
+      "en": [
+        "TypeScript Developer",
+        "Backend Engineer",
+        "Full-Stack Developer",
+        "DevOps Engineer",
+        "Frontend Developer",
+        "React Developer",
+        "Security Engineer",
+        "Senior Developer"
+      ]
+    }
   },
   "goal": {
-    "label": "목표",
+    "label": { "ko": "목표", "en": "Goal" },
     "required": true,
     "inputType": "text",
-    "template": "## Goal\n{{value}}",
-    "hint": "달성하려는 목표를 한 문장으로 작성하세요.",
-    "examples": ["배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정", "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환"]
+    "template": { "ko": "## 목표\n{{value}}", "en": "## Goal\n{{value}}" },
+    "hint": {
+      "ko": "달성하려는 목표를 한 문장으로 작성하세요.",
+      "en": "Describe the goal you want to achieve in one sentence."
+    },
+    "examples": {
+      "ko": ["배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정", "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환"],
+      "en": ["Identify and fix the cause of TypeError in the login API after deployment", "Add email login API and return failure reasons clearly"]
+    }
   },
   "stack-environment": {
-    "label": "스택 & 환경",
+    "label": { "ko": "스택 & 환경", "en": "Stack & Environment" },
     "required": false,
     "inputType": "multiline",
-    "template": "## Stack & Environment\n{{value}}",
-    "hint": "프레임워크, 언어, 패키지 매니저 등 환경 정보. 스캔 시 자동 채워집니다.",
+    "template": { "ko": "## 스택 & 환경\n{{value}}", "en": "## Stack & Environment\n{{value}}" },
+    "hint": {
+      "ko": "프레임워크, 언어, 패키지 매니저 등 환경 정보. 스캔 시 자동 채워집니다.",
+      "en": "Environment info such as framework, language, and package manager. Auto-filled when scanned."
+    },
     "scanSuggested": true
   },
   "error-evidence": {
-    "label": "에러 증거",
+    "label": { "ko": "에러 증거", "en": "Error Evidence" },
     "required": false,
     "inputType": "multiline-mention",
-    "template": "## Error Evidence\n{{value}}",
-    "hint": "다음 3요소를 포함하세요: (1) 에러 메시지 원문 (2) 파일:라인 위치 (3) 재현 조건. @파일경로로 파일 참조 가능.",
-    "examples": [
-      "TypeError: Cannot read properties of undefined at src/service/user.js:42:17",
-      "UnhandledPromiseRejection: Error: connect ECONNREFUSED 127.0.0.1:5432"
-    ]
+    "template": { "ko": "## 에러 증거\n{{value}}", "en": "## Error Evidence\n{{value}}" },
+    "hint": {
+      "ko": "다음 3요소를 포함하세요: (1) 에러 메시지 원문 (2) 파일:라인 위치 (3) 재현 조건. @파일경로로 파일 참조 가능.",
+      "en": "Include these 3 elements: (1) exact error message (2) file:line location (3) reproduction condition. Reference files with @filepath."
+    },
+    "examples": {
+      "ko": [
+        "TypeError: Cannot read properties of undefined at src/service/user.js:42:17",
+        "UnhandledPromiseRejection: Error: connect ECONNREFUSED 127.0.0.1:5432"
+      ],
+      "en": [
+        "TypeError: Cannot read properties of undefined at src/service/user.js:42:17",
+        "UnhandledPromiseRejection: Error: connect ECONNREFUSED 127.0.0.1:5432"
+      ]
+    }
   },
   "tried-methods": {
-    "label": "시도한 방법",
+    "label": { "ko": "시도한 방법", "en": "Tried Methods" },
     "required": false,
     "inputType": "multiline",
-    "template": "## Tried Methods\n{{value}}",
-    "hint": "이미 시도해본 방법을 나열하세요. 중복 제안을 줄일 수 있습니다."
+    "template": { "ko": "## 시도한 방법\n{{value}}", "en": "## Tried Methods\n{{value}}" },
+    "hint": {
+      "ko": "이미 시도해본 방법을 나열하세요. 중복 제안을 줄일 수 있습니다.",
+      "en": "List the approaches you have already tried. This reduces duplicate suggestions."
+    }
   },
   "current-situation": {
-    "label": "현재 상황",
+    "label": { "ko": "현재 상황", "en": "Current Situation" },
     "required": false,
     "inputType": "multiline-mention",
-    "template": "## Current Situation\n{{value}}",
-    "hint": "발생 조건, 재현 단계, 관련 코드 위치를 포함하면 정확도가 높아집니다.",
-    "examples": ["프로세스 재시작 후 첫 요청만 실패하고 이후에는 정상 동작", "특정 사용자 데이터에서만 파싱 에러가 발생"]
+    "template": { "ko": "## 현재 상황\n{{value}}", "en": "## Current Situation\n{{value}}" },
+    "hint": {
+      "ko": "발생 조건, 재현 단계, 관련 코드 위치를 포함하면 정확도가 높아집니다.",
+      "en": "Including trigger conditions, reproduction steps, and code location improves diagnosis accuracy."
+    },
+    "examples": {
+      "ko": ["프로세스 재시작 후 첫 요청만 실패하고 이후에는 정상 동작", "특정 사용자 데이터에서만 파싱 에러가 발생"],
+      "en": ["Only the first request fails after process restart; subsequent requests succeed", "Parse error occurs only with specific user data"]
+    }
   },
   "constraints": {
-    "label": "제약 조건",
+    "label": { "ko": "제약 조건", "en": "Constraints" },
     "required": false,
     "inputType": "multiline",
-    "template": "## Constraints\n{{value}}",
-    "hint": "반드시 지켜야 하는 기술/운영 제약을 적어주세요. '~하지 말 것'보다 '~해야 한다'로 표현하면 효과적입니다.",
-    "examples": [
-      "- 기존 API 응답 형식 유지 (하위 호환)\n- 함수형 스타일 사용\n- 외부 라이브러리 추가 금지",
-      "- 응답 시간 200ms 이내\n- TypeScript strict 모드 준수\n- 기존 테스트 깨지지 않아야 함"
-    ]
+    "template": { "ko": "## 제약 조건\n{{value}}", "en": "## Constraints\n{{value}}" },
+    "hint": {
+      "ko": "반드시 지켜야 하는 기술/운영 제약을 적어주세요. '~하지 말 것'보다 '~해야 한다'로 표현하면 효과적입니다.",
+      "en": "List hard technical or operational constraints. Framing as 'must do X' is more effective than 'do not do X'."
+    },
+    "examples": {
+      "ko": [
+        "- 기존 API 응답 형식 유지 (하위 호환)\n- 함수형 스타일 사용\n- 외부 라이브러리 추가 금지",
+        "- 응답 시간 200ms 이내\n- TypeScript strict 모드 준수\n- 기존 테스트 깨지지 않아야 함"
+      ],
+      "en": [
+        "- Preserve existing API response shape (backward compatible)\n- Use functional style\n- No new external libraries",
+        "- Response time under 200ms\n- Comply with TypeScript strict mode\n- Existing tests must not break"
+      ]
+    }
   },
   "build-log": {
-    "label": "빌드 로그",
+    "label": { "ko": "빌드 로그", "en": "Build Log" },
     "required": false,
     "inputType": "multiline-mention",
-    "template": "## Build Log\n{{value}}",
-    "hint": "빌드/컴파일 에러 로그를 붙여넣으세요. 첫 번째 에러와 연쇄 에러를 함께 포함해 주세요."
+    "template": { "ko": "## 빌드 로그\n{{value}}", "en": "## Build Log\n{{value}}" },
+    "hint": {
+      "ko": "빌드/컴파일 에러 로그를 붙여넣으세요. 첫 번째 에러와 연쇄 에러를 함께 포함해 주세요.",
+      "en": "Paste the build/compile error log. Include both the first error and any cascading errors."
+    }
   },
   "request-log": {
-    "label": "요청/응답 로그",
+    "label": { "ko": "요청/응답 로그", "en": "Request Log" },
     "required": false,
     "inputType": "multiline-mention",
-    "template": "## Request Log\n{{value}}",
-    "hint": "HTTP 메서드, URL, 상태코드, 응답 본문 일부를 포함하세요."
+    "template": { "ko": "## 요청/응답 로그\n{{value}}", "en": "## Request Log\n{{value}}" },
+    "hint": {
+      "ko": "HTTP 메서드, URL, 상태코드, 응답 본문 일부를 포함하세요.",
+      "en": "Include the HTTP method, URL, status code, and a portion of the response body."
+    }
   },
   "profiling-data": {
-    "label": "프로파일링 데이터",
+    "label": { "ko": "프로파일링 데이터", "en": "Profiling Data" },
     "required": false,
     "inputType": "multiline",
-    "template": "## Profiling Data\n{{value}}",
-    "hint": "응답 시간, CPU/메모리 사용량, 병목 함수 정보를 포함하면 좋습니다."
+    "template": { "ko": "## 프로파일링 데이터\n{{value}}", "en": "## Profiling Data\n{{value}}" },
+    "hint": {
+      "ko": "응답 시간, CPU/메모리 사용량, 병목 함수 정보를 포함하면 좋습니다.",
+      "en": "Include response times, CPU/memory usage, and bottleneck function information."
+    }
   },
   "baseline-metric": {
-    "label": "기준 성능 지표",
+    "label": { "ko": "기준 성능 지표", "en": "Baseline Metric" },
     "required": false,
     "inputType": "text",
-    "template": "## Baseline Metric\n{{value}}",
-    "hint": "예: API p95 300ms 이하, 메모리 512MB 이하"
+    "template": { "ko": "## 기준 성능 지표\n{{value}}", "en": "## Baseline Metric\n{{value}}" },
+    "hint": {
+      "ko": "예: API p95 300ms 이하, 메모리 512MB 이하",
+      "en": "e.g. API p95 ≤ 300ms, memory ≤ 512MB"
+    }
   },
   "impl-scope": {
-    "label": "구현 범위",
+    "label": { "ko": "구현 범위", "en": "Implementation Scope" },
     "required": false,
     "inputType": "select-or-text",
-    "template": "## Implementation Scope\n{{value}}",
-    "hint": "신규 구현인지 기존 코드 수정인지 선택하거나 직접 작성하세요.",
+    "template": { "ko": "## 구현 범위\n{{value}}", "en": "## Implementation Scope\n{{value}}" },
+    "hint": {
+      "ko": "신규 구현인지 기존 코드 수정인지 선택하거나 직접 작성하세요.",
+      "en": "Select whether this is a new implementation or a modification of existing code, or enter free text."
+    },
     "options": [
-      { "value": "신규 구현 — 새 기능을 바닥부터 추가", "label": "신규 구현" },
-      { "value": "기존 코드 수정/확장 — 현재 코드 기반으로 변경", "label": "기존 코드 수정" }
+      {
+        "value": { "ko": "신규 구현 — 새 기능을 바닥부터 추가", "en": "New implementation — add a new feature from scratch" },
+        "label": { "ko": "신규 구현", "en": "New implementation" }
+      },
+      {
+        "value": { "ko": "기존 코드 수정/확장 — 현재 코드 기반으로 변경", "en": "Modify/extend existing code — change based on current code" },
+        "label": { "ko": "기존 코드 수정", "en": "Modify existing code" }
+      }
     ]
   },
   "target-code": {
-    "label": "대상 코드",
+    "label": { "ko": "대상 코드", "en": "Target Code" },
     "required": false,
     "inputType": "multiline-mention",
-    "template": "## Target Code\n{{value}}",
-    "hint": "수정할 대상 코드나 파일을 붙여넣으세요. @파일경로로 첨부 가능."
+    "template": { "ko": "## 대상 코드\n{{value}}", "en": "## Target Code\n{{value}}" },
+    "hint": {
+      "ko": "수정할 대상 코드나 파일을 붙여넣으세요. @파일경로로 첨부 가능.",
+      "en": "Paste the target code or file to modify. You can attach files with @filepath."
+    }
   },
   "tech-preference": {
-    "label": "기술 선호",
+    "label": { "ko": "기술 선호", "en": "Tech Preference" },
     "required": false,
     "inputType": "text",
-    "template": "## Tech Preference\n{{value}}",
-    "hint": "선호하는 라이브러리/패턴이 있다면 입력하세요. (예: clean architecture, react-query, prisma)"
+    "template": { "ko": "## 기술 선호\n{{value}}", "en": "## Tech Preference\n{{value}}" },
+    "hint": {
+      "ko": "선호하는 라이브러리/패턴이 있다면 입력하세요. (예: clean architecture, react-query, prisma)",
+      "en": "Enter preferred libraries or patterns if any. (e.g. clean architecture, react-query, prisma)"
+    }
   },
   "modification-scope": {
-    "label": "수정 범위",
+    "label": { "ko": "수정 범위", "en": "Modification Scope" },
     "required": false,
     "inputType": "text",
-    "template": "## Modification Scope\n{{value}}",
-    "hint": "수정 범위와 반드시 유지해야 할 동작을 설명하세요. (호환성, 성능, API 계약 등)"
+    "template": { "ko": "## 수정 범위\n{{value}}", "en": "## Modification Scope\n{{value}}" },
+    "hint": {
+      "ko": "수정 범위와 반드시 유지해야 할 동작을 설명하세요. (호환성, 성능, API 계약 등)",
+      "en": "Describe the scope of changes and behaviors that must be preserved. (compatibility, performance, API contract, etc.)"
+    }
   },
   "review-code": {
-    "label": "리뷰 대상 코드",
+    "label": { "ko": "리뷰 대상 코드", "en": "Review Code" },
     "required": false,
     "inputType": "multiline-mention",
-    "template": "## Review Code\n{{value}}",
-    "hint": "리뷰할 코드를 붙여넣으세요. @파일경로로 첨부 가능."
+    "template": { "ko": "## 리뷰 대상 코드\n{{value}}", "en": "## Review Code\n{{value}}" },
+    "hint": {
+      "ko": "리뷰할 코드를 붙여넣으세요. @파일경로로 첨부 가능.",
+      "en": "Paste the code to review. You can attach files with @filepath."
+    }
   },
   "review-focus": {
-    "label": "리뷰 중점",
+    "label": { "ko": "리뷰 중점", "en": "Review Focus" },
     "required": false,
     "inputType": "select-or-text",
-    "template": "## Review Focus\n{{value}}",
-    "hint": "리뷰 중점을 선택하거나 직접 작성하세요.",
+    "template": { "ko": "## 리뷰 중점\n{{value}}", "en": "## Review Focus\n{{value}}" },
+    "hint": {
+      "ko": "리뷰 중점을 선택하거나 직접 작성하세요.",
+      "en": "Select a review focus or enter your own."
+    },
     "options": [
-      { "value": "성능 최적화 — 병목 지점, 시간/메모리 복잡도, 캐시 전략", "label": "성능 최적화" },
-      { "value": "보안 취약점 — 인증/인가, 인젝션, 민감 정보 노출", "label": "보안 취약점" },
-      { "value": "가독성/유지보수 — 네이밍, 모듈화, 주석, 중복 코드", "label": "가독성/유지보수" },
-      { "value": "아키텍처/구조 — 레이어 분리, 의존성, 확장성", "label": "아키텍처/구조" },
-      { "value": "전체 종합 리뷰 — 여러 관점을 균형 있게 점검", "label": "전체 종합 리뷰" },
-      { "value": "테스트 커버리지 — 테스트 누락, 엣지 케이스, 모킹 전략", "label": "테스트 커버리지" },
-      { "value": "에러 핸들링 — 예외 처리, 에러 전파, 사용자 피드백", "label": "에러 핸들링" },
-      { "value": "타입 안전성 — 타입 정의, 제네릭, 타입 가드, any 사용", "label": "타입 안전성" }
+      {
+        "value": {
+          "ko": "성능 최적화 — 병목 지점, 시간/메모리 복잡도, 캐시 전략",
+          "en": "Performance optimization — bottlenecks, time/memory complexity, caching strategy"
+        },
+        "label": { "ko": "성능 최적화", "en": "Performance optimization" }
+      },
+      {
+        "value": {
+          "ko": "보안 취약점 — 인증/인가, 인젝션, 민감 정보 노출",
+          "en": "Security vulnerabilities — authn/authz, injection, sensitive data exposure"
+        },
+        "label": { "ko": "보안 취약점", "en": "Security vulnerabilities" }
+      },
+      {
+        "value": {
+          "ko": "가독성/유지보수 — 네이밍, 모듈화, 주석, 중복 코드",
+          "en": "Readability/Maintainability — naming, modularity, comments, duplicate code"
+        },
+        "label": { "ko": "가독성/유지보수", "en": "Readability / Maintainability" }
+      },
+      {
+        "value": { "ko": "아키텍처/구조 — 레이어 분리, 의존성, 확장성", "en": "Architecture/Structure — layer separation, dependencies, scalability" },
+        "label": { "ko": "아키텍처/구조", "en": "Architecture / Structure" }
+      },
+      {
+        "value": { "ko": "전체 종합 리뷰 — 여러 관점을 균형 있게 점검", "en": "Comprehensive review — balanced check across multiple perspectives" },
+        "label": { "ko": "전체 종합 리뷰", "en": "Comprehensive review" }
+      },
+      {
+        "value": { "ko": "테스트 커버리지 — 테스트 누락, 엣지 케이스, 모킹 전략", "en": "Test coverage — missing tests, edge cases, mocking strategy" },
+        "label": { "ko": "테스트 커버리지", "en": "Test coverage" }
+      },
+      {
+        "value": { "ko": "에러 핸들링 — 예외 처리, 에러 전파, 사용자 피드백", "en": "Error handling — exception handling, error propagation, user feedback" },
+        "label": { "ko": "에러 핸들링", "en": "Error handling" }
+      },
+      {
+        "value": { "ko": "타입 안전성 — 타입 정의, 제네릭, 타입 가드, any 사용", "en": "Type safety — type definitions, generics, type guards, any usage" },
+        "label": { "ko": "타입 안전성", "en": "Type safety" }
+      }
     ]
   },
   "security-context": {
-    "label": "보안 맥락",
+    "label": { "ko": "보안 맥락", "en": "Security Context" },
     "required": false,
     "inputType": "text",
-    "template": "## Security Context\n{{value}}",
-    "hint": "인증 방식, 외부 노출 여부 등 보안 맥락을 설명하세요."
+    "template": { "ko": "## 보안 맥락\n{{value}}", "en": "## Security Context\n{{value}}" },
+    "hint": {
+      "ko": "인증 방식, 외부 노출 여부 등 보안 맥락을 설명하세요.",
+      "en": "Describe the security context such as authentication method and external exposure."
+    }
   },
   "concern-area": {
-    "label": "우려 영역",
+    "label": { "ko": "우려 영역", "en": "Concern Area" },
     "required": false,
     "inputType": "text",
-    "template": "## Concern Area\n{{value}}",
-    "hint": "특별히 신경 쓰이는 부분을 설명하세요. (예: DB 쿼리 최적화, 인증 우회 가능성)"
+    "template": { "ko": "## 우려 영역\n{{value}}", "en": "## Concern Area\n{{value}}" },
+    "hint": {
+      "ko": "특별히 신경 쓰이는 부분을 설명하세요. (예: DB 쿼리 최적화, 인증 우회 가능성)",
+      "en": "Describe areas of particular concern. (e.g. DB query optimization, authentication bypass risk)"
+    }
   },
   "concept": {
-    "label": "학습 개념",
+    "label": { "ko": "학습 개념", "en": "Concept" },
     "required": false,
     "inputType": "text",
-    "template": "## Concept\n{{value}}",
-    "hint": "배우고 싶은 개념이나 기술을 구체적으로 알려주세요.",
-    "examples": ["JavaScript 이벤트 루프와 마이크로태스크 큐", "트랜잭션 격리 수준과 동시성 문제"]
+    "template": { "ko": "## 학습 개념\n{{value}}", "en": "## Concept\n{{value}}" },
+    "hint": {
+      "ko": "배우고 싶은 개념이나 기술을 구체적으로 알려주세요.",
+      "en": "Specify the concept or technology you want to learn."
+    },
+    "examples": {
+      "ko": ["JavaScript 이벤트 루프와 마이크로태스크 큐", "트랜잭션 격리 수준과 동시성 문제"],
+      "en": ["JavaScript event loop and microtask queue", "Transaction isolation levels and concurrency problems"]
+    }
   },
   "skill-level": {
-    "label": "현재 수준",
+    "label": { "ko": "현재 수준", "en": "Skill Level" },
     "required": false,
     "inputType": "select-or-text",
-    "template": "## Skill Level\n{{value}}",
-    "hint": "해당 분야의 현재 수준을 선택하세요.",
+    "template": { "ko": "## 현재 수준\n{{value}}", "en": "## Skill Level\n{{value}}" },
+    "hint": {
+      "ko": "해당 분야의 현재 수준을 선택하세요.",
+      "en": "Select your current level in this area."
+    },
     "options": [
-      { "value": "입문 — 처음 접하는 개념, 기초부터 필요", "label": "입문" },
-      { "value": "중급 — 기본은 알고 있고 실전 응용이 필요", "label": "중급" },
-      { "value": "심화 — 원리와 트레이드오프까지 깊게 이해하고 싶음", "label": "심화" }
+      {
+        "value": { "ko": "입문 — 처음 접하는 개념, 기초부터 필요", "en": "Beginner — new to the concept, need the basics first" },
+        "label": { "ko": "입문", "en": "Beginner" }
+      },
+      {
+        "value": { "ko": "중급 — 기본은 알고 있고 실전 응용이 필요", "en": "Intermediate — know the basics, need practical application" },
+        "label": { "ko": "중급", "en": "Intermediate" }
+      },
+      {
+        "value": { "ko": "심화 — 원리와 트레이드오프까지 깊게 이해하고 싶음", "en": "Advanced — want deep understanding including principles and trade-offs" },
+        "label": { "ko": "심화", "en": "Advanced" }
+      }
     ]
   },
   "output-pref": {
-    "label": "설명 방식",
+    "label": { "ko": "설명 방식", "en": "Output Preference" },
     "required": false,
     "inputType": "select-or-text",
-    "template": "## Output Preference\n{{value}}",
-    "hint": "원하는 설명 방식을 선택하세요.",
+    "template": { "ko": "## 설명 방식\n{{value}}", "en": "## Output Preference\n{{value}}" },
+    "hint": {
+      "ko": "원하는 설명 방식을 선택하세요.",
+      "en": "Select your preferred explanation style."
+    },
     "options": [
-      { "value": "개념 중심 설명 — 원리, 비유, 실생활 예시 중심", "label": "개념 중심 설명" },
-      { "value": "코드 중심 설명 — 실행 가능한 예제 코드부터 설명", "label": "코드 중심 설명" },
-      { "value": "비교/대조 설명 — 유사 개념과의 차이점 중심", "label": "비교/대조 설명" }
+      {
+        "value": { "ko": "개념 중심 설명 — 원리, 비유, 실생활 예시 중심", "en": "Concept-focused — principles, analogies, real-world examples" },
+        "label": { "ko": "개념 중심 설명", "en": "Concept-focused" }
+      },
+      {
+        "value": { "ko": "코드 중심 설명 — 실행 가능한 예제 코드부터 설명", "en": "Code-focused — start from runnable example code" },
+        "label": { "ko": "코드 중심 설명", "en": "Code-focused" }
+      },
+      {
+        "value": { "ko": "비교/대조 설명 — 유사 개념과의 차이점 중심", "en": "Comparative — focus on differences from similar concepts" },
+        "label": { "ko": "비교/대조 설명", "en": "Comparative" }
+      }
     ]
   },
   "expected-behavior": {
-    "label": "기대 동작",
+    "label": { "ko": "기대 동작", "en": "Expected Behavior" },
     "required": false,
     "inputType": "multiline",
-    "template": "## Expected Behavior\n{{value}}",
-    "hint": "정상 동작 시 예상 결과를 작성하세요. '기대 vs 실제' 대비가 디버깅 정확도를 높입니다.",
-    "examples": ["로그인 API 호출 시 200 OK와 JWT 토큰 반환", "빌드 완료 후 dist/ 폴더에 번들 파일 생성"]
+    "template": { "ko": "## 기대 동작\n{{value}}", "en": "## Expected Behavior\n{{value}}" },
+    "hint": {
+      "ko": "정상 동작 시 예상 결과를 작성하세요. '기대 vs 실제' 대비가 디버깅 정확도를 높입니다.",
+      "en": "Describe the expected result under normal operation. Contrasting 'expected vs actual' sharpens debugging accuracy."
+    },
+    "examples": {
+      "ko": ["로그인 API 호출 시 200 OK와 JWT 토큰 반환", "빌드 완료 후 dist/ 폴더에 번들 파일 생성"],
+      "en": ["Login API call returns 200 OK with a JWT token", "Build completes and creates bundle files under dist/"]
+    }
   },
   "acceptance-criteria": {
-    "label": "수락 기준",
+    "label": { "ko": "수락 기준", "en": "Acceptance Criteria" },
     "required": false,
     "inputType": "multiline",
-    "template": "## Acceptance Criteria\n{{value}}",
-    "hint": "구현 완료를 판단할 수 있는 구체적 기준을 나열하세요.",
-    "examples": [
-      "- 이메일 형식 검증 실패 시 400 에러 반환\n- 중복 이메일 가입 시 409 에러 반환\n- 성공 시 JWT 토큰과 사용자 정보 반환",
-      "- 이미지 리사이징 후 S3 업로드 완료\n- 업로드 진행률 UI 표시\n- 5MB 초과 파일 거부"
-    ]
+    "template": { "ko": "## 수락 기준\n{{value}}", "en": "## Acceptance Criteria\n{{value}}" },
+    "hint": {
+      "ko": "구현 완료를 판단할 수 있는 구체적 기준을 나열하세요.",
+      "en": "List specific criteria that determine when the implementation is complete."
+    },
+    "examples": {
+      "ko": [
+        "- 이메일 형식 검증 실패 시 400 에러 반환\n- 중복 이메일 가입 시 409 에러 반환\n- 성공 시 JWT 토큰과 사용자 정보 반환",
+        "- 이미지 리사이징 후 S3 업로드 완료\n- 업로드 진행률 UI 표시\n- 5MB 초과 파일 거부"
+      ],
+      "en": [
+        "- Returns 400 on invalid email format\n- Returns 409 on duplicate email registration\n- Returns JWT token and user info on success",
+        "- Image resizing and S3 upload completes\n- Upload progress UI is displayed\n- Files over 5MB are rejected"
+      ]
+    }
   },
   "output-format": {
-    "label": "응답 형식",
+    "label": { "ko": "응답 형식", "en": "Output Format" },
     "required": false,
     "inputType": "select-or-text",
-    "template": "## Output Format\n{{value}}",
-    "hint": "AI 응답의 구조를 지정하세요. 형식을 명시하면 답변 품질이 크게 향상됩니다.",
+    "template": { "ko": "## 응답 형식\n{{value}}", "en": "## Output Format\n{{value}}" },
+    "hint": {
+      "ko": "AI 응답의 구조를 지정하세요. 형식을 명시하면 답변 품질이 크게 향상됩니다.",
+      "en": "Specify the structure of the AI response. Stating the format significantly improves answer quality."
+    },
     "options": [
-      { "value": "완전한 코드 + 변경 부분 주석 표시", "label": "전체 코드" },
-      { "value": "diff 형식 — 변경 전후만 표시", "label": "diff 형식" },
-      { "value": "단계별 설명 + 각 단계의 코드 스니펫", "label": "단계별 설명" },
-      { "value": "요약표 + 상세 분석", "label": "표 + 분석" }
+      {
+        "value": { "ko": "완전한 코드 + 변경 부분 주석 표시", "en": "Complete code + comments marking the changes" },
+        "label": { "ko": "전체 코드", "en": "Full code" }
+      },
+      {
+        "value": { "ko": "diff 형식 — 변경 전후만 표시", "en": "Diff format — show only before/after changes" },
+        "label": { "ko": "diff 형식", "en": "Diff format" }
+      },
+      {
+        "value": { "ko": "단계별 설명 + 각 단계의 코드 스니펫", "en": "Step-by-step explanation + code snippet per step" },
+        "label": { "ko": "단계별 설명", "en": "Step-by-step" }
+      },
+      {
+        "value": { "ko": "요약표 + 상세 분석", "en": "Summary table + detailed analysis" },
+        "label": { "ko": "표 + 분석", "en": "Table + analysis" }
+      }
     ]
   },
   "example-io": {
-    "label": "입출력 예시",
+    "label": { "ko": "입출력 예시", "en": "Example Input/Output" },
     "required": false,
     "inputType": "multiline",
-    "template": "## Example Input/Output\n{{value}}",
-    "hint": "기대하는 입력과 출력의 구체적 예시를 제공하세요. Few-shot 예시는 AI 정확도를 크게 높입니다.",
-    "examples": [
-      "입력: POST /api/login { email: \"user@test.com\", password: \"1234\" }\n출력: { token: \"eyJ...\", user: { id: 1, email: \"user@test.com\" } }",
-      "입력: [3, 1, 4, 1, 5]\n출력: [1, 1, 3, 4, 5] (오름차순 정렬)"
-    ]
+    "template": { "ko": "## 입출력 예시\n{{value}}", "en": "## Example Input/Output\n{{value}}" },
+    "hint": {
+      "ko": "기대하는 입력과 출력의 구체적 예시를 제공하세요. Few-shot 예시는 AI 정확도를 크게 높입니다.",
+      "en": "Provide concrete input/output examples. Few-shot examples significantly improve AI accuracy."
+    },
+    "examples": {
+      "ko": [
+        "입력: POST /api/login { email: \"user@test.com\", password: \"1234\" }\n출력: { token: \"eyJ...\", user: { id: 1, email: \"user@test.com\" } }",
+        "입력: [3, 1, 4, 1, 5]\n출력: [1, 1, 3, 4, 5] (오름차순 정렬)"
+      ],
+      "en": [
+        "Input: POST /api/login { email: \"user@test.com\", password: \"1234\" }\nOutput: { token: \"eyJ...\", user: { id: 1, email: \"user@test.com\" } }",
+        "Input: [3, 1, 4, 1, 5]\nOutput: [1, 1, 3, 4, 5] (ascending sort)"
+      ]
+    }
   },
   "related-code": {
-    "label": "관련 코드",
+    "label": { "ko": "관련 코드", "en": "Related Code" },
     "required": false,
     "inputType": "multiline-mention",
-    "template": "## Related Code\n{{value}}",
-    "hint": "직접 수정하지는 않지만 참조해야 할 의존 코드를 첨부하세요. @파일경로 사용 가능."
+    "template": { "ko": "## 관련 코드\n{{value}}", "en": "## Related Code\n{{value}}" },
+    "hint": {
+      "ko": "직접 수정하지는 않지만 참조해야 할 의존 코드를 첨부하세요. @파일경로 사용 가능.",
+      "en": "Attach dependent code that won't be modified but needs to be referenced. Use @filepath."
+    }
   }
 }

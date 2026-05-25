@@ -1,8 +1,8 @@
 {
   "id": "feature-impl",
-  "label": "기능 구현",
-  "description": "신규 기능 추가 또는 수정",
-  "roleSuffix": "기능 구현 전문가",
+  "label": { "ko": "기능 구현", "en": "Feature Implementation" },
+  "description": { "ko": "신규 기능 추가 또는 수정", "en": "Add or modify a new feature" },
+  "roleSuffix": { "ko": "기능 구현 전문가", "en": "Feature Implementation Specialist" },
   "defaultActiveCards": ["role", "goal", "stack-environment", "impl-scope"],
   "cardPool": [
     "acceptance-criteria",
@@ -17,17 +17,32 @@
   ],
   "cardOverrides": {
     "goal": {
-      "hint": "사용자 가치와 완료 기준을 함께 적으면 구현 품질이 좋아집니다.",
-      "examples": [
-        "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환",
-        "관리자 대시보드에 최근 7일 통계 위젯을 추가",
-        "사용자 프로필 이미지 업로드 기능 구현 (S3 연동)",
-        "결제 실패 시 자동 재시도 로직 추가",
-        "Redis 캐싱 레이어를 추가해 DB 조회 성능 개선"
-      ]
+      "hint": {
+        "ko": "사용자 가치와 완료 기준을 함께 적으면 구현 품질이 좋아집니다.",
+        "en": "Describing the user value and completion criteria improves implementation quality."
+      },
+      "examples": {
+        "ko": [
+          "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환",
+          "관리자 대시보드에 최근 7일 통계 위젯을 추가",
+          "사용자 프로필 이미지 업로드 기능 구현 (S3 연동)",
+          "결제 실패 시 자동 재시도 로직 추가",
+          "Redis 캐싱 레이어를 추가해 DB 조회 성능 개선"
+        ],
+        "en": [
+          "Add email login API and return failure reasons clearly",
+          "Add a last-7-days statistics widget to the admin dashboard",
+          "Implement user profile image upload (S3 integration)",
+          "Add automatic retry logic on payment failure",
+          "Add a Redis caching layer to improve DB query performance"
+        ]
+      }
     },
     "role": {
-      "examples": ["풀스택 개발자", "백엔드 엔지니어", "프론트엔드 개발자", "React 개발자", "Node.js 개발자"]
+      "examples": {
+        "ko": ["풀스택 개발자", "백엔드 엔지니어", "프론트엔드 개발자", "React 개발자", "Node.js 개발자"],
+        "en": ["Full-Stack Developer", "Backend Engineer", "Frontend Developer", "React Developer", "Node.js Developer"]
+      }
     }
   }
 }

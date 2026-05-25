@@ -1,22 +1,30 @@
 import net from 'node:net';
 import { Command } from 'commander';
 import { createServer } from '../../server/index.js';
+import { resolveLang } from '../../server/locale.js';
+import { detectLocale } from '../../shared/i18n/detectLocale.js';
+import { t } from '../../shared/i18n/t.js';
+
+// .description() / .option() 은 module-load 시 평가되므로 OS 로케일(detectLocale)을 사용한다.
+// action 내부는 DB 접근 가능 시점이므로 resolveLang() (config 우선)을 사용한다.
+const _initLang = detectLocale();
 
 export const serveCommand = new Command('serve')
-  .description('웹 UI를 실행합니다 (localhost 전용)')
-  .option('-p, --port <number>', '포트 번호', '3000')
-  .option('--no-open', '브라우저 자동 실행 비활성화')
+  .description(t('cli.serveDescription', _initLang))
+  .option('-p, --port <number>', t('cli.portOption', _initLang), '3000')
+  .option('--no-open', t('cli.noOpenOption', _initLang))
   .action(async (opts: { port: string; open: boolean }) => {
+    const lang = resolveLang();
     const startPort = Number(opts.port);
-    const port = await findAvailablePort(startPort);
+    const port = await findAvailablePort(startPort, lang);
 
     if (port !== startPort) {
-      console.log(`포트 ${startPort}가 사용 중입니다. ${port}번으로 실행합니다.`);
+      console.log(t('cli.portInUse', lang, { start: startPort, port }));
     }
 
     await createServer(port);
     const url = `http://localhost:${port}`;
-    console.log(`PromptCraft UI: ${url}`);
+    console.log(t('cli.runUrl', lang, { url }));
 
     if (opts.open) {
       const { default: open } = await import('open');
@@ -24,13 +32,13 @@ export const serveCommand = new Command('serve')
     }
   });
 
-async function findAvailablePort(start: number, maxAttempts = 10): Promise<number> {
+async function findAvailablePort(start: number, lang: ReturnType<typeof resolveLang>, maxAttempts = 10): Promise<number> {
   for (let i = 0; i < maxAttempts; i++) {
     const port = start + i;
     const available = await isPortAvailable(port);
     if (available) return port;
   }
-  throw new Error(`${start}~${start + maxAttempts - 1} 범위에서 사용 가능한 포트를 찾을 수 없습니다.`);
+  throw new Error(t('cli.portNotFound', lang, { start, end: start + maxAttempts - 1 }));
 }
 
 function isPortAvailable(port: number): Promise<boolean> {

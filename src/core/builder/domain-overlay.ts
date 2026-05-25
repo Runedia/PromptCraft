@@ -1,12 +1,13 @@
-import type { CardDefinition, SelectOption } from '../types/card.js';
+import type { I18nText, I18nTextArray } from '../../shared/i18n/types.js';
+import type { CardDefinition, SelectOptionDef } from '../types/card.js';
 
 export interface DomainCardOverride {
-  label?: string;
-  hint?: string;
-  defaultValue?: string;
-  options?: SelectOption[];
-  /** tree별 예시 맵 또는 단순 배열 */
-  examples?: Record<string, string[]> | string[];
+  label?: I18nText;
+  hint?: I18nText;
+  defaultValue?: I18nText;
+  options?: SelectOptionDef[];
+  /** tree별 예시 맵 또는 단순 배열(i18n) */
+  examples?: Record<string, I18nTextArray> | I18nTextArray;
 }
 
 export interface DomainOverlay {
@@ -18,12 +19,17 @@ export interface DomainOverlay {
 /** DomainCardOverride를 특정 treeId 기준으로 Partial<CardDefinition>으로 변환 */
 function resolveDomainCardOverride(ov: DomainCardOverride, treeId: string): Partial<CardDefinition> {
   const { examples, ...rest } = ov;
-  let resolvedExamples: string[] | undefined;
-  if (Array.isArray(examples)) {
-    resolvedExamples = examples;
-  } else if (examples && typeof examples === 'object') {
-    resolvedExamples = (examples as Record<string, string[]>)[treeId];
+  let resolvedExamples: I18nTextArray | undefined;
+  if (examples) {
+    if ('ko' in examples && 'en' in examples) {
+      // I18nTextArray direct form — use as-is
+      resolvedExamples = examples as I18nTextArray;
+    } else {
+      // Record<string, I18nTextArray> — look up by treeId
+      resolvedExamples = (examples as Record<string, I18nTextArray>)[treeId];
+    }
   }
+  // 의도된 동작: treeId 미발견 시 examples 미지정 → base 카드 examples 적용
   return {
     ...rest,
     ...(resolvedExamples !== undefined ? { examples: resolvedExamples } : {}),

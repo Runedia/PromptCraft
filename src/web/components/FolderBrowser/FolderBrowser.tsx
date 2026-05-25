@@ -2,6 +2,7 @@ import { ArrowLeft, Check, ChevronRight, FolderOpen, HardDrive } from 'lucide-re
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button.js';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet.js';
+import { useT } from '@/i18n/useT.js';
 
 interface BrowseResult {
   current: string;
@@ -26,25 +27,29 @@ function basename(p: string): string {
 }
 
 export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserProps) {
+  const t = useT();
   const [data, setData] = useState<BrowseResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const navigate = useCallback(async (targetPath?: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const url = targetPath ? `/api/browse?path=${encodeURIComponent(targetPath)}` : '/api/browse';
-      const res = await fetch(url);
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? '탐색 실패');
-      setData(json);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const navigate = useCallback(
+    async (targetPath?: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const url = targetPath ? `/api/browse?path=${encodeURIComponent(targetPath)}` : '/api/browse';
+        const res = await fetch(url);
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error ?? t('web.folderBrowser.browseError'));
+        setData(json);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t('web.folderBrowser.genericError'));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [t]
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
   useEffect(() => {
@@ -54,8 +59,8 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
   return (
     <Sheet open onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="right" className="w-[520px] max-w-full p-0 flex flex-col">
-        <SheetTitle className="sr-only">폴더 탐색</SheetTitle>
-        <SheetDescription className="sr-only">폴더를 탐색하고 프로젝트 경로를 선택합니다</SheetDescription>
+        <SheetTitle className="sr-only">{t('web.folderBrowser.title')}</SheetTitle>
+        <SheetDescription className="sr-only">{t('web.folderBrowser.description')}</SheetDescription>
 
         {/* 헤더 */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-border/50 bg-muted">
@@ -66,26 +71,26 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
             className="size-8 text-muted-foreground hover:text-foreground shrink-0"
             onClick={() => (data?.parent ? navigate(data.parent) : navigate())}
             disabled={loading}
-            title="상위 폴더"
+            title={t('web.folderBrowser.upTitle')}
           >
             <ArrowLeft size={16} />
           </Button>
           <span className="flex-1 text-xs font-code text-secondary-foreground overflow-hidden text-ellipsis whitespace-nowrap">
             {data?.isRoot ? (
               <span className="flex items-center gap-2 font-ui text-sm font-medium text-foreground">
-                <HardDrive size={14} /> 드라이브 선택
+                <HardDrive size={14} /> {t('web.folderBrowser.driveSelect')}
               </span>
             ) : (
-              (data?.current ?? '로딩 중...')
+              (data?.current ?? t('web.folderBrowser.loading'))
             )}
           </span>
         </div>
 
         {/* 목록 */}
         <div className="flex-1 overflow-y-auto p-2">
-          {loading && <div className="py-4 text-sm text-muted-foreground">로딩 중...</div>}
+          {loading && <div className="py-4 text-sm text-muted-foreground">{t('web.folderBrowser.loading')}</div>}
           {error && <div className="py-4 text-sm text-destructive">{error}</div>}
-          {!loading && !error && data?.dirs.length === 0 && <div className="py-4 text-sm text-muted-foreground">하위 폴더가 없습니다.</div>}
+          {!loading && !error && data?.dirs.length === 0 && <div className="py-4 text-sm text-muted-foreground">{t('web.folderBrowser.empty')}</div>}
           {!loading &&
             !error &&
             data?.dirs.map((dir) => (
@@ -110,7 +115,7 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
           </span>
           <div className="flex gap-2 shrink-0">
             <Button type="button" variant="ghost" size="sm" onClick={onClose}>
-              취소
+              {t('web.folderBrowser.cancel')}
             </Button>
             <Button
               type="button"
@@ -119,7 +124,8 @@ export function FolderBrowser({ initialPath, onSelect, onClose }: FolderBrowserP
               onClick={() => data?.current && !data.isRoot && onSelect(data.current)}
               disabled={!data?.current || data.isRoot}
             >
-              <Check data-icon="inline-start" size={14} />이 폴더 선택
+              <Check data-icon="inline-start" size={14} />
+              {t('web.folderBrowser.selectFolder')}
             </Button>
           </div>
         </div>

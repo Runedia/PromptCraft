@@ -1,6 +1,7 @@
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button.js';
+import { useT } from '@/i18n/useT.js';
 
 interface MentionInputProps {
   value: string;
@@ -23,6 +24,7 @@ interface FilePreview {
 }
 
 export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputProps) {
+  const t = useT();
   const [suggestions, setSuggestions] = useState<MentionSuggestion[]>([]);
   const [mentionStart, setMentionStart] = useState(-1);
   const [selectedIdx, setSelectedIdx] = useState(-1);
@@ -200,7 +202,7 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
         ref={ref}
         className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-base text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
         value={value}
-        placeholder={hint ?? '@파일경로 로 파일을 첨부할 수 있습니다.'}
+        placeholder={hint ?? t('web.mentionInput.placeholder')}
         rows={4}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
@@ -224,7 +226,7 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
             <div className="border-t border-border">
               <div className="px-3 pt-2 flex items-center justify-between">
                 <span className="text-xs font-code text-muted-foreground truncate">{preview.path}</span>
-                <span className="text-xs text-muted-foreground ml-2 shrink-0">{preview.totalLines}줄</span>
+                <span className="text-xs text-muted-foreground ml-2 shrink-0">{t('web.mentionInput.lines', { n: preview.totalLines })}</span>
               </div>
               <pre className="mx-3 my-1 text-xs font-code text-foreground bg-muted rounded p-2 max-h-[120px] overflow-y-auto">
                 {previewLines.map((line, i) => (
@@ -234,14 +236,16 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
                     {line || ' '}
                   </span>
                 ))}
-                {preview.totalLines > 15 && <span className="text-muted-foreground block mt-1">... ({preview.totalLines - 15}줄 더)</span>}
+                {preview.totalLines > 15 && (
+                  <span className="text-muted-foreground block mt-1">{t('web.mentionInput.moreLines', { n: preview.totalLines - 15 })}</span>
+                )}
               </pre>
               <div className="flex gap-2 px-3 pb-2">
                 <Button type="button" size="sm" variant="default" onClick={() => insertMention(preview.path, false)}>
-                  전체 파일
+                  {t('web.mentionInput.insertFull')}
                 </Button>
                 <Button type="button" size="sm" variant="outline" onClick={() => insertMentionWithLineRange(preview.path)}>
-                  라인 범위 지정
+                  {t('web.mentionInput.insertRange')}
                 </Button>
               </div>
             </div>
@@ -251,16 +255,16 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
             className="border-t border-border px-3 py-1.5 text-xs text-muted-foreground font-code flex flex-wrap items-center gap-x-3 gap-y-1"
           >
             <span>
-              <kbd className="font-code text-foreground">↑↓</kbd> 이동
+              <kbd className="font-code text-foreground">↑↓</kbd> {t('web.mentionInput.hintNav')}
             </span>
             <span>
-              <kbd className="font-code text-foreground">Enter</kbd> 전체
+              <kbd className="font-code text-foreground">Enter</kbd> {t('web.mentionInput.hintFull')}
             </span>
             <span>
-              <kbd className="font-code text-foreground">Shift+Enter</kbd> <span className="text-foreground">line-range</span> 지원
+              <kbd className="font-code text-foreground">Shift+Enter</kbd> <span className="text-foreground">{t('web.mentionInput.hintRange')}</span>
             </span>
             <span>
-              <kbd className="font-code text-foreground">Esc</kbd> 닫기
+              <kbd className="font-code text-foreground">Esc</kbd> {t('web.mentionInput.hintClose')}
             </span>
           </div>
         </div>

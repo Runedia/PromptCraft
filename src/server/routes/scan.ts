@@ -4,7 +4,9 @@ import path from 'node:path';
 import { Router } from 'express';
 import { resolveRoleSuggestions } from '../../core/builder/role-resolver.js';
 import { scan } from '../../core/scanner/index.js';
+import { pickText } from '../../shared/i18n/pickLang.js';
 import { loadDomainOverlay, loadRoleMappings, loadTreesMeta } from '../domain-loader.js';
+import { resolveLang } from '../locale.js';
 import { writeScanDebugLog } from '../scan-debug.js';
 
 const router = Router();
@@ -31,8 +33,9 @@ router.post('/', async (req, res, next) => {
     // - roleSuggestions: 트리 미선택 시 메인 화면용 fallback (default, base 우선)
     // - roleSuggestionsByTree: 5개 트리 각각의 5개 역할. 워크스페이스 카드 옵션과 1:1 일치
     const roleMappings = loadRoleMappings();
+    const lang = resolveLang();
     const roleSuggestions = roleMappings
-      ? resolveRoleSuggestions(result, 'default', roleMappings)
+      ? resolveRoleSuggestions(result, 'default', roleMappings, undefined, lang)
           .map((o) => o.value)
           .slice(0, 5)
       : [];
@@ -40,7 +43,8 @@ router.post('/', async (req, res, next) => {
     const roleSuggestionsByTree: Record<string, string[]> = {};
     if (roleMappings) {
       for (const treeMeta of loadTreesMeta()) {
-        roleSuggestionsByTree[treeMeta.id] = resolveRoleSuggestions(result, treeMeta.id, roleMappings, treeMeta.roleSuffix)
+        const roleSuffix = treeMeta.roleSuffix ? pickText(treeMeta.roleSuffix, lang) : undefined;
+        roleSuggestionsByTree[treeMeta.id] = resolveRoleSuggestions(result, treeMeta.id, roleMappings, roleSuffix, lang)
           .map((o) => o.value)
           .slice(0, 5);
       }

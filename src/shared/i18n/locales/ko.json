@@ -1,0 +1,217 @@
+{
+  "test": { "greeting": "안녕 {{name}}" },
+  "web": {
+    "actionBar": {
+      "noCopyPrompt": "복사할 프롬프트가 없습니다.",
+      "copied": "클립보드에 복사됨",
+      "noRunPrompt": "실행할 프롬프트가 없습니다.",
+      "noProjectPath": "프로젝트 경로가 없습니다.",
+      "notInstalled": "{{bin}}이(가) 설치되어 있지 않습니다",
+      "invalidCwd": "프로젝트 경로가 올바르지 않습니다",
+      "runSuccess": "{{label}} 실행됨 · 프롬프트 복사됨, 새 창에서 Ctrl+V",
+      "runFailed": "실행 실패: {{message}}",
+      "undoLabel": "실행 취소",
+      "undoTooltip": "실행 취소 (⌘Z)",
+      "redoLabel": "다시 실행",
+      "redoTooltip": "다시 실행 (⌘⇧Z)",
+      "historyLabel": "히스토리",
+      "historyTooltip": "히스토리",
+      "settingsLabel": "설정",
+      "settingsTooltip": "설정",
+      "copy": "복사",
+      "selectTarget": "대상 선택",
+      "notInstalledShort": "미설치"
+    },
+    "settingsSheet": {
+      "loadError": "설정을 불러오지 못했습니다.",
+      "shellChanged": "기본 셸이 변경되었습니다.",
+      "saveError": "설정 저장에 실패했습니다.",
+      "title": "설정",
+      "appearance": "모양",
+      "theme": "테마",
+      "themeSystem": "시스템 설정 따름",
+      "themeLight": "라이트",
+      "themeDark": "다크",
+      "run": "실행",
+      "defaultShell": "기본 셸 (Run as)",
+      "shellHint": "새 터미널 창에서 provider CLI를 실행할 셸입니다.",
+      "language": "언어",
+      "languageLabel": "표시 언어",
+      "langSystem": "시스템 따름",
+      "langKo": "한국어",
+      "langEn": "English",
+      "langChanged": "언어가 변경되었습니다.",
+      "langHint": "UI와 카드 정의 언어입니다. '시스템 따름'은 OS 설정을 사용합니다."
+    },
+    "historySheet": {
+      "loadError": "히스토리를 불러오지 못했습니다.",
+      "restoreSuccess": "프롬프트를 불러왔습니다.",
+      "copySuccess": "클립보드에 복사됨",
+      "copyError": "복사 실패",
+      "deleteError": "삭제 실패",
+      "title": "최근 프롬프트",
+      "loading": "불러오는 중…",
+      "empty": "아직 사용한 프롬프트가 없습니다.",
+      "noTitle": "(제목 없음)",
+      "restore": "복원",
+      "otherWorkflow": "다른 워크플로우 — 복사만 가능",
+      "copy": "복사",
+      "deleteLabel": "삭제"
+    },
+    "folderBrowser": {
+      "browseError": "탐색 실패",
+      "genericError": "오류가 발생했습니다.",
+      "title": "폴더 탐색",
+      "description": "폴더를 탐색하고 프로젝트 경로를 선택합니다",
+      "upTitle": "상위 폴더",
+      "driveSelect": "드라이브 선택",
+      "loading": "로딩 중...",
+      "empty": "하위 폴더가 없습니다.",
+      "cancel": "취소",
+      "selectFolder": "이 폴더 선택"
+    },
+    "workspacePage": {
+      "restoreTitle": "이전 작업을 이어서 할까요?",
+      "restoreDesc": "저장된 세션이 있습니다.",
+      "restoreYes": "이어서 하기",
+      "restoreNo": "새로 시작",
+      "pageTitle": "프롬프트 작성"
+    },
+    "topBar": {
+      "backLabel": "진입 화면으로",
+      "backTooltip": "진입 화면으로",
+      "rescanLabel": "재스캔",
+      "rescanTooltip": "경로 재스캔",
+      "scanPath": "스캔 경로",
+      "scanning": "스캔 중...",
+      "scanRun": "실행"
+    },
+    "cardPool": {
+      "addCard": "카드 추가"
+    },
+    "sectionCard": {
+      "pinnedLabel": "고정된 카드 — 이동 불가",
+      "pinnedTooltip": "고정 — 이동 불가",
+      "dragLabel": "드래그로 순서 변경",
+      "required": "필수",
+      "removeLabel": "카드 제거",
+      "removeTooltip": "제거"
+    },
+    "cardInput": {
+      "selectPlaceholder": "선택하세요..."
+    },
+    "promptPreview": {
+      "raw": "[원본]",
+      "rendered": "[미리보기]",
+      "blank": "카드를 채우면 프롬프트가 표시됩니다.",
+      "empty": "(비어 있음 — 출력에서 제외)"
+    },
+    "scanBanner": {
+      "idle": "경로를 입력하면 자동 스캔됩니다.",
+      "scanning": "스캔 중…",
+      "analyzing": "분석: {{n}} files",
+      "done": "스캔 완료"
+    },
+    "treeSelect": {
+      "loading": "로딩 중...",
+      "hero": "어떤 작업을 도와드릴까요?",
+      "heroDesc": "상황 유형을 고르면 그에 맞는 카드 구성과 도메인 적응형 역할 후보가 자동으로 준비됩니다.",
+      "projectPath": "프로젝트 경로",
+      "autoScan": "· 입력 후 800ms 자동 스캔",
+      "selectType": "상황 유형 선택",
+      "hintScanFirst": "경로 입력 후 스캔이 완료되면 활성화됩니다.",
+      "hintSelectTree": "트리를 선택하세요."
+    },
+    "ctaRow": {
+      "cancel": "취소",
+      "continue": "계속하기"
+    },
+    "pathInputRow": {
+      "placeholder": "예: C:/my-project",
+      "clearLabel": "경로 지우기",
+      "browse": "폴더 찾기"
+    },
+    "suggestedRoles": {
+      "header": "추천 역할"
+    },
+    "selectOrTextInput": {
+      "backToList": "← 목록에서 선택",
+      "placeholder": "선택하세요...",
+      "custom": "직접 입력..."
+    },
+    "textInput": {
+      "exampleTitle": "이 예시를 사용합니다"
+    },
+    "mentionInput": {
+      "placeholder": "@파일경로 로 파일을 첨부할 수 있습니다.",
+      "lines": "{{n}}줄",
+      "moreLines": "... ({{n}}줄 더)",
+      "insertFull": "전체 파일",
+      "insertRange": "라인 범위 지정",
+      "hintNav": "이동",
+      "hintFull": "전체",
+      "hintRange": "line-range 지원",
+      "hintClose": "닫기"
+    },
+    "themeToggle": {
+      "toLightMode": "라이트 모드로",
+      "toDarkMode": "다크 모드로"
+    },
+    "useScan": {
+      "langs": "언어 {{n}}개",
+      "frameworks": "프레임워크 {{n}}개",
+      "noDetected": "감지된 항목 없음",
+      "scanFailed": "스캔 실패",
+      "scanError": "스캔 중 오류가 발생했습니다.",
+      "scanDone": "스캔 완료",
+      "stackLangs": "언어: {{names}}",
+      "stackFrameworks": "프레임워크: {{names}}",
+      "stackPkg": "패키지 매니저: {{name}}"
+    },
+    "relativeTime": {
+      "justNow": "방금 전",
+      "minutesAgo": "{{n}}분 전",
+      "hoursAgo": "{{n}}시간 전",
+      "yesterday": "어제",
+      "daysAgo": "{{n}}일 전"
+    }
+  },
+  "cli": {
+    "description": "로컬 설치형 프롬프트 설계 도구",
+    "unknownCommand": "알 수 없는 명령어: {{cmd}}",
+    "portInUse": "포트 {{start}}가 사용 중입니다. {{port}}번으로 실행합니다.",
+    "serveDescription": "웹 UI를 실행합니다 (localhost 전용)",
+    "portOption": "포트 번호",
+    "noOpenOption": "브라우저 자동 실행 비활성화",
+    "runUrl": "PromptCraft UI: {{url}}",
+    "portNotFound": "{{start}}~{{end}} 범위에서 사용 가능한 포트를 찾을 수 없습니다."
+  },
+  "core": {
+    "stackEnv": {
+      "languages": "언어",
+      "frameworks": "프레임워크",
+      "packageManager": "패키지 매니저",
+      "constraints": "타입/문법 제약"
+    },
+    "role": {
+      "developerSuffix": "{{name}} 개발자",
+      "softwareEngineer": "소프트웨어 엔지니어",
+      "fullstack": "풀스택 개발자",
+      "backend": "백엔드 엔지니어"
+    },
+    "preview": {
+      "waiting": "_입력 대기 중..._"
+    },
+    "constraints": {
+      "strict": "strict(null·undefined 명시, 암묵 any 금지)",
+      "strictNullChecks": "strictNullChecks(null·undefined 명시 처리)",
+      "noImplicitAny": "암묵 any 금지",
+      "noUncheckedIndexedAccess": "noUncheckedIndexedAccess(인덱스 결과 undefined 체크)",
+      "commonjs": "CommonJS require",
+      "esm": "ESM import 구문",
+      "verbatim": "type-only는 import type",
+      "target": "target {{target}}",
+      "jsx": "JSX 사용"
+    }
+  }
+}

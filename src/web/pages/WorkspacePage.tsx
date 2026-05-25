@@ -1,5 +1,5 @@
 import type { RoleMappings } from '@core/builder/role-resolver.js';
-import type { CardDefinition, TreeConfig } from '@core/types/card.js';
+import type { CardDefinition } from '@core/types/card.js';
 import { closestCenter, DndContext, type DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -15,7 +15,10 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { useCardSession } from '@/hooks/useCardSession.js';
 import { useKeyboard } from '@/hooks/useKeyboard.js';
 import { useScan } from '@/hooks/useScan.js';
+import { useLocale } from '@/i18n/LocaleContext.js';
+import { useT } from '@/i18n/useT.js';
 import { useCardStore } from '@/store/cardStore.js';
+import type { ResolvedTree } from '@/types/tree.js';
 import { UI_IDS } from '@/ui-ids.js';
 
 interface WorkspacePageProps {
@@ -28,12 +31,15 @@ interface WorkspacePageProps {
  * @ui-ids WORK_RESTORE_DIALOG, WORK_SECTION_LIST, WORK_RIGHT_PANEL
  */
 export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePageProps) {
+  const t = useT();
+  const { lang } = useLocale();
   const { activeCards, reorderCards, scanResult } = useCardStore();
-  const { initSession, getSavedSession, restoreSession, clearSavedSession } = useCardSession();
+  const { initSession, reresolveCardsForLang, getSavedSession, restoreSession, clearSavedSession } = useCardSession();
   const { scan, isScanLoading } = useScan();
   const actionBarRef = useRef<ActionBarHandle | null>(null);
 
-  const [treeConfig, setTreeConfig] = useState<TreeConfig | null>(null);
+  const [treeConfig, setTreeConfig] = useState<ResolvedTree | null>(null);
+  const [cardDefs, setCardDefs] = useState<Record<string, CardDefinition> | null>(null);
   const [roleMappings, setRoleMappings] = useState<RoleMappings | null>(null);
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
   const [pendingRestore, setPendingRestore] = useState<ReturnType<typeof getSavedSession>>(null);
@@ -42,27 +48,53 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally run once when treeId changes
+  // 언어 전환 effect의 첫 실행(마운트 또는 새 tree 적재 직후) 스킵 가드. treeId effect에서 재설정한다.
+  const skipFirstLangEffect = useRef(true);
+
+  // treeId 변경 시에만 1회 실행해 tree/cardDefs/roleMappings를 적재하고 초기 세션을 해소한다.
+  // initSession은 lang에 의존하지만 lang 변경 시 이 effect를 재호출하지 않는다 — 언어 전환 시
+  // 카드 재해소는 아래 별도 lang effect(reresolveCardsForLang)가 담당한다(value 보존).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: 위 의도대로 treeId만 의존(lang 포함 나머지는 의도적 omit)
   useEffect(() => {
+    // 새 tree로 초기 세션을 해소하므로 그 lang은 이미 반영됨 → 새 tree의 첫 lang effect는 스킵한다.
+    // (treeId in-place 재사용 시 stale skip 플래그로 인한 잠재 버그 방어 — I1)
+    skipFirstLangEffect.current = true;
     fetch(`/api/trees/${treeId}`)
       .then((r) => r.json())
-      .then(async ({ tree, cardDefs, roleMappings: rm }: { tree: TreeConfig; cardDefs: Record<string, CardDefinition>; roleMappings?: RoleMappings }) => {
-        setTreeConfig(tree);
-        if (rm) setRoleMappings(rm);
-        const normalizePath = (p: string) => p.replace(/\\/g, '/').replace(/\/+$/, '');
-        const saved = getSavedSession(treeId);
-        const savedPathMatches = saved?.projectPath === undefined || normalizePath(saved.projectPath) === normalizePath(projectPath);
-        if (saved && savedPathMatches) {
-          setPendingRestore(saved);
-          setShowRestorePrompt(true);
-        } else {
-          const existingScan = useCardStore.getState().scanResult;
-          const scanMatchesPath = existingScan?.path === projectPath;
-          initSession(tree, cardDefs, scanMatchesPath ? existingScan : null, undefined, rm ?? null);
-          if (projectPath && !scanMatchesPath) await scan(projectPath, { silent: true });
+      .then(
+        async ({ tree, cardDefs: defs, roleMappings: rm }: { tree: ResolvedTree; cardDefs: Record<string, CardDefinition>; roleMappings?: RoleMappings }) => {
+          setTreeConfig(tree);
+          setCardDefs(defs);
+          if (rm) setRoleMappings(rm);
+          const normalizePath = (p: string) => p.replace(/\\/g, '/').replace(/\/+$/, '');
+          const saved = getSavedSession(treeId);
+          const savedPathMatches = saved?.projectPath === undefined || normalizePath(saved.projectPath) === normalizePath(projectPath);
+          if (saved && savedPathMatches) {
+            setPendingRestore(saved);
+            setShowRestorePrompt(true);
+          } else {
+            const existingScan = useCardStore.getState().scanResult;
+            const scanMatchesPath = existingScan?.path === projectPath;
+            initSession(tree, defs, scanMatchesPath ? existingScan : null, undefined, rm ?? null);
+            if (projectPath && !scanMatchesPath) await scan(projectPath, { silent: true });
+          }
         }
-      });
+      );
   }, [treeId]);
+
+  // 언어 전환 시 카드 정의(label/template/options/hint)를 새 lang으로 재해소하되 사용자 입력(value)은
+  // 보존한다(reresolveCardsForLang → store.reresolveCards). 마운트/새 tree 적재 직후 lang은 이미
+  // 초기 세션에 반영돼 있으므로 첫 실행(또는 세션 미적재 상태)은 건너뛴다.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: lang 변경에만 반응. treeConfig/cardDefs/roleMappings는 트리거가 아닌 최신값 참조용으로 ref가 아닌 deps에 포함하면 mount 직후 중복 재해소가 발생함
+  useEffect(() => {
+    if (skipFirstLangEffect.current) {
+      skipFirstLangEffect.current = false;
+      return;
+    }
+    // 세션이 아직 없거나(카드 0개) 정의 미적재면 재해소 불가 — 마운트 effect가 처리.
+    if (!treeConfig || !cardDefs || useCardStore.getState().cards.length === 0) return;
+    reresolveCardsForLang(treeConfig, cardDefs, roleMappings, lang);
+  }, [lang]);
 
   const handleRestoreYes = useCallback(() => {
     if (pendingRestore) restoreSession(pendingRestore);
@@ -73,10 +105,11 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
     if (treeConfig) {
       fetch('/api/cards')
         .then((r) => r.json())
-        .then((cardDefs: Record<string, CardDefinition>) => {
+        .then((defs: Record<string, CardDefinition>) => {
+          setCardDefs(defs);
           const existingScan = useCardStore.getState().scanResult;
           const scanMatchesPath = existingScan?.path === projectPath;
-          initSession(treeConfig, cardDefs, scanMatchesPath ? existingScan : null, undefined, roleMappings);
+          initSession(treeConfig, defs, scanMatchesPath ? existingScan : null, undefined, roleMappings);
           clearSavedSession(treeId);
         });
     }
@@ -119,12 +152,12 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
           onEscapeKeyDown={(e) => e.preventDefault()}
           className="max-w-sm text-center"
         >
-          <DialogTitle>이전 작업을 이어서 할까요?</DialogTitle>
-          <DialogDescription>저장된 세션이 있습니다.</DialogDescription>
+          <DialogTitle>{t('web.workspacePage.restoreTitle')}</DialogTitle>
+          <DialogDescription>{t('web.workspacePage.restoreDesc')}</DialogDescription>
           <div className="flex gap-3 justify-center pt-2">
-            <Button onClick={handleRestoreYes}>이어서 하기</Button>
+            <Button onClick={handleRestoreYes}>{t('web.workspacePage.restoreYes')}</Button>
             <Button variant="outline" onClick={handleRestoreNo}>
-              새로 시작
+              {t('web.workspacePage.restoreNo')}
             </Button>
           </div>
         </DialogContent>
@@ -151,7 +184,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         <main className="flex-1 min-w-0 overflow-y-auto px-6 py-6">
           <div className="max-w-3xl mx-auto">
             <div className="flex items-baseline gap-2 mb-1">
-              <h1 className="text-[20px] font-semibold tracking-[-0.4px] text-foreground">프롬프트 작성</h1>
+              <h1 className="text-[20px] font-semibold tracking-[-0.4px] text-foreground">{t('web.workspacePage.pageTitle')}</h1>
               <span className="text-[11.5px] font-code text-muted-foreground">
                 {active.length} active · {emptyCount} empty
               </span>

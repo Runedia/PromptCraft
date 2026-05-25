@@ -26,4 +26,15 @@ router.put('/', async (req, res, next) => {
   }
 });
 
+// 설정 키 삭제. "시스템 따름"(ui.language 삭제 → OS 감지 복귀) 등에 사용.
+router.delete('/:key', async (req, res, next) => {
+  try {
+    await initialize();
+    const removed = config.delete(req.params.key);
+    res.json({ success: true, removed });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

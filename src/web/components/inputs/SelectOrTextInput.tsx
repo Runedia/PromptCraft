@@ -2,6 +2,7 @@ import type { SelectOption } from '@core/types/card.js';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
+import { useT } from '@/i18n/useT.js';
 
 interface SelectOrTextInputProps {
   value: string;
@@ -11,6 +12,7 @@ interface SelectOrTextInputProps {
 }
 
 export function SelectOrTextInput({ value, options, hint, onChange }: SelectOrTextInputProps) {
+  const t = useT();
   const [isCustom, setIsCustom] = useState(!!value && !options?.some((o) => o.value === value));
 
   const handleValueChange = (val: string) => {
@@ -35,7 +37,7 @@ export function SelectOrTextInput({ value, options, hint, onChange }: SelectOrTe
             onChange('');
           }}
         >
-          ← 목록에서 선택
+          {t('web.selectOrTextInput.backToList')}
         </button>
       </div>
     );
@@ -44,7 +46,7 @@ export function SelectOrTextInput({ value, options, hint, onChange }: SelectOrTe
   return (
     <Select value={value || undefined} onValueChange={handleValueChange}>
       <SelectTrigger>
-        <SelectValue placeholder="선택하세요..." />
+        <SelectValue placeholder={t('web.selectOrTextInput.placeholder')} />
       </SelectTrigger>
       <SelectContent>
         {options?.map((o) => (
@@ -52,7 +54,7 @@ export function SelectOrTextInput({ value, options, hint, onChange }: SelectOrTe
             {o.label}
           </SelectItem>
         ))}
-        <SelectItem value="__custom__">직접 입력...</SelectItem>
+        <SelectItem value="__custom__">{t('web.selectOrTextInput.custom')}</SelectItem>
       </SelectContent>
     </Select>
   );

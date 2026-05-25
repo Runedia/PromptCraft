@@ -53,3 +53,21 @@ describe('PUT /api/config', () => {
     expect(res.status).toBe(500);
   });
 });
+
+// ─── DELETE /:key ────────────────────────────────────────────────────
+
+describe('DELETE /api/config/:key', () => {
+  test('존재하는 키 삭제 → removed=1, 이후 조회 시 null', async () => {
+    db.config.set('ui.language', 'ko');
+    const res = await request(app).delete('/ui.language');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ success: true, removed: 1 });
+    expect(db.config.get('ui.language')).toBeNull();
+  });
+
+  test('없는 키 삭제 → success:true, removed=0 (idempotent)', async () => {
+    const res = await request(app).delete('/ui.language');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ success: true, removed: 0 });
+  });
+});

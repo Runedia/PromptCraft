@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.js';
+import { useT } from '@/i18n/useT.js';
 import { useCardStore, useTemporalStore } from '@/store/cardStore.js';
 import { UI_IDS } from '@/ui-ids.js';
 
@@ -35,6 +36,7 @@ export interface ActionBarHandle {
  *   WORK_ACTIONBAR_COPY, WORK_ACTIONBAR_RUN, WORK_ACTIONBAR_HISTORY, WORK_ACTIONBAR_SETTINGS
  */
 export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistory, onSettings, projectPath }, ref) => {
+  const t = useT();
   const prompt = useCardStore((s) => s.prompt);
   const treeId = useCardStore((s) => s.treeId);
   const cards = useCardStore((s) => s.cards);
@@ -71,22 +73,22 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistor
 
   const copy = useCallback(async () => {
     if (!prompt) {
-      toast.warning('복사할 프롬프트가 없습니다.');
+      toast.warning(t('web.actionBar.noCopyPrompt'));
       return;
     }
     await navigator.clipboard.writeText(prompt);
-    toast.success('클립보드에 복사됨');
+    toast.success(t('web.actionBar.copied'));
     saveHistory();
-  }, [prompt, saveHistory]);
+  }, [prompt, saveHistory, t]);
 
   const run = useCallback(
     async (target: RunTarget) => {
       if (!prompt) {
-        toast.warning('실행할 프롬프트가 없습니다.');
+        toast.warning(t('web.actionBar.noRunPrompt'));
         return;
       }
       if (!projectPath) {
-        toast.warning('프로젝트 경로가 없습니다.');
+        toast.warning(t('web.actionBar.noProjectPath'));
         return;
       }
       try {
@@ -98,17 +100,17 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistor
         });
         if (!res.ok) {
           const body = (await res.json().catch(() => ({}))) as { error?: string; bin?: string };
-          if (res.status === 409) throw new Error(`${body.bin ?? PROVIDERS[target].bin}이(가) 설치되어 있지 않습니다`);
-          if (body.error === 'invalid_cwd') throw new Error('프로젝트 경로가 올바르지 않습니다');
+          if (res.status === 409) throw new Error(t('web.actionBar.notInstalled', { bin: body.bin ?? PROVIDERS[target].bin }));
+          if (body.error === 'invalid_cwd') throw new Error(t('web.actionBar.invalidCwd'));
           throw new Error(`HTTP ${res.status}`);
         }
-        toast.success(`${PROVIDERS[target].label} 실행됨 · 프롬프트 복사됨, 새 창에서 Ctrl+V`);
+        toast.success(t('web.actionBar.runSuccess', { label: PROVIDERS[target].label }));
         saveHistory();
       } catch (err) {
-        toast.error(`실행 실패: ${(err as Error).message}`);
+        toast.error(t('web.actionBar.runFailed', { message: (err as Error).message }));
       }
     },
-    [prompt, projectPath, saveHistory]
+    [prompt, projectPath, saveHistory, t]
   );
 
   const runDefault = useCallback(() => run(DEFAULT_TARGET), [run]);
@@ -126,13 +128,13 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistor
             data-ui-id={UI_IDS.WORK_ACTIONBAR_UNDO}
             disabled={!canUndo}
             onClick={() => undo()}
-            aria-label="실행 취소"
+            aria-label={t('web.actionBar.undoLabel')}
             className="size-8"
           >
             <Undo2 size={15} />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>실행 취소 (⌘Z)</TooltipContent>
+        <TooltipContent>{t('web.actionBar.undoTooltip')}</TooltipContent>
       </Tooltip>
 
       <Tooltip>
@@ -144,13 +146,13 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistor
             data-ui-id={UI_IDS.WORK_ACTIONBAR_REDO}
             disabled={!canRedo}
             onClick={() => redo()}
-            aria-label="다시 실행"
+            aria-label={t('web.actionBar.redoLabel')}
             className="size-8"
           >
             <Redo2 size={15} />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>다시 실행 (⌘⇧Z)</TooltipContent>
+        <TooltipContent>{t('web.actionBar.redoTooltip')}</TooltipContent>
       </Tooltip>
 
       <div className="h-5 w-px bg-border mx-1" aria-hidden />
@@ -164,13 +166,13 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistor
               size="icon"
               data-ui-id={UI_IDS.WORK_ACTIONBAR_HISTORY}
               onClick={onHistory}
-              aria-label="히스토리"
+              aria-label={t('web.actionBar.historyLabel')}
               className="size-8"
             >
               <History size={15} />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>히스토리</TooltipContent>
+          <TooltipContent>{t('web.actionBar.historyTooltip')}</TooltipContent>
         </Tooltip>
       )}
 
@@ -183,19 +185,19 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistor
               size="icon"
               data-ui-id={UI_IDS.WORK_ACTIONBAR_SETTINGS}
               onClick={onSettings}
-              aria-label="설정"
+              aria-label={t('web.actionBar.settingsLabel')}
               className="size-8"
             >
               <Settings size={15} />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>설정</TooltipContent>
+          <TooltipContent>{t('web.actionBar.settingsTooltip')}</TooltipContent>
         </Tooltip>
       )}
 
       <Button type="button" variant="outline" size="sm" data-ui-id={UI_IDS.WORK_ACTIONBAR_COPY} onClick={copy} disabled={!prompt} className="h-8 gap-2">
         <Copy size={14} />
-        복사
+        {t('web.actionBar.copy')}
         <kbd className="ml-1 text-[10px] font-code text-muted-foreground">⌘↵</kbd>
       </Button>
 
@@ -208,14 +210,18 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistor
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-[220px]">
-          <DropdownMenuLabel className="text-[10.5px] font-code uppercase tracking-[0.07em] text-muted-foreground">대상 선택</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-[10.5px] font-code uppercase tracking-[0.07em] text-muted-foreground">
+            {t('web.actionBar.selectTarget')}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {RUN_TARGETS.map((t) => {
-            const installed = available[t] !== false;
+          {RUN_TARGETS.map((target) => {
+            const installed = available[target] !== false;
             return (
-              <DropdownMenuItem key={t} disabled={!installed} onSelect={() => run(t)} className="flex items-center justify-between gap-4">
-                <span>{PROVIDERS[t].label}</span>
-                <span className="text-[11px] font-code text-muted-foreground">{installed ? PROVIDERS[t].launch.join(' ') : '미설치'}</span>
+              <DropdownMenuItem key={target} disabled={!installed} onSelect={() => run(target)} className="flex items-center justify-between gap-4">
+                <span>{PROVIDERS[target].label}</span>
+                <span className="text-[11px] font-code text-muted-foreground">
+                  {installed ? PROVIDERS[target].launch.join(' ') : t('web.actionBar.notInstalledShort')}
+                </span>
               </DropdownMenuItem>
             );
           })}

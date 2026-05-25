@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useT } from '@/i18n/useT.js';
 import { cn } from '@/lib/utils';
 import { useCardStore } from '@/store/cardStore.js';
 import { useUIStore } from '@/store/uiStore.js';
@@ -18,6 +19,7 @@ import { UI_IDS } from '@/ui-ids.js';
  *         WORK_PREVIEW_TOGGLE_RAW, WORK_PREVIEW_TOGGLE_RENDERED
  */
 export function PromptPreview() {
+  const t = useT();
   const { cards, tokenEstimate } = useCardStore();
   const previewMode = useUIStore((s) => s.previewMode);
   const setPreviewMode = useUIStore((s) => s.setPreviewMode);
@@ -42,7 +44,7 @@ export function PromptPreview() {
             aria-pressed={previewMode === 'raw'}
             className={cn(toggleBtnBase, previewMode === 'raw' ? toggleBtnActive : toggleBtnInactive)}
           >
-            [원본]
+            {t('web.promptPreview.raw')}
           </button>
           <button
             type="button"
@@ -51,7 +53,7 @@ export function PromptPreview() {
             aria-pressed={previewMode === 'rendered'}
             className={cn(toggleBtnBase, previewMode === 'rendered' ? toggleBtnActive : toggleBtnInactive)}
           >
-            [미리보기]
+            {t('web.promptPreview.rendered')}
           </button>
         </div>
         <span className="text-[11px] font-code text-muted-foreground">~{tokenEstimate.toLocaleString()} tokens</span>
@@ -67,7 +69,7 @@ export function PromptPreview() {
       >
         {isBlank ? (
           <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
-            <p className="text-muted-foreground text-sm font-sans">카드를 채우면 프롬프트가 표시됩니다.</p>
+            <p className="text-muted-foreground text-sm font-sans">{t('web.promptPreview.blank')}</p>
           </div>
         ) : (
           <>
@@ -86,7 +88,7 @@ export function PromptPreview() {
             {activeEmpty.map((c) => (
               <div key={c.id} className="mb-[18px] opacity-40">
                 <div className="text-muted-foreground font-semibold mb-1 text-[12.5px] font-code">## {c.label}</div>
-                <div className="italic font-sans text-muted-foreground">(비어 있음 — 출력에서 제외)</div>
+                <div className="italic font-sans text-muted-foreground">{t('web.promptPreview.empty')}</div>
               </div>
             ))}
             <div className="mt-8 pt-4 border-t border-dashed border-border flex justify-between text-[11px] text-muted-foreground font-code">

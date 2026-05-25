@@ -23,10 +23,10 @@ function parseIntOrDefault(value: string | undefined, fallback: number): number 
 }
 
 function pickExampleValue(def: CardDefinition): string {
-  if (def.examples && def.examples.length > 0) return def.examples[0];
-  if (def.options && def.options.length > 0) return def.options[0].value;
-  if (def.defaultValue) return def.defaultValue;
-  return `벤치마크 입력 — ${def.label}. 25개 카드 채움 상태 측정용 샘플 값.`;
+  if (def.examples && def.examples.ko.length > 0) return def.examples.ko[0];
+  if (def.options && def.options.length > 0) return def.options[0].value.ko;
+  if (def.defaultValue) return def.defaultValue.ko;
+  return `벤치마크 입력 — ${def.label.ko}. 25개 카드 채움 상태 측정용 샘플 값.`;
 }
 
 function buildSampleCards(defs: Record<string, CardDefinition>, count: number): { cards: SectionCard[]; totalCards: number } {
@@ -36,16 +36,16 @@ function buildSampleCards(defs: Record<string, CardDefinition>, count: number): 
     const isActive = idx < count;
     return {
       id,
-      label: def.label,
+      label: def.label.ko,
       required: def.required ?? false,
       active: isActive,
       order: isActive ? idx + 1 : 0,
       inputType: def.inputType,
       value: isActive ? pickExampleValue(def) : '',
-      template: def.template,
-      hint: def.hint,
-      examples: def.examples,
-      options: def.options,
+      template: def.template.ko,
+      hint: def.hint?.ko,
+      examples: def.examples?.ko,
+      options: def.options?.map((o) => ({ value: o.value.ko, label: o.label.ko, description: o.description?.ko })),
       scanSuggested: def.scanSuggested ?? false,
     };
   });

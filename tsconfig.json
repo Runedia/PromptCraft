@@ -17,7 +17,12 @@
     "types": [
       "bun",
       "node"
-    ]
+    ],
+    "paths": {
+      "@/*": ["./src/web/*"],
+      "@core/*": ["./src/core/*"],
+      "@shared/*": ["./src/shared/*"]
+    }
   },
   "include": [
     "src/**/*",

@@ -16,12 +16,14 @@
     "noEmit": true,
     "paths": {
       "@/*": ["./src/web/*"],
-      "@core/*": ["./src/core/*"]
+      "@core/*": ["./src/core/*"],
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "include": [
     "src/web/**/*",
     "src/core/**/*",
+    "src/shared/**/*",
     "vite.config.ts"
   ],
   "exclude": [

@@ -1,4 +1,5 @@
 import { Input } from '@/components/ui/input.js';
+import { useT } from '@/i18n/useT.js';
 
 interface TextInputProps {
   value: string;
@@ -9,6 +10,8 @@ interface TextInputProps {
 }
 
 export function TextInput({ value, hint, examples, onChange, placeholder }: TextInputProps) {
+  const t = useT();
+
   return (
     <div>
       <Input value={value} placeholder={placeholder ?? hint} onChange={(e) => onChange(e.target.value)} />
@@ -20,7 +23,7 @@ export function TextInput({ value, hint, examples, onChange, placeholder }: Text
               type="button"
               className="text-xs text-muted-foreground border border-border/50 rounded-md px-2 py-1 bg-transparent transition-all text-left max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap hover:border-primary hover:text-foreground"
               onClick={() => onChange(ex)}
-              title="이 예시를 사용합니다"
+              title={t('web.textInput.exampleTitle')}
             >
               {ex}
             </button>

@@ -3,12 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { type RoleMappings, resolveRoleSuggestions } from '../../../src/core/builder/role-resolver.js';
 import type { ScanResult } from '../../../src/core/types.js';
+import type { I18nText } from '../../../src/shared/i18n/types.js';
 
 const TREES_DIR = path.resolve(import.meta.dir, '../../../data/trees');
 
 interface TreeFile {
   id: string;
-  roleSuffix?: string;
+  roleSuffix?: I18nText;
 }
 
 function loadAllTrees(): TreeFile[] {
@@ -35,33 +36,45 @@ const SCAN: ScanResult = {
 } as unknown as ScanResult;
 
 describe('roleSuffix 일관성 — 5개 트리 모두 정의되어야 함', () => {
-  test('모든 트리가 roleSuffix 필드를 보유한다', () => {
+  test('모든 트리가 roleSuffix 필드를 보유한다 ({ko,en})', () => {
     const trees = loadAllTrees();
     for (const tree of trees) {
       expect(tree.roleSuffix, `tree ${tree.id} missing roleSuffix`).toBeDefined();
-      expect(tree.roleSuffix?.trim().length).toBeGreaterThan(0);
+      expect(tree.roleSuffix?.ko.trim().length).toBeGreaterThan(0);
+      expect(tree.roleSuffix?.en.trim().length).toBeGreaterThan(0);
     }
   });
 
   test('각 트리에서 [Framework] [roleSuffix] 조합 역할이 1번 슬롯에 prepend된다', () => {
     const trees = loadAllTrees();
     for (const tree of trees) {
-      const result = resolveRoleSuggestions(SCAN, tree.id, REAL_MAPPINGS, tree.roleSuffix).map((o) => o.value);
-      expect(result[0], `tree ${tree.id} slot 0 mismatch`).toBe(`React ${tree.roleSuffix}`);
+      const roleSuffix = tree.roleSuffix?.ko;
+      const result = resolveRoleSuggestions(SCAN, tree.id, REAL_MAPPINGS, roleSuffix, 'ko').map((o) => o.value);
+      expect(result[0], `tree ${tree.id} slot 0 mismatch`).toBe(`React ${roleSuffix}`);
     }
   });
 
   test('각 트리에서 [Language] [roleSuffix] 조합 역할이 2번 슬롯에 들어간다', () => {
     const trees = loadAllTrees();
     for (const tree of trees) {
-      const result = resolveRoleSuggestions(SCAN, tree.id, REAL_MAPPINGS, tree.roleSuffix).map((o) => o.value);
-      expect(result[1], `tree ${tree.id} slot 1 mismatch`).toBe(`TypeScript ${tree.roleSuffix}`);
+      const roleSuffix = tree.roleSuffix?.ko;
+      const result = resolveRoleSuggestions(SCAN, tree.id, REAL_MAPPINGS, roleSuffix, 'ko').map((o) => o.value);
+      expect(result[1], `tree ${tree.id} slot 1 mismatch`).toBe(`TypeScript ${roleSuffix}`);
+    }
+  });
+
+  test('lang=en: [Framework] [roleSuffix-en] 조합 역할이 1번 슬롯에 prepend된다', () => {
+    const trees = loadAllTrees();
+    for (const tree of trees) {
+      const roleSuffix = tree.roleSuffix?.en;
+      const result = resolveRoleSuggestions(SCAN, tree.id, REAL_MAPPINGS, roleSuffix, 'en').map((o) => o.value);
+      expect(result[0], `tree ${tree.id} en slot 0 mismatch`).toBe(`React ${roleSuffix}`);
     }
   });
 });
 
 describe('roleSuffix 어휘 통일 — 전문가/멘토 패턴', () => {
-  test('expected roleSuffix 값 (PRD 2.5 §3.2.3 일관성)', () => {
+  test('expected roleSuffix 값 (PRD 2.5 §3.2.3 일관성, ko 기준)', () => {
     const expected: Record<string, string> = {
       'error-solving': '디버깅 전문가',
       'feature-impl': '기능 구현 전문가',
@@ -71,7 +84,7 @@ describe('roleSuffix 어휘 통일 — 전문가/멘토 패턴', () => {
     };
     const trees = loadAllTrees();
     for (const tree of trees) {
-      expect(tree.roleSuffix, `tree ${tree.id} roleSuffix`).toBe(expected[tree.id]);
+      expect(tree.roleSuffix?.ko, `tree ${tree.id} roleSuffix`).toBe(expected[tree.id]);
     }
   });
 });

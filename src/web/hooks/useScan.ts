@@ -2,6 +2,7 @@ import type { DomainOverlay } from '@core/builder/domain-overlay.js';
 import type { ScanResult } from '@core/types.js';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useT } from '@/i18n/useT.js';
 import { useCardStore } from '@/store/cardStore.js';
 
 export interface ScanApiResponse extends ScanResult {
@@ -13,16 +14,19 @@ interface ScanOptions {
   silent?: boolean;
 }
 
-function summarizeScan(result: ScanApiResponse): string {
+type Translator = (key: string, vars?: Record<string, string | number>) => string;
+
+function summarizeScan(result: ScanApiResponse, t: Translator): string {
   const parts: string[] = [];
   const domain = result.domainContext?.primary;
   if (domain) parts.push(domain);
-  if (result.languages.length > 0) parts.push(`언어 ${result.languages.length}개`);
-  if (result.frameworks.length > 0) parts.push(`프레임워크 ${result.frameworks.length}개`);
-  return parts.length > 0 ? parts.join(' · ') : '감지된 항목 없음';
+  if (result.languages.length > 0) parts.push(t('web.useScan.langs', { n: result.languages.length }));
+  if (result.frameworks.length > 0) parts.push(t('web.useScan.frameworks', { n: result.frameworks.length }));
+  return parts.length > 0 ? parts.join(' · ') : t('web.useScan.noDetected');
 }
 
 export function useScan() {
+  const t = useT();
   const [error, setError] = useState<string | null>(null);
   const [domainOverlay, setDomainOverlay] = useState<DomainOverlay | null>(null);
   const { setIsScanLoading, setScanResult, cards, updateCardValue: storeUpdate } = useCardStore();
@@ -39,7 +43,7 @@ export function useScan() {
       });
       if (!res.ok) {
         const { error: msg } = await res.json();
-        throw new Error(msg ?? '스캔 실패');
+        throw new Error(msg ?? t('web.useScan.scanFailed'));
       }
       const response: ScanApiResponse = await res.json();
       setScanResult(response);
@@ -49,18 +53,18 @@ export function useScan() {
       const stackCard = cards.find((c) => c.id === 'stack-environment');
       if (stackCard && !stackCard.value) {
         const parts: string[] = [];
-        if (response.languages.length > 0) parts.push(`언어: ${response.languages.map((l) => l.name).join(', ')}`);
-        if (response.frameworks.length > 0) parts.push(`프레임워크: ${response.frameworks.map((f) => f.name).join(', ')}`);
-        if (response.packageManager) parts.push(`패키지 매니저: ${response.packageManager}`);
+        if (response.languages.length > 0) parts.push(t('web.useScan.stackLangs', { names: response.languages.map((l) => l.name).join(', ') }));
+        if (response.frameworks.length > 0) parts.push(t('web.useScan.stackFrameworks', { names: response.frameworks.map((f) => f.name).join(', ') }));
+        if (response.packageManager) parts.push(t('web.useScan.stackPkg', { name: response.packageManager }));
         storeUpdate('stack-environment', parts.join('\n'));
       }
 
-      if (!opts.silent) toast.success('스캔 완료', { description: summarizeScan(response) });
+      if (!opts.silent) toast.success(t('web.useScan.scanDone'), { description: summarizeScan(response, t) });
       return response;
     } catch (err) {
-      const message = err instanceof Error ? err.message : '스캔 중 오류가 발생했습니다.';
+      const message = err instanceof Error ? err.message : t('web.useScan.scanError');
       setError(message);
-      if (!opts.silent) toast.error('스캔 실패', { description: message });
+      if (!opts.silent) toast.error(t('web.useScan.scanFailed'), { description: message });
       return null;
     } finally {
       setIsScanLoading(false);

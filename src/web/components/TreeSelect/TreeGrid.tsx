@@ -1,10 +1,10 @@
-import type { TreeConfig } from '@core/types/card.js';
 import { Check } from 'lucide-react';
 import { getTreeCardStyle } from '@/lib/treeCardStyles.js';
 import { cn } from '@/lib/utils.js';
+import type { ResolvedTree } from '@/types/tree.js';
 import { UI_IDS } from '@/ui-ids.js';
 
-type TreeMeta = Pick<TreeConfig, 'id' | 'label' | 'description'> & { cardCount?: number };
+type TreeMeta = Pick<ResolvedTree, 'id' | 'label' | 'description'> & { cardCount?: number };
 
 interface TreeGridProps {
   trees: TreeMeta[];

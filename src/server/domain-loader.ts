@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import type { DomainOverlay } from '../core/builder/domain-overlay.js';
 import type { RoleMappings } from '../core/builder/role-resolver.js';
 import type { ProgrammingDomain } from '../core/types/domain.js';
+import type { I18nText } from '../shared/i18n/types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const moduleDirname = path.dirname(__filename);
@@ -18,7 +19,7 @@ let treesMetaCache: TreeMeta[] | null = null;
 
 export interface TreeMeta {
   id: string;
-  roleSuffix?: string;
+  roleSuffix?: I18nText;
 }
 
 /**
@@ -78,7 +79,7 @@ export function loadTreesMeta(): TreeMeta[] {
   const metas: TreeMeta[] = [];
   for (const f of files) {
     try {
-      const tree = JSON.parse(fs.readFileSync(path.join(TREES_DIR, f), 'utf8')) as { id?: string; roleSuffix?: string };
+      const tree = JSON.parse(fs.readFileSync(path.join(TREES_DIR, f), 'utf8')) as { id?: string; roleSuffix?: I18nText };
       if (tree.id) metas.push({ id: tree.id, roleSuffix: tree.roleSuffix });
     } catch {
       // 개별 파일 파싱 실패는 무시

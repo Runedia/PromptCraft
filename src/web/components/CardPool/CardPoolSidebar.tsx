@@ -1,11 +1,11 @@
-import type { TreeConfig } from '@core/types/card.js';
 import type { ScanResult } from '@core/types.js';
 import { getTreeCardStyle } from '@/lib/treeCardStyles.js';
+import type { ResolvedTree } from '@/types/tree.js';
 import { UI_IDS } from '@/ui-ids.js';
 import { CardPool } from './CardPool.js';
 
 interface CardPoolSidebarProps {
-  treeConfig: TreeConfig | null;
+  treeConfig: ResolvedTree | null;
   scanResult: ScanResult | null;
 }
 

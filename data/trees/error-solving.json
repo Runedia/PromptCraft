@@ -1,8 +1,8 @@
 {
   "id": "error-solving",
-  "label": "에러 해결",
-  "description": "런타임/빌드/네트워크 에러 디버깅",
-  "roleSuffix": "디버깅 전문가",
+  "label": { "ko": "에러 해결", "en": "Error Solving" },
+  "description": { "ko": "런타임/빌드/네트워크 에러 디버깅", "en": "Debug runtime/build/network errors" },
+  "roleSuffix": { "ko": "디버깅 전문가", "en": "Debugging Specialist" },
   "defaultActiveCards": ["role", "goal", "stack-environment", "error-evidence", "tried-methods"],
   "cardPool": [
     "expected-behavior",
@@ -17,20 +17,38 @@
   ],
   "cardOverrides": {
     "goal": {
-      "hint": "원인 분석의 목표를 명확히 적으면 해결 방향이 구체화됩니다.",
-      "examples": [
-        "배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정",
-        "빌드 실패를 재현하고 최소 수정으로 배포 가능 상태 복구",
-        "메모리 누수가 발생하는 컴포넌트를 특정하고 원인 제거",
-        "CI에서 간헐적으로 실패하는 테스트 재현 및 수정",
-        "특정 사용자에게만 발생하는 500 에러의 원인 분석"
-      ]
+      "hint": {
+        "ko": "원인 분석의 목표를 명확히 적으면 해결 방향이 구체화됩니다.",
+        "en": "Stating the goal of the root-cause analysis clarifies the path to a solution."
+      },
+      "examples": {
+        "ko": [
+          "배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정",
+          "빌드 실패를 재현하고 최소 수정으로 배포 가능 상태 복구",
+          "메모리 누수가 발생하는 컴포넌트를 특정하고 원인 제거",
+          "CI에서 간헐적으로 실패하는 테스트 재현 및 수정",
+          "특정 사용자에게만 발생하는 500 에러의 원인 분석"
+        ],
+        "en": [
+          "Identify and fix the cause of TypeError in the login API after deployment",
+          "Reproduce the build failure and restore a deployable state with minimal changes",
+          "Identify the component causing the memory leak and eliminate its root cause",
+          "Reproduce and fix the intermittently failing test in CI",
+          "Analyze the root cause of 500 errors that occur only for specific users"
+        ]
+      }
     },
     "role": {
-      "examples": ["백엔드 엔지니어", "DevOps 엔지니어", "SRE", "TypeScript 개발자", "풀스택 개발자"]
+      "examples": {
+        "ko": ["백엔드 엔지니어", "DevOps 엔지니어", "SRE", "TypeScript 개발자", "풀스택 개발자"],
+        "en": ["Backend Engineer", "DevOps Engineer", "SRE", "TypeScript Developer", "Full-Stack Developer"]
+      }
     },
     "error-evidence": {
-      "hint": "다음 3요소를 포함하세요: (1) 에러 메시지 원문 (2) 파일:라인 위치 (3) 재현 조건. @파일경로로 파일 참조 가능."
+      "hint": {
+        "ko": "다음 3요소를 포함하세요: (1) 에러 메시지 원문 (2) 파일:라인 위치 (3) 재현 조건. @파일경로로 파일 참조 가능.",
+        "en": "Include these 3 elements: (1) exact error message (2) file:line location (3) reproduction condition. Reference files with @filepath."
+      }
     }
   }
 }

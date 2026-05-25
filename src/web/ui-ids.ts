@@ -373,6 +373,13 @@ export const UI_IDS = {
    * @file src/web/components/SettingsSheet/SettingsSheet.tsx
    */
   WORK_SETTINGS_SHELL_GROUP: 'WORK_SETTINGS_SHELL_GROUP',
+  /**
+   * @screen WorkspacePage
+   * @region Settings
+   * @description 언어 선택 RadioGroup (시스템 따름/한국어/English)
+   * @file src/web/components/SettingsSheet/SettingsSheet.tsx
+   */
+  WORK_SETTINGS_LANG_GROUP: 'WORK_SETTINGS_LANG_GROUP',
 
   // ── ScanBanner / V6 Tree-Select ──────────────────────────────────────────
 

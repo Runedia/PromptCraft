@@ -1,3 +1,5 @@
+import { t } from '../../shared/i18n/t.js';
+import type { Locale } from '../../shared/i18n/types.js';
 import type { SectionCard } from '../types/card.js';
 import { MENTION_PATTERN } from './mentionParser.js';
 
@@ -41,13 +43,13 @@ export function substituteOnce(template: string, value: string): string {
 /**
  * 프리뷰용: active 카드를 order 순으로 조립, 빈 값은 placeholder로 표시.
  */
-export function buildPreview(cards: SectionCard[]): string {
+export function buildPreview(cards: SectionCard[], lang: Locale = 'ko'): string {
   return cards
     .filter((c) => c.active)
     .sort((a, b) => a.order - b.order)
     .map((c) => {
       const header = c.template.split('\n')[0];
-      const body = c.value.trim() !== '' ? resolveMentionLinks(c.value.trim()) : '_입력 대기 중..._';
+      const body = c.value.trim() !== '' ? resolveMentionLinks(c.value.trim()) : t('core.preview.waiting', lang);
       return `${header}\n${body}`;
     })
     .join('\n\n');

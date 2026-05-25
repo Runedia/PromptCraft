@@ -17,6 +17,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@core': path.join(__dirname, 'src/core'),
+      '@shared': path.join(__dirname, 'src/shared'),
       '@': path.join(__dirname, 'src/web'),
     },
   },

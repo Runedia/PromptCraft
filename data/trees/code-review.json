@@ -1,24 +1,42 @@
 {
   "id": "code-review",
-  "label": "코드 리뷰",
-  "description": "보안/성능/스타일 점검",
+  "label": { "ko": "코드 리뷰", "en": "Code Review" },
+  "description": { "ko": "보안/성능/스타일 점검", "en": "Security/performance/style review" },
+  "roleSuffix": { "ko": "코드 리뷰 전문가", "en": "Code Review Specialist" },
   "defaultActiveCards": ["role", "goal", "review-code", "review-focus"],
   "cardPool": ["related-code", "security-context", "concern-area", "constraints", "output-format"],
-  "roleSuffix": "코드 리뷰 전문가",
   "cardOverrides": {
     "goal": {
-      "defaultValue": "코드 리뷰",
-      "hint": "리뷰 목적을 구체화하려면 수정하세요. (예: PR 머지 전 안전성 확인, 레거시 리팩터링 후보 파악)"
+      "defaultValue": { "ko": "코드 리뷰", "en": "Code review" },
+      "hint": {
+        "ko": "리뷰 목적을 구체화하려면 수정하세요. (예: PR 머지 전 안전성 확인, 레거시 리팩터링 후보 파악)",
+        "en": "Edit to clarify the review purpose. (e.g. confirm safety before PR merge, identify legacy refactoring candidates)"
+      }
     },
     "role": {
-      "examples": ["시니어 개발자", "테크 리드", "보안 엔지니어", "코드 리뷰어", "풀스택 개발자"]
+      "examples": {
+        "ko": ["시니어 개발자", "테크 리드", "보안 엔지니어", "코드 리뷰어", "풀스택 개발자"],
+        "en": ["Senior Developer", "Tech Lead", "Security Engineer", "Code Reviewer", "Full-Stack Developer"]
+      }
     },
     "output-format": {
       "options": [
-        { "value": "심각도별 분류표 (Critical/Major/Minor) + 제안 코드", "label": "심각도 분류표" },
-        { "value": "라인별 인라인 코멘트 형식", "label": "인라인 코멘트" },
-        { "value": "전체 요약 + 상세 항목 + 액션 아이템", "label": "요약 + 상세" },
-        { "value": "변경 전후 diff + 설명", "label": "diff + 설명" }
+        {
+          "value": { "ko": "심각도별 분류표 (Critical/Major/Minor) + 제안 코드", "en": "Severity table (Critical/Major/Minor) + suggested code" },
+          "label": { "ko": "심각도 분류표", "en": "Severity table" }
+        },
+        {
+          "value": { "ko": "라인별 인라인 코멘트 형식", "en": "Line-by-line inline comment format" },
+          "label": { "ko": "인라인 코멘트", "en": "Inline comments" }
+        },
+        {
+          "value": { "ko": "전체 요약 + 상세 항목 + 액션 아이템", "en": "Overall summary + detailed items + action items" },
+          "label": { "ko": "요약 + 상세", "en": "Summary + details" }
+        },
+        {
+          "value": { "ko": "변경 전후 diff + 설명", "en": "Before/after diff + explanation" },
+          "label": { "ko": "diff + 설명", "en": "Diff + explanation" }
+        }
       ]
     }
   }

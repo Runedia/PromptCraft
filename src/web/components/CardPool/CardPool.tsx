@@ -1,5 +1,6 @@
 import { Check, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button.js';
+import { useT } from '@/i18n/useT.js';
 import { cn } from '@/lib/utils';
 import { useCardStore } from '@/store/cardStore.js';
 import { UI_IDS } from '@/ui-ids.js';
@@ -12,6 +13,7 @@ interface CardPoolProps {
  * @ui-ids WORK_CARD_POOL, WORK_CARD_POOL_ITEM_BTN
  */
 export function CardPool({ variant = 'inline' }: CardPoolProps) {
+  const t = useT();
   const { activateCard, deactivateCard, inactiveCards, activeCards } = useCardStore();
   const inactive = inactiveCards();
   const active = activeCards();
@@ -58,7 +60,7 @@ export function CardPool({ variant = 'inline' }: CardPoolProps) {
 
   return (
     <div className="flex flex-col gap-2 pt-4 border-t border-border/50" data-ui-id={UI_IDS.WORK_CARD_POOL}>
-      <span className="text-sm text-muted-foreground font-medium">카드 추가</span>
+      <span className="text-sm text-muted-foreground font-medium">{t('web.cardPool.addCard')}</span>
       <div className="flex flex-wrap gap-2">
         {inactive.map((card) => (
           <Button

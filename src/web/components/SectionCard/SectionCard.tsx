@@ -5,6 +5,7 @@ import { GripVertical, Lock, Pin, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.js';
+import { useT } from '@/i18n/useT.js';
 import { cn } from '@/lib/utils';
 import { useCardStore } from '@/store/cardStore.js';
 import { UI_IDS } from '@/ui-ids.js';
@@ -22,6 +23,7 @@ interface SectionCardProps {
  * @ui-ids WORK_SECTION_CARD, WORK_SECTION_CARD_DRAG_BTN, WORK_SECTION_CARD_REMOVE_BTN
  */
 export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCardProps) {
+  const t = useT();
   const { updateCardValue, deactivateCard } = useCardStore();
   const isPinned = PINNED_CARD_IDS.has(card.id);
 
@@ -60,12 +62,12 @@ export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCar
                 disabled
                 data-ui-id={UI_IDS.WORK_SECTION_CARD_DRAG_BTN}
                 className="text-muted-foreground/60 p-1 rounded-md flex items-center cursor-not-allowed"
-                aria-label="고정된 카드 — 이동 불가"
+                aria-label={t('web.sectionCard.pinnedLabel')}
               >
                 <Pin size={16} />
               </button>
             </TooltipTrigger>
-            <TooltipContent>고정 — 이동 불가</TooltipContent>
+            <TooltipContent>{t('web.sectionCard.pinnedTooltip')}</TooltipContent>
           </Tooltip>
         ) : (
           <button
@@ -74,7 +76,7 @@ export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCar
             className="text-muted-foreground p-1 rounded-md flex items-center transition-colors hover:text-secondary-foreground cursor-grab active:cursor-grabbing"
             {...attributes}
             {...listeners}
-            aria-label="드래그로 순서 변경"
+            aria-label={t('web.sectionCard.dragLabel')}
           >
             <GripVertical size={16} />
           </button>
@@ -83,7 +85,7 @@ export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCar
         {card.required && (
           <Badge variant="secondary" className="gap-1">
             <Lock size={12} />
-            필수
+            {t('web.sectionCard.required')}
           </Badge>
         )}
         {!card.required && (
@@ -96,12 +98,12 @@ export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCar
                 data-ui-id={UI_IDS.WORK_SECTION_CARD_REMOVE_BTN}
                 className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                 onClick={() => deactivateCard(card.id)}
-                aria-label="카드 제거"
+                aria-label={t('web.sectionCard.removeLabel')}
               >
                 <X size={16} />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>제거</TooltipContent>
+            <TooltipContent>{t('web.sectionCard.removeTooltip')}</TooltipContent>
           </Tooltip>
         )}
       </div>

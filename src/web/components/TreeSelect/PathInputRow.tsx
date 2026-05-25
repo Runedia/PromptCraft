@@ -1,6 +1,7 @@
 import { Folder, FolderOpen, X } from 'lucide-react';
 import { forwardRef } from 'react';
 import { Button } from '@/components/ui/button.js';
+import { useT } from '@/i18n/useT.js';
 import { cn } from '@/lib/utils.js';
 import { UI_IDS } from '@/ui-ids.js';
 
@@ -12,6 +13,8 @@ interface PathInputRowProps {
 }
 
 export const PathInputRow = forwardRef<HTMLInputElement, PathInputRowProps>(({ value, onChange, onBrowse, onClear }, ref) => {
+  const t = useT();
+
   return (
     <div className="flex items-center gap-2">
       <div
@@ -27,7 +30,7 @@ export const PathInputRow = forwardRef<HTMLInputElement, PathInputRowProps>(({ v
           data-ui-id={UI_IDS.TREE_PATH_INPUT}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="예: C:/my-project"
+          placeholder={t('web.pathInputRow.placeholder')}
           spellCheck={false}
           className="flex-1 bg-transparent border-0 outline-none font-code text-sm text-foreground placeholder:text-muted-foreground"
         />
@@ -37,7 +40,7 @@ export const PathInputRow = forwardRef<HTMLInputElement, PathInputRowProps>(({ v
             data-ui-id={UI_IDS.TREE_PATH_CLEAR_BTN}
             onClick={onClear}
             tabIndex={-1}
-            aria-label="경로 지우기"
+            aria-label={t('web.pathInputRow.clearLabel')}
             className="text-muted-foreground hover:text-foreground p-0.5 rounded"
           >
             <X size={13} />
@@ -46,7 +49,7 @@ export const PathInputRow = forwardRef<HTMLInputElement, PathInputRowProps>(({ v
       </div>
       <Button type="button" variant="outline" size="sm" data-ui-id={UI_IDS.TREE_PATH_BROWSE_BTN} onClick={onBrowse} className="h-10">
         <FolderOpen size={14} />
-        폴더 찾기
+        {t('web.pathInputRow.browse')}
       </Button>
     </div>
   );

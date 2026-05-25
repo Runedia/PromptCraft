@@ -1,17 +1,18 @@
-import type { TreeConfig } from '@core/types/card.js';
 import { Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FolderBrowser } from '@/components/FolderBrowser/FolderBrowser.js';
 import { ScanBanner, type ScanStatus } from '@/components/ScanBanner/ScanBanner.js';
 import { ThemeToggle } from '@/components/ThemeToggle.js';
+import { useT } from '@/i18n/useT.js';
 import { useCardStore } from '@/store/cardStore.js';
+import type { ResolvedTree } from '@/types/tree.js';
 import { UI_IDS } from '@/ui-ids.js';
 import { CTARow } from './CTARow.js';
 import { PathInputRow } from './PathInputRow.js';
 import { SuggestedRoles } from './SuggestedRoles.js';
 import { TreeGrid } from './TreeGrid.js';
 
-type TreeMeta = Pick<TreeConfig, 'id' | 'label' | 'description'> & { cardCount?: number };
+type TreeMeta = Pick<ResolvedTree, 'id' | 'label' | 'description'> & { cardCount?: number };
 
 interface TreeSelectProps {
   onSelect: (treeId: string, projectPath: string) => void;
@@ -25,6 +26,7 @@ const SESSION_PATH_KEY = 'promptcraft:projectPath';
  *   TREE_PATH_ROLE_CHIPS, TREE_CTA_CANCEL, TREE_CTA_CONTINUE
  */
 export function TreeSelect({ onSelect }: TreeSelectProps) {
+  const t = useT();
   const setScanResult = useCardStore((s) => s.setScanResult);
   const scanResult = useCardStore((s) => s.scanResult);
 
@@ -114,7 +116,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
     if (canContinue && selectedTreeId) onSelect(selectedTreeId, projectPath.trim());
   };
 
-  const selectedTreeLabel = trees.find((t) => t.id === selectedTreeId)?.label ?? null;
+  const selectedTreeLabel = trees.find((tr) => tr.id === selectedTreeId)?.label ?? null;
   const domain = scanResult?.domainContext?.primary ?? null;
 
   if (loading) {
@@ -122,7 +124,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
       <div className="flex items-center justify-center h-screen bg-background">
         <div className="flex flex-col items-center gap-3">
           <div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-          <span className="text-sm text-muted-foreground">로딩 중...</span>
+          <span className="text-sm text-muted-foreground">{t('web.treeSelect.loading')}</span>
         </div>
       </div>
     );
@@ -151,18 +153,16 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
           <span className="text-[11.5px] font-code uppercase tracking-[0.06em] text-muted-foreground mb-2">step 01 · new prompt</span>
 
           {/* H1 (sans 36px / 600 / -0.8) */}
-          <h1 className="text-[36px] leading-[1.1] font-semibold tracking-[-0.025em] text-foreground mb-2">어떤 작업을 도와드릴까요?</h1>
+          <h1 className="text-[36px] leading-[1.1] font-semibold tracking-[-0.025em] text-foreground mb-2">{t('web.treeSelect.hero')}</h1>
 
           {/* Description */}
-          <p className="text-sm text-secondary-foreground max-w-[580px] mb-8">
-            상황 유형을 고르면 그에 맞는 카드 구성과 도메인 적응형 역할 후보가 자동으로 준비됩니다.
-          </p>
+          <p className="text-sm text-secondary-foreground max-w-[580px] mb-8">{t('web.treeSelect.heroDesc')}</p>
 
           {/* Path label + input + scan banner */}
           <div className="flex flex-col gap-2.5 mb-7">
             <div className="flex items-center gap-2">
-              <span className="text-[11.5px] font-semibold text-secondary-foreground">프로젝트 경로</span>
-              <span className="text-[10.5px] font-code text-muted-foreground">· 입력 후 800ms 자동 스캔</span>
+              <span className="text-[11.5px] font-semibold text-secondary-foreground">{t('web.treeSelect.projectPath')}</span>
+              <span className="text-[10.5px] font-code text-muted-foreground">{t('web.treeSelect.autoScan')}</span>
             </div>
             <PathInputRow ref={inputRef} value={projectPath} onChange={handlePathChange} onBrowse={() => setShowBrowser(true)} onClear={handleClearPath} />
             <ScanBanner status={scanStatus} result={scanResult} />
@@ -170,7 +170,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
 
           {/* Tree grid */}
           <div className="flex flex-col gap-2.5 mb-7">
-            <span className="text-[11.5px] font-semibold text-secondary-foreground">상황 유형 선택</span>
+            <span className="text-[11.5px] font-semibold text-secondary-foreground">{t('web.treeSelect.selectType')}</span>
             <TreeGrid trees={trees} selectedId={selectedTreeId} onSelect={setSelectedTreeId} disabled={scanStatus !== 'scanned'} />
           </div>
 
@@ -184,7 +184,7 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
           {/* CTA */}
           <CTARow
             canContinue={canContinue}
-            hint={scanStatus !== 'scanned' ? '경로 입력 후 스캔이 완료되면 활성화됩니다.' : !selectedTreeId ? '트리를 선택하세요.' : undefined}
+            hint={scanStatus !== 'scanned' ? t('web.treeSelect.hintScanFirst') : !selectedTreeId ? t('web.treeSelect.hintSelectTree') : undefined}
             onCancel={handleClearPath}
             onContinue={handleContinue}
           />

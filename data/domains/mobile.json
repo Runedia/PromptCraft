@@ -3,42 +3,87 @@
   "cardOverrides": {
     "goal": {
       "examples": {
-        "error-solving": [
-          "iOS 17에서만 발생하는 SwiftUI 레이아웃 깨짐 원인 분석 및 수정",
-          "Flutter 앱의 특정 기기에서 발생하는 네이티브 모듈 크래시 원인 파악",
-          "Android 앱의 메모리 누수로 인한 ANR 원인 분석 — LeakCanary 결과 해석",
-          "React Native 앱의 JavaScript 스레드 블로킹 원인 특정 및 해결",
-          "앱 백그라운드 전환 후 세션 토큰 갱신 실패 원인 분석"
-        ],
-        "feature-impl": [
-          "오프라인 우선 동기화 기능 구현 — Hive/SQLite 로컬 캐시 + 백그라운드 sync",
-          "생체 인증(Face ID/지문) 통합 구현",
-          "푸시 알림 수신 및 딥링크 처리 기능 구현",
-          "이미지 피커 + 업로드 진행률 UI 구현",
-          "다국어 지원(l10n) 추가 — ARB 파일 기반 Flutter 로컬라이제이션"
-        ],
-        "code-review": [
-          "컴포넌트 라이프사이클 관리 — 메모리 누수 가능성 점검",
-          "앱 권한 요청 시점과 사용자 경험 흐름 리뷰",
-          "플랫폼별(iOS/Android) 동작 차이 처리 여부 점검",
-          "배터리 소모 최적화 — 백그라운드 작업 및 센서 사용 패턴 점검",
-          "접근성(VoiceOver/TalkBack) 지원 여부 리뷰"
-        ],
-        "concept-learn": [
-          "Flutter Widget 트리와 Element/RenderObject 계층 이해",
-          "iOS 앱 라이프사이클과 백그라운드 모드 처리 전략",
-          "Android Jetpack Compose의 recomposition 원리와 최적화",
-          "React Native의 New Architecture — JSI와 Hermes 엔진 이해",
-          "모바일 앱 보안 — 인증서 피닝, 키체인/키스토어 사용 패턴"
-        ]
+        "error-solving": {
+          "ko": [
+            "iOS 17에서만 발생하는 SwiftUI 레이아웃 깨짐 원인 분석 및 수정",
+            "Flutter 앱의 특정 기기에서 발생하는 네이티브 모듈 크래시 원인 파악",
+            "Android 앱의 메모리 누수로 인한 ANR 원인 분석 — LeakCanary 결과 해석",
+            "React Native 앱의 JavaScript 스레드 블로킹 원인 특정 및 해결",
+            "앱 백그라운드 전환 후 세션 토큰 갱신 실패 원인 분석"
+          ],
+          "en": [
+            "Analyze and fix SwiftUI layout breakage that occurs only on iOS 17",
+            "Identify the root cause of native module crashes on specific devices in a Flutter app",
+            "Analyze ANR caused by memory leak in an Android app — interpret LeakCanary results",
+            "Identify and resolve JavaScript thread blocking in a React Native app",
+            "Analyze the cause of session token refresh failures after app backgrounding"
+          ]
+        },
+        "feature-impl": {
+          "ko": [
+            "오프라인 우선 동기화 기능 구현 — Hive/SQLite 로컬 캐시 + 백그라운드 sync",
+            "생체 인증(Face ID/지문) 통합 구현",
+            "푸시 알림 수신 및 딥링크 처리 기능 구현",
+            "이미지 피커 + 업로드 진행률 UI 구현",
+            "다국어 지원(l10n) 추가 — ARB 파일 기반 Flutter 로컬라이제이션"
+          ],
+          "en": [
+            "Implement offline-first sync — Hive/SQLite local cache + background sync",
+            "Integrate biometric authentication (Face ID / fingerprint)",
+            "Implement push notification receiving and deep link handling",
+            "Implement image picker with upload progress UI",
+            "Add localization (l10n) support — ARB file-based Flutter localization"
+          ]
+        },
+        "code-review": {
+          "ko": [
+            "컴포넌트 라이프사이클 관리 — 메모리 누수 가능성 점검",
+            "앱 권한 요청 시점과 사용자 경험 흐름 리뷰",
+            "플랫폼별(iOS/Android) 동작 차이 처리 여부 점검",
+            "배터리 소모 최적화 — 백그라운드 작업 및 센서 사용 패턴 점검",
+            "접근성(VoiceOver/TalkBack) 지원 여부 리뷰"
+          ],
+          "en": [
+            "Review component lifecycle management — check for potential memory leaks",
+            "Review permission request timing and user experience flow",
+            "Check whether platform-specific (iOS/Android) behavior differences are handled",
+            "Review battery consumption optimization — background task and sensor usage patterns",
+            "Review accessibility (VoiceOver/TalkBack) support"
+          ]
+        },
+        "concept-learn": {
+          "ko": [
+            "Flutter Widget 트리와 Element/RenderObject 계층 이해",
+            "iOS 앱 라이프사이클과 백그라운드 모드 처리 전략",
+            "Android Jetpack Compose의 recomposition 원리와 최적화",
+            "React Native의 New Architecture — JSI와 Hermes 엔진 이해",
+            "모바일 앱 보안 — 인증서 피닝, 키체인/키스토어 사용 패턴"
+          ],
+          "en": [
+            "Understand the Flutter Widget tree and the Element/RenderObject hierarchy",
+            "Understand iOS app lifecycle and background mode handling strategies",
+            "Understand the recomposition principle and optimization in Android Jetpack Compose",
+            "Understand React Native's New Architecture — JSI and the Hermes engine",
+            "Understand mobile app security — certificate pinning and Keychain/Keystore usage patterns"
+          ]
+        }
       },
-      "hint": "타겟 플랫폼(iOS/Android/양쪽), 지원 OS 버전 범위, 디자인 가이드라인 준수 여부를 함께 적으면 구현 품질이 좋아집니다."
+      "hint": {
+        "ko": "타겟 플랫폼(iOS/Android/양쪽), 지원 OS 버전 범위, 디자인 가이드라인 준수 여부를 함께 적으면 구현 품질이 좋아집니다.",
+        "en": "Describing the target platform (iOS/Android/both), supported OS version range, and design guideline compliance improves implementation quality."
+      }
     },
     "error-evidence": {
-      "hint": "다음을 포함하세요: (1) 크래시 로그/스택트레이스 (2) 기기 모델 및 OS 버전 (3) 재현 단계 (4) 앱 버전 및 빌드 환경. @파일경로로 관련 파일 참조 가능."
+      "hint": {
+        "ko": "다음을 포함하세요: (1) 크래시 로그/스택트레이스 (2) 기기 모델 및 OS 버전 (3) 재현 단계 (4) 앱 버전 및 빌드 환경. @파일경로로 관련 파일 참조 가능.",
+        "en": "Include: (1) crash log/stack trace (2) device model and OS version (3) reproduction steps (4) app version and build environment. Reference files with @filepath."
+      }
     },
     "profiling-data": {
-      "hint": "기기 메모리 사용량, 프레임 드롭(Jank), 배터리 소모 통계, Xcode Instruments 또는 Android Profiler 결과를 포함하면 좋습니다."
+      "hint": {
+        "ko": "기기 메모리 사용량, 프레임 드롭(Jank), 배터리 소모 통계, Xcode Instruments 또는 Android Profiler 결과를 포함하면 좋습니다.",
+        "en": "Include device memory usage, frame drops (Jank), battery consumption stats, and Xcode Instruments or Android Profiler results."
+      }
     }
   },
   "cardRelevance": {

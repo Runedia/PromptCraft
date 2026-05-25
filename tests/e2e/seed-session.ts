@@ -9,11 +9,11 @@ export interface SeedSession {
   savedAt: number;
 }
 
-function pickExampleValue(def: CardDefinition, label: string): string {
-  if (def.examples && def.examples.length > 0) return def.examples[0];
-  if (def.options && def.options.length > 0) return def.options[0].value;
-  if (def.defaultValue) return def.defaultValue;
-  return `벤치마크 입력 — ${label}. 25개 카드 활성화 상태 측정용 샘플 텍스트.`;
+function pickExampleValue(def: CardDefinition, labelKo: string): string {
+  if (def.examples && def.examples.ko.length > 0) return def.examples.ko[0];
+  if (def.options && def.options.length > 0) return def.options[0].value.ko;
+  if (def.defaultValue) return def.defaultValue.ko;
+  return `벤치마크 입력 — ${labelKo}. 25개 카드 활성화 상태 측정용 샘플 텍스트.`;
 }
 
 export function loadCardDefinitions(): Record<string, CardDefinition> {
@@ -29,18 +29,19 @@ export function buildSeedSession(treeId: string, activeCount: number): SeedSessi
 
   const cards: SectionCard[] = ordered.map(([id, def], idx) => {
     const isActive = idx < activeCount;
+    const labelKo = def.label.ko;
     return {
       id,
-      label: def.label,
+      label: labelKo,
       required: def.required ?? false,
       active: isActive,
       order: isActive ? idx + 1 : 0,
       inputType: def.inputType,
-      value: isActive ? pickExampleValue(def, def.label) : '',
-      template: def.template,
-      hint: def.hint,
-      examples: def.examples,
-      options: def.options,
+      value: isActive ? pickExampleValue(def, labelKo) : '',
+      template: def.template.ko,
+      hint: def.hint?.ko,
+      examples: def.examples?.ko,
+      options: def.options?.map((o) => ({ value: o.value.ko, label: o.label.ko, description: o.description?.ko })),
       scanSuggested: def.scanSuggested ?? false,
     };
   });

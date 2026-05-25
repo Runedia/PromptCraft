@@ -1,158 +1,350 @@
 {
   "domainRoles": {
     "web-frontend": {
-      "default": ["프론트엔드 개발자", "UI/UX 엔지니어", "웹 개발자"],
-      "error-solving": ["프론트엔드 디버깅 전문가", "브라우저 호환성 엔지니어", "프론트엔드 개발자"],
-      "feature-impl": ["프론트엔드 아키텍트", "UI 컴포넌트 개발자", "프론트엔드 개발자"],
-      "code-review": ["시니어 프론트엔드 개발자", "접근성(a11y) 전문가", "프론트엔드 아키텍트"],
-      "concept-learn": ["프론트엔드 멘토", "웹 기술 강사", "시니어 프론트엔드 개발자"],
-      "refactoring": ["프론트엔드 리팩토링 전문가", "UI 컴포넌트 아키텍트", "시니어 프론트엔드 개발자"]
+      "default": [
+        { "ko": "프론트엔드 개발자", "en": "Frontend Developer" },
+        { "ko": "UI/UX 엔지니어", "en": "UI/UX Engineer" },
+        { "ko": "웹 개발자", "en": "Web Developer" }
+      ],
+      "error-solving": [
+        { "ko": "프론트엔드 디버깅 전문가", "en": "Frontend Debugging Specialist" },
+        { "ko": "브라우저 호환성 엔지니어", "en": "Browser Compatibility Engineer" },
+        { "ko": "프론트엔드 개발자", "en": "Frontend Developer" }
+      ],
+      "feature-impl": [
+        { "ko": "프론트엔드 아키텍트", "en": "Frontend Architect" },
+        { "ko": "UI 컴포넌트 개발자", "en": "UI Component Developer" },
+        { "ko": "프론트엔드 개발자", "en": "Frontend Developer" }
+      ],
+      "code-review": [
+        { "ko": "시니어 프론트엔드 개발자", "en": "Senior Frontend Developer" },
+        { "ko": "접근성(a11y) 전문가", "en": "Accessibility (a11y) Specialist" },
+        { "ko": "프론트엔드 아키텍트", "en": "Frontend Architect" }
+      ],
+      "concept-learn": [
+        { "ko": "프론트엔드 멘토", "en": "Frontend Mentor" },
+        { "ko": "웹 기술 강사", "en": "Web Technology Instructor" },
+        { "ko": "시니어 프론트엔드 개발자", "en": "Senior Frontend Developer" }
+      ],
+      "refactoring": [
+        { "ko": "프론트엔드 리팩토링 전문가", "en": "Frontend Refactoring Specialist" },
+        { "ko": "UI 컴포넌트 아키텍트", "en": "UI Component Architect" },
+        { "ko": "시니어 프론트엔드 개발자", "en": "Senior Frontend Developer" }
+      ]
     },
     "web-backend": {
-      "default": ["백엔드 엔지니어", "API 개발자", "서버 개발자"],
-      "error-solving": ["백엔드 SRE", "API 디버깅 전문가", "백엔드 엔지니어"],
-      "feature-impl": ["백엔드 아키텍트", "API 설계자", "백엔드 엔지니어"],
-      "code-review": ["시니어 백엔드 개발자", "보안 엔지니어", "테크 리드"],
-      "concept-learn": ["백엔드 멘토", "시스템 설계 강사", "시니어 백엔드 개발자"],
-      "refactoring": ["백엔드 리팩토링 전문가", "API 아키텍트", "시니어 백엔드 개발자"]
+      "default": [
+        { "ko": "백엔드 엔지니어", "en": "Backend Engineer" },
+        { "ko": "API 개발자", "en": "API Developer" },
+        { "ko": "서버 개발자", "en": "Server Developer" }
+      ],
+      "error-solving": [
+        { "ko": "백엔드 SRE", "en": "Backend SRE" },
+        { "ko": "API 디버깅 전문가", "en": "API Debugging Specialist" },
+        { "ko": "백엔드 엔지니어", "en": "Backend Engineer" }
+      ],
+      "feature-impl": [
+        { "ko": "백엔드 아키텍트", "en": "Backend Architect" },
+        { "ko": "API 설계자", "en": "API Designer" },
+        { "ko": "백엔드 엔지니어", "en": "Backend Engineer" }
+      ],
+      "code-review": [
+        { "ko": "시니어 백엔드 개발자", "en": "Senior Backend Developer" },
+        { "ko": "보안 엔지니어", "en": "Security Engineer" },
+        { "ko": "테크 리드", "en": "Tech Lead" }
+      ],
+      "concept-learn": [
+        { "ko": "백엔드 멘토", "en": "Backend Mentor" },
+        { "ko": "시스템 설계 강사", "en": "System Design Instructor" },
+        { "ko": "시니어 백엔드 개발자", "en": "Senior Backend Developer" }
+      ],
+      "refactoring": [
+        { "ko": "백엔드 리팩토링 전문가", "en": "Backend Refactoring Specialist" },
+        { "ko": "API 아키텍트", "en": "API Architect" },
+        { "ko": "시니어 백엔드 개발자", "en": "Senior Backend Developer" }
+      ]
     },
     "data-ml": {
-      "default": ["데이터 사이언티스트", "ML 엔지니어", "데이터 엔지니어"],
-      "error-solving": ["ML 디버깅 엔지니어", "데이터 파이프라인 엔지니어", "ML 엔지니어"],
-      "feature-impl": ["ML 엔지니어", "데이터 엔지니어", "AI 시스템 개발자"],
-      "code-review": ["시니어 ML 엔지니어", "데이터 품질 엔지니어", "ML 아키텍트"],
-      "concept-learn": ["ML 리서처", "데이터 과학 강사", "시니어 ML 엔지니어"],
-      "refactoring": ["ML 코드 품질 엔지니어", "데이터 파이프라인 아키텍트", "시니어 ML 엔지니어"]
+      "default": [
+        { "ko": "데이터 사이언티스트", "en": "Data Scientist" },
+        { "ko": "ML 엔지니어", "en": "ML Engineer" },
+        { "ko": "데이터 엔지니어", "en": "Data Engineer" }
+      ],
+      "error-solving": [
+        { "ko": "ML 디버깅 엔지니어", "en": "ML Debugging Engineer" },
+        { "ko": "데이터 파이프라인 엔지니어", "en": "Data Pipeline Engineer" },
+        { "ko": "ML 엔지니어", "en": "ML Engineer" }
+      ],
+      "feature-impl": [
+        { "ko": "ML 엔지니어", "en": "ML Engineer" },
+        { "ko": "데이터 엔지니어", "en": "Data Engineer" },
+        { "ko": "AI 시스템 개발자", "en": "AI Systems Developer" }
+      ],
+      "code-review": [
+        { "ko": "시니어 ML 엔지니어", "en": "Senior ML Engineer" },
+        { "ko": "데이터 품질 엔지니어", "en": "Data Quality Engineer" },
+        { "ko": "ML 아키텍트", "en": "ML Architect" }
+      ],
+      "concept-learn": [
+        { "ko": "ML 리서처", "en": "ML Researcher" },
+        { "ko": "데이터 과학 강사", "en": "Data Science Instructor" },
+        { "ko": "시니어 ML 엔지니어", "en": "Senior ML Engineer" }
+      ],
+      "refactoring": [
+        { "ko": "ML 코드 품질 엔지니어", "en": "ML Code Quality Engineer" },
+        { "ko": "데이터 파이프라인 아키텍트", "en": "Data Pipeline Architect" },
+        { "ko": "시니어 ML 엔지니어", "en": "Senior ML Engineer" }
+      ]
     },
     "mobile": {
-      "default": ["모바일 개발자", "앱 개발자"],
-      "error-solving": ["모바일 디버깅 전문가", "앱 퍼포먼스 엔지니어", "모바일 개발자"],
-      "feature-impl": ["모바일 아키텍트", "앱 개발자", "UI 개발자"],
-      "code-review": ["시니어 모바일 개발자", "앱 보안 전문가", "모바일 아키텍트"],
-      "concept-learn": ["모바일 멘토", "앱 개발 강사", "시니어 모바일 개발자"],
-      "refactoring": ["모바일 리팩토링 전문가", "앱 아키텍트", "시니어 모바일 개발자"]
+      "default": [{ "ko": "모바일 개발자", "en": "Mobile Developer" }, { "ko": "앱 개발자", "en": "App Developer" }],
+      "error-solving": [
+        { "ko": "모바일 디버깅 전문가", "en": "Mobile Debugging Specialist" },
+        { "ko": "앱 퍼포먼스 엔지니어", "en": "App Performance Engineer" },
+        { "ko": "모바일 개발자", "en": "Mobile Developer" }
+      ],
+      "feature-impl": [
+        { "ko": "모바일 아키텍트", "en": "Mobile Architect" },
+        { "ko": "앱 개발자", "en": "App Developer" },
+        { "ko": "UI 개발자", "en": "UI Developer" }
+      ],
+      "code-review": [
+        { "ko": "시니어 모바일 개발자", "en": "Senior Mobile Developer" },
+        { "ko": "앱 보안 전문가", "en": "App Security Specialist" },
+        { "ko": "모바일 아키텍트", "en": "Mobile Architect" }
+      ],
+      "concept-learn": [
+        { "ko": "모바일 멘토", "en": "Mobile Mentor" },
+        { "ko": "앱 개발 강사", "en": "App Development Instructor" },
+        { "ko": "시니어 모바일 개발자", "en": "Senior Mobile Developer" }
+      ],
+      "refactoring": [
+        { "ko": "모바일 리팩토링 전문가", "en": "Mobile Refactoring Specialist" },
+        { "ko": "앱 아키텍트", "en": "App Architect" },
+        { "ko": "시니어 모바일 개발자", "en": "Senior Mobile Developer" }
+      ]
     },
     "systems": {
-      "default": ["시스템 프로그래머", "성능 엔지니어", "백엔드 엔지니어"],
-      "error-solving": ["시스템 디버깅 전문가", "성능 최적화 엔지니어", "시스템 프로그래머"],
-      "feature-impl": ["시스템 아키텍트", "성능 엔지니어", "시스템 프로그래머"],
-      "code-review": ["시니어 시스템 엔지니어", "메모리 안전성 전문가", "테크 리드"],
-      "concept-learn": ["시스템 프로그래밍 멘토", "성능 최적화 강사", "시니어 시스템 엔지니어"],
-      "refactoring": ["시스템 리팩토링 전문가", "메모리 안전성 전문가", "시니어 시스템 엔지니어"]
+      "default": [
+        { "ko": "시스템 프로그래머", "en": "Systems Programmer" },
+        { "ko": "성능 엔지니어", "en": "Performance Engineer" },
+        { "ko": "백엔드 엔지니어", "en": "Backend Engineer" }
+      ],
+      "error-solving": [
+        { "ko": "시스템 디버깅 전문가", "en": "Systems Debugging Specialist" },
+        { "ko": "성능 최적화 엔지니어", "en": "Performance Optimization Engineer" },
+        { "ko": "시스템 프로그래머", "en": "Systems Programmer" }
+      ],
+      "feature-impl": [
+        { "ko": "시스템 아키텍트", "en": "Systems Architect" },
+        { "ko": "성능 엔지니어", "en": "Performance Engineer" },
+        { "ko": "시스템 프로그래머", "en": "Systems Programmer" }
+      ],
+      "code-review": [
+        { "ko": "시니어 시스템 엔지니어", "en": "Senior Systems Engineer" },
+        { "ko": "메모리 안전성 전문가", "en": "Memory Safety Specialist" },
+        { "ko": "테크 리드", "en": "Tech Lead" }
+      ],
+      "concept-learn": [
+        { "ko": "시스템 프로그래밍 멘토", "en": "Systems Programming Mentor" },
+        { "ko": "성능 최적화 강사", "en": "Performance Optimization Instructor" },
+        { "ko": "시니어 시스템 엔지니어", "en": "Senior Systems Engineer" }
+      ],
+      "refactoring": [
+        { "ko": "시스템 리팩토링 전문가", "en": "Systems Refactoring Specialist" },
+        { "ko": "메모리 안전성 전문가", "en": "Memory Safety Specialist" },
+        { "ko": "시니어 시스템 엔지니어", "en": "Senior Systems Engineer" }
+      ]
     },
     "devops": {
-      "default": ["DevOps 엔지니어", "SRE", "클라우드 엔지니어"],
-      "error-solving": ["SRE", "인프라 디버깅 엔지니어", "DevOps 엔지니어"],
-      "feature-impl": ["DevOps 아키텍트", "클라우드 엔지니어", "플랫폼 엔지니어"],
-      "code-review": ["시니어 DevOps 엔지니어", "보안 엔지니어", "클라우드 아키텍트"],
-      "concept-learn": ["DevOps 멘토", "인프라 강사", "시니어 SRE"],
-      "refactoring": ["인프라 코드 품질 엔지니어", "DevOps 아키텍트", "시니어 SRE"]
+      "default": [{ "ko": "DevOps 엔지니어", "en": "DevOps Engineer" }, { "ko": "SRE", "en": "SRE" }, { "ko": "클라우드 엔지니어", "en": "Cloud Engineer" }],
+      "error-solving": [
+        { "ko": "SRE", "en": "SRE" },
+        { "ko": "인프라 디버깅 엔지니어", "en": "Infrastructure Debugging Engineer" },
+        { "ko": "DevOps 엔지니어", "en": "DevOps Engineer" }
+      ],
+      "feature-impl": [
+        { "ko": "DevOps 아키텍트", "en": "DevOps Architect" },
+        { "ko": "클라우드 엔지니어", "en": "Cloud Engineer" },
+        { "ko": "플랫폼 엔지니어", "en": "Platform Engineer" }
+      ],
+      "code-review": [
+        { "ko": "시니어 DevOps 엔지니어", "en": "Senior DevOps Engineer" },
+        { "ko": "보안 엔지니어", "en": "Security Engineer" },
+        { "ko": "클라우드 아키텍트", "en": "Cloud Architect" }
+      ],
+      "concept-learn": [
+        { "ko": "DevOps 멘토", "en": "DevOps Mentor" },
+        { "ko": "인프라 강사", "en": "Infrastructure Instructor" },
+        { "ko": "시니어 SRE", "en": "Senior SRE" }
+      ],
+      "refactoring": [
+        { "ko": "인프라 코드 품질 엔지니어", "en": "Infrastructure Code Quality Engineer" },
+        { "ko": "DevOps 아키텍트", "en": "DevOps Architect" },
+        { "ko": "시니어 SRE", "en": "Senior SRE" }
+      ]
     },
     "game": {
-      "default": ["게임 프로그래머", "게임 개발자"],
-      "error-solving": ["게임 디버깅 전문가", "그래픽스 엔지니어", "게임 프로그래머"],
-      "feature-impl": ["게임 아키텍트", "게임플레이 프로그래머", "그래픽스 엔지니어"],
-      "code-review": ["시니어 게임 프로그래머", "성능 최적화 엔지니어", "게임 아키텍트"],
-      "concept-learn": ["게임 개발 멘토", "게임 프로그래밍 강사", "시니어 게임 개발자"],
-      "refactoring": ["게임 코드 품질 엔지니어", "게임 아키텍트", "시니어 게임 프로그래머"]
+      "default": [{ "ko": "게임 프로그래머", "en": "Game Programmer" }, { "ko": "게임 개발자", "en": "Game Developer" }],
+      "error-solving": [
+        { "ko": "게임 디버깅 전문가", "en": "Game Debugging Specialist" },
+        { "ko": "그래픽스 엔지니어", "en": "Graphics Engineer" },
+        { "ko": "게임 프로그래머", "en": "Game Programmer" }
+      ],
+      "feature-impl": [
+        { "ko": "게임 아키텍트", "en": "Game Architect" },
+        { "ko": "게임플레이 프로그래머", "en": "Gameplay Programmer" },
+        { "ko": "그래픽스 엔지니어", "en": "Graphics Engineer" }
+      ],
+      "code-review": [
+        { "ko": "시니어 게임 프로그래머", "en": "Senior Game Programmer" },
+        { "ko": "성능 최적화 엔지니어", "en": "Performance Optimization Engineer" },
+        { "ko": "게임 아키텍트", "en": "Game Architect" }
+      ],
+      "concept-learn": [
+        { "ko": "게임 개발 멘토", "en": "Game Development Mentor" },
+        { "ko": "게임 프로그래밍 강사", "en": "Game Programming Instructor" },
+        { "ko": "시니어 게임 개발자", "en": "Senior Game Developer" }
+      ],
+      "refactoring": [
+        { "ko": "게임 코드 품질 엔지니어", "en": "Game Code Quality Engineer" },
+        { "ko": "게임 아키텍트", "en": "Game Architect" },
+        { "ko": "시니어 게임 프로그래머", "en": "Senior Game Programmer" }
+      ]
     },
     "desktop": {
-      "default": ["데스크톱 앱 개발자", "GUI 개발자"],
-      "error-solving": ["데스크톱 디버깅 전문가", "GUI 개발자"],
-      "feature-impl": ["데스크톱 앱 아키텍트", "GUI 개발자"],
-      "code-review": ["시니어 데스크톱 개발자", "앱 보안 전문가"],
-      "concept-learn": ["데스크톱 개발 멘토", "GUI 프로그래밍 강사"],
-      "refactoring": ["데스크톱 리팩토링 전문가", "시니어 데스크톱 개발자"]
+      "default": [{ "ko": "데스크톱 앱 개발자", "en": "Desktop App Developer" }, { "ko": "GUI 개발자", "en": "GUI Developer" }],
+      "error-solving": [{ "ko": "데스크톱 디버깅 전문가", "en": "Desktop Debugging Specialist" }, { "ko": "GUI 개발자", "en": "GUI Developer" }],
+      "feature-impl": [{ "ko": "데스크톱 앱 아키텍트", "en": "Desktop App Architect" }, { "ko": "GUI 개발자", "en": "GUI Developer" }],
+      "code-review": [{ "ko": "시니어 데스크톱 개발자", "en": "Senior Desktop Developer" }, { "ko": "앱 보안 전문가", "en": "App Security Specialist" }],
+      "concept-learn": [
+        { "ko": "데스크톱 개발 멘토", "en": "Desktop Development Mentor" },
+        { "ko": "GUI 프로그래밍 강사", "en": "GUI Programming Instructor" }
+      ],
+      "refactoring": [
+        { "ko": "데스크톱 리팩토링 전문가", "en": "Desktop Refactoring Specialist" },
+        { "ko": "시니어 데스크톱 개발자", "en": "Senior Desktop Developer" }
+      ]
     },
     "cli": {
-      "default": ["CLI 도구 개발자", "백엔드 엔지니어"],
-      "error-solving": ["CLI 디버깅 전문가", "백엔드 엔지니어"],
-      "feature-impl": ["CLI 도구 개발자", "백엔드 엔지니어"],
-      "code-review": ["시니어 백엔드 개발자", "API 설계자"],
-      "concept-learn": ["백엔드 멘토", "CLI 개발 강사"],
-      "refactoring": ["CLI 코드 품질 엔지니어", "시니어 백엔드 개발자"]
+      "default": [{ "ko": "CLI 도구 개발자", "en": "CLI Tool Developer" }, { "ko": "백엔드 엔지니어", "en": "Backend Engineer" }],
+      "error-solving": [{ "ko": "CLI 디버깅 전문가", "en": "CLI Debugging Specialist" }, { "ko": "백엔드 엔지니어", "en": "Backend Engineer" }],
+      "feature-impl": [{ "ko": "CLI 도구 개발자", "en": "CLI Tool Developer" }, { "ko": "백엔드 엔지니어", "en": "Backend Engineer" }],
+      "code-review": [{ "ko": "시니어 백엔드 개발자", "en": "Senior Backend Developer" }, { "ko": "API 설계자", "en": "API Designer" }],
+      "concept-learn": [{ "ko": "백엔드 멘토", "en": "Backend Mentor" }, { "ko": "CLI 개발 강사", "en": "CLI Development Instructor" }],
+      "refactoring": [{ "ko": "CLI 코드 품질 엔지니어", "en": "CLI Code Quality Engineer" }, { "ko": "시니어 백엔드 개발자", "en": "Senior Backend Developer" }]
     },
     "embedded": {
-      "default": ["임베디드 시스템 엔지니어", "펌웨어 개발자"],
-      "error-solving": ["임베디드 디버깅 전문가", "하드웨어 소프트웨어 엔지니어"],
-      "feature-impl": ["임베디드 아키텍트", "펌웨어 개발자"],
-      "code-review": ["시니어 임베디드 엔지니어", "안전성 검토 엔지니어"],
-      "concept-learn": ["임베디드 개발 멘토", "펌웨어 강사"],
-      "refactoring": ["임베디드 코드 품질 엔지니어", "시니어 임베디드 엔지니어"]
+      "default": [{ "ko": "임베디드 시스템 엔지니어", "en": "Embedded Systems Engineer" }, { "ko": "펌웨어 개발자", "en": "Firmware Developer" }],
+      "error-solving": [
+        { "ko": "임베디드 디버깅 전문가", "en": "Embedded Debugging Specialist" },
+        { "ko": "하드웨어 소프트웨어 엔지니어", "en": "Hardware-Software Engineer" }
+      ],
+      "feature-impl": [{ "ko": "임베디드 아키텍트", "en": "Embedded Architect" }, { "ko": "펌웨어 개발자", "en": "Firmware Developer" }],
+      "code-review": [{ "ko": "시니어 임베디드 엔지니어", "en": "Senior Embedded Engineer" }, { "ko": "안전성 검토 엔지니어", "en": "Safety Review Engineer" }],
+      "concept-learn": [{ "ko": "임베디드 개발 멘토", "en": "Embedded Development Mentor" }, { "ko": "펌웨어 강사", "en": "Firmware Instructor" }],
+      "refactoring": [
+        { "ko": "임베디드 코드 품질 엔지니어", "en": "Embedded Code Quality Engineer" },
+        { "ko": "시니어 임베디드 엔지니어", "en": "Senior Embedded Engineer" }
+      ]
     },
     "general": {
-      "default": ["소프트웨어 엔지니어", "풀스택 개발자", "백엔드 엔지니어"],
-      "error-solving": ["시니어 개발자", "SRE", "백엔드 엔지니어"],
-      "feature-impl": ["소프트웨어 아키텍트", "풀스택 개발자", "백엔드 엔지니어"],
-      "code-review": ["시니어 개발자", "테크 리드", "코드 리뷰어"],
-      "concept-learn": ["시니어 멘토", "기술 강사", "소프트웨어 아키텍트"],
-      "refactoring": ["리팩토링 전문가", "소프트웨어 아키텍트", "테크 리드"]
+      "default": [
+        { "ko": "소프트웨어 엔지니어", "en": "Software Engineer" },
+        { "ko": "풀스택 개발자", "en": "Full-Stack Developer" },
+        { "ko": "백엔드 엔지니어", "en": "Backend Engineer" }
+      ],
+      "error-solving": [
+        { "ko": "시니어 개발자", "en": "Senior Developer" },
+        { "ko": "SRE", "en": "SRE" },
+        { "ko": "백엔드 엔지니어", "en": "Backend Engineer" }
+      ],
+      "feature-impl": [
+        { "ko": "소프트웨어 아키텍트", "en": "Software Architect" },
+        { "ko": "풀스택 개발자", "en": "Full-Stack Developer" },
+        { "ko": "백엔드 엔지니어", "en": "Backend Engineer" }
+      ],
+      "code-review": [
+        { "ko": "시니어 개발자", "en": "Senior Developer" },
+        { "ko": "테크 리드", "en": "Tech Lead" },
+        { "ko": "코드 리뷰어", "en": "Code Reviewer" }
+      ],
+      "concept-learn": [
+        { "ko": "시니어 멘토", "en": "Senior Mentor" },
+        { "ko": "기술 강사", "en": "Technical Instructor" },
+        { "ko": "소프트웨어 아키텍트", "en": "Software Architect" }
+      ],
+      "refactoring": [
+        { "ko": "리팩토링 전문가", "en": "Refactoring Specialist" },
+        { "ko": "소프트웨어 아키텍트", "en": "Software Architect" },
+        { "ko": "테크 리드", "en": "Tech Lead" }
+      ]
     }
   },
   "languageRoles": {
-    "Java": "Java 개발자",
-    "Python": "Python 개발자",
-    "TypeScript": "TypeScript 개발자",
-    "JavaScript": "JavaScript 개발자",
-    "C++": "C++ 개발자",
-    "C": "C 개발자",
-    "C#": "C# 개발자",
-    "Go": "Go 개발자",
-    "Rust": "Rust 개발자",
-    "Ruby": "Ruby 개발자",
-    "PHP": "PHP 개발자",
-    "Swift": "Swift 개발자",
-    "Kotlin": "Kotlin 개발자",
-    "Zig": "Zig 시스템 프로그래머"
+    "Java": { "ko": "Java 개발자", "en": "Java Developer" },
+    "Python": { "ko": "Python 개발자", "en": "Python Developer" },
+    "TypeScript": { "ko": "TypeScript 개발자", "en": "TypeScript Developer" },
+    "JavaScript": { "ko": "JavaScript 개발자", "en": "JavaScript Developer" },
+    "C++": { "ko": "C++ 개발자", "en": "C++ Developer" },
+    "C": { "ko": "C 개발자", "en": "C Developer" },
+    "C#": { "ko": "C# 개발자", "en": "C# Developer" },
+    "Go": { "ko": "Go 개발자", "en": "Go Developer" },
+    "Rust": { "ko": "Rust 개발자", "en": "Rust Developer" },
+    "Ruby": { "ko": "Ruby 개발자", "en": "Ruby Developer" },
+    "PHP": { "ko": "PHP 개발자", "en": "PHP Developer" },
+    "Swift": { "ko": "Swift 개발자", "en": "Swift Developer" },
+    "Kotlin": { "ko": "Kotlin 개발자", "en": "Kotlin Developer" },
+    "Zig": { "ko": "Zig 시스템 프로그래머", "en": "Zig Systems Programmer" }
   },
   "frameworkRoles": {
-    "React": "React 컴포넌트 아키텍트",
-    "Next.js": "Next.js 풀스택 개발자",
-    "Vue": "Vue.js 프론트엔드 개발자",
-    "Angular": "Angular 엔터프라이즈 개발자",
-    "Svelte": "Svelte 프론트엔드 개발자",
-    "NestJS": "NestJS 백엔드 아키텍트",
-    "Express": "Node.js API 엔지니어",
-    "Fastify": "Node.js API 엔지니어",
-    "Hono": "엣지 API 개발자",
-    "React Native": "React Native 모바일 개발자",
-    "Electron": "Electron 데스크톱 앱 개발자",
-    "Prisma": "TypeScript 백엔드 엔지니어",
-    "Drizzle": "TypeScript 백엔드 엔지니어",
-    "TypeORM": "TypeScript 백엔드 엔지니어",
-    "Remix": "Remix 풀스택 개발자",
-    "Astro": "Astro 웹 개발자",
-    "Django": "Django 백엔드 엔지니어",
-    "FastAPI": "FastAPI 백엔드 엔지니어",
-    "Flask": "Flask API 개발자",
-    "PyTorch": "ML 엔지니어 (PyTorch)",
-    "TensorFlow": "ML 엔지니어 (TensorFlow)",
-    "scikit-learn": "데이터 사이언티스트",
-    "Streamlit": "데이터 앱 개발자",
-    "Hugging Face Transformers": "NLP/LLM 엔지니어",
-    "LangChain": "LLM 애플리케이션 개발자",
-    "Gin": "Go API 엔지니어",
-    "Echo": "Go 백엔드 엔지니어",
-    "Fiber": "Go 웹 개발자",
-    "GORM": "Go 백엔드 엔지니어",
-    "gRPC-Go": "Go gRPC 엔지니어",
-    "Actix Web": "Rust 웹 엔지니어",
-    "Axum": "Rust 웹 엔지니어",
-    "Tokio": "Rust 비동기 엔지니어",
-    "Bevy": "Rust 게임 개발자",
-    "Tauri": "Tauri 데스크톱 개발자",
-    "Spring Boot": "Spring Boot 엔지니어",
-    "Quarkus": "Java 클라우드 네이티브 개발자",
-    "Ktor": "Kotlin 백엔드 개발자",
-    "Jetpack Compose": "Android 개발자",
-    "Flutter": "Flutter 모바일 개발자",
-    "Vapor": "Swift 백엔드 개발자",
-    "Ruby on Rails": "Rails 개발자",
-    "Laravel": "Laravel PHP 개발자",
-    "Symfony": "Symfony PHP 개발자",
-    "Play Framework": "Scala 백엔드 개발자",
-    "Apache Spark": "데이터 엔지니어 (Spark)",
-    "ASP.NET Core": ".NET 백엔드 개발자",
-    ".NET MAUI": ".NET 모바일 개발자"
+    "React": { "ko": "React 컴포넌트 아키텍트", "en": "React Component Architect" },
+    "Next.js": { "ko": "Next.js 풀스택 개발자", "en": "Next.js Full-Stack Developer" },
+    "Vue": { "ko": "Vue.js 프론트엔드 개발자", "en": "Vue.js Frontend Developer" },
+    "Angular": { "ko": "Angular 엔터프라이즈 개발자", "en": "Angular Enterprise Developer" },
+    "Svelte": { "ko": "Svelte 프론트엔드 개발자", "en": "Svelte Frontend Developer" },
+    "NestJS": { "ko": "NestJS 백엔드 아키텍트", "en": "NestJS Backend Architect" },
+    "Express": { "ko": "Node.js API 엔지니어", "en": "Node.js API Engineer" },
+    "Fastify": { "ko": "Node.js API 엔지니어", "en": "Node.js API Engineer" },
+    "Hono": { "ko": "엣지 API 개발자", "en": "Edge API Developer" },
+    "React Native": { "ko": "React Native 모바일 개발자", "en": "React Native Mobile Developer" },
+    "Electron": { "ko": "Electron 데스크톱 앱 개발자", "en": "Electron Desktop App Developer" },
+    "Prisma": { "ko": "TypeScript 백엔드 엔지니어", "en": "TypeScript Backend Engineer" },
+    "Drizzle": { "ko": "TypeScript 백엔드 엔지니어", "en": "TypeScript Backend Engineer" },
+    "TypeORM": { "ko": "TypeScript 백엔드 엔지니어", "en": "TypeScript Backend Engineer" },
+    "Remix": { "ko": "Remix 풀스택 개발자", "en": "Remix Full-Stack Developer" },
+    "Astro": { "ko": "Astro 웹 개발자", "en": "Astro Web Developer" },
+    "Django": { "ko": "Django 백엔드 엔지니어", "en": "Django Backend Engineer" },
+    "FastAPI": { "ko": "FastAPI 백엔드 엔지니어", "en": "FastAPI Backend Engineer" },
+    "Flask": { "ko": "Flask API 개발자", "en": "Flask API Developer" },
+    "PyTorch": { "ko": "ML 엔지니어 (PyTorch)", "en": "ML Engineer (PyTorch)" },
+    "TensorFlow": { "ko": "ML 엔지니어 (TensorFlow)", "en": "ML Engineer (TensorFlow)" },
+    "scikit-learn": { "ko": "데이터 사이언티스트", "en": "Data Scientist" },
+    "Streamlit": { "ko": "데이터 앱 개발자", "en": "Data App Developer" },
+    "Hugging Face Transformers": { "ko": "NLP/LLM 엔지니어", "en": "NLP/LLM Engineer" },
+    "LangChain": { "ko": "LLM 애플리케이션 개발자", "en": "LLM Application Developer" },
+    "Gin": { "ko": "Go API 엔지니어", "en": "Go API Engineer" },
+    "Echo": { "ko": "Go 백엔드 엔지니어", "en": "Go Backend Engineer" },
+    "Fiber": { "ko": "Go 웹 개발자", "en": "Go Web Developer" },
+    "GORM": { "ko": "Go 백엔드 엔지니어", "en": "Go Backend Engineer" },
+    "gRPC-Go": { "ko": "Go gRPC 엔지니어", "en": "Go gRPC Engineer" },
+    "Actix Web": { "ko": "Rust 웹 엔지니어", "en": "Rust Web Engineer" },
+    "Axum": { "ko": "Rust 웹 엔지니어", "en": "Rust Web Engineer" },
+    "Tokio": { "ko": "Rust 비동기 엔지니어", "en": "Rust Async Engineer" },
+    "Bevy": { "ko": "Rust 게임 개발자", "en": "Rust Game Developer" },
+    "Tauri": { "ko": "Tauri 데스크톱 개발자", "en": "Tauri Desktop Developer" },
+    "Spring Boot": { "ko": "Spring Boot 엔지니어", "en": "Spring Boot Engineer" },
+    "Quarkus": { "ko": "Java 클라우드 네이티브 개발자", "en": "Java Cloud-Native Developer" },
+    "Ktor": { "ko": "Kotlin 백엔드 개발자", "en": "Kotlin Backend Developer" },
+    "Jetpack Compose": { "ko": "Android 개발자", "en": "Android Developer" },
+    "Flutter": { "ko": "Flutter 모바일 개발자", "en": "Flutter Mobile Developer" },
+    "Vapor": { "ko": "Swift 백엔드 개발자", "en": "Swift Backend Developer" },
+    "Ruby on Rails": { "ko": "Rails 개발자", "en": "Rails Developer" },
+    "Laravel": { "ko": "Laravel PHP 개발자", "en": "Laravel PHP Developer" },
+    "Symfony": { "ko": "Symfony PHP 개발자", "en": "Symfony PHP Developer" },
+    "Play Framework": { "ko": "Scala 백엔드 개발자", "en": "Scala Backend Developer" },
+    "Apache Spark": { "ko": "데이터 엔지니어 (Spark)", "en": "Data Engineer (Spark)" },
+    "ASP.NET Core": { "ko": ".NET 백엔드 개발자", "en": ".NET Backend Developer" },
+    ".NET MAUI": { "ko": ".NET 모바일 개발자", "en": ".NET Mobile Developer" }
   }
 }

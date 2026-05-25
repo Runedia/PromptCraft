@@ -4,6 +4,7 @@ import { MultilineInput } from '@/components/inputs/MultilineInput.js';
 import { SelectOrTextInput } from '@/components/inputs/SelectOrTextInput.js';
 import { TextInput } from '@/components/inputs/TextInput.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
+import { useT } from '@/i18n/useT.js';
 
 interface CardInputProps {
   type: InputType;
@@ -16,6 +17,8 @@ interface CardInputProps {
 }
 
 export function CardInput({ type, value, hint, examples, options, onChange, scanRoot }: CardInputProps) {
+  const t = useT();
+
   switch (type) {
     case 'text':
       return <TextInput value={value} hint={hint} examples={examples} onChange={onChange} />;
@@ -25,7 +28,7 @@ export function CardInput({ type, value, hint, examples, options, onChange, scan
       return (
         <Select value={value || undefined} onValueChange={onChange}>
           <SelectTrigger>
-            <SelectValue placeholder="선택하세요..." />
+            <SelectValue placeholder={t('web.cardInput.selectPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
             {options?.map((o) => (

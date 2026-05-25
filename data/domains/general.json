@@ -3,33 +3,68 @@
   "cardOverrides": {
     "goal": {
       "examples": {
-        "error-solving": [
-          "배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정",
-          "빌드 실패를 재현하고 최소 수정으로 배포 가능 상태 복구",
-          "메모리 누수가 발생하는 컴포넌트를 특정하고 원인 제거",
-          "CI에서 간헐적으로 실패하는 테스트 재현 및 수정",
-          "특정 사용자에게만 발생하는 500 에러의 원인 분석"
-        ],
-        "feature-impl": [
-          "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환",
-          "관리자 대시보드에 최근 7일 통계 위젯을 추가",
-          "사용자 프로필 이미지 업로드 기능 구현",
-          "결제 실패 시 자동 재시도 로직 추가",
-          "Redis 캐싱 레이어를 추가해 DB 조회 성능 개선"
-        ],
-        "code-review": [
-          "PR 머지 전 전체 품질 점검 — 보안, 성능, 가독성 종합 리뷰",
-          "레거시 리팩터링 후보 파악 — 기술 부채 우선순위 분류",
-          "에러 핸들링 일관성 및 로깅 품질 점검",
-          "테스트 커버리지 누락 및 엣지 케이스 점검",
-          "코드 중복 제거 및 모듈화 개선 기회 파악"
-        ],
-        "concept-learn": [
-          "실무 프로젝트에 바로 적용할 수 있는 수준으로 이해",
-          "다음 주 기술 면접 준비",
-          "팀 내 코드 리뷰 시 해당 개념 기반 피드백 제공 가능 수준",
-          "사이드 프로젝트에서 직접 구현해볼 수 있는 실전 지식 습득"
-        ]
+        "error-solving": {
+          "ko": [
+            "배포 후 로그인 API에서 발생하는 TypeError 원인 파악 및 수정",
+            "빌드 실패를 재현하고 최소 수정으로 배포 가능 상태 복구",
+            "메모리 누수가 발생하는 컴포넌트를 특정하고 원인 제거",
+            "CI에서 간헐적으로 실패하는 테스트 재현 및 수정",
+            "특정 사용자에게만 발생하는 500 에러의 원인 분석"
+          ],
+          "en": [
+            "Identify and fix the cause of TypeError in the login API after deployment",
+            "Reproduce the build failure and restore a deployable state with minimal changes",
+            "Identify the component causing the memory leak and eliminate its root cause",
+            "Reproduce and fix the intermittently failing test in CI",
+            "Analyze the root cause of 500 errors that occur only for specific users"
+          ]
+        },
+        "feature-impl": {
+          "ko": [
+            "이메일 로그인 API를 추가하고 실패 사유를 명확히 반환",
+            "관리자 대시보드에 최근 7일 통계 위젯을 추가",
+            "사용자 프로필 이미지 업로드 기능 구현",
+            "결제 실패 시 자동 재시도 로직 추가",
+            "Redis 캐싱 레이어를 추가해 DB 조회 성능 개선"
+          ],
+          "en": [
+            "Add email login API and return failure reasons clearly",
+            "Add a last-7-days statistics widget to the admin dashboard",
+            "Implement user profile image upload feature",
+            "Add automatic retry logic on payment failure",
+            "Add a Redis caching layer to improve DB query performance"
+          ]
+        },
+        "code-review": {
+          "ko": [
+            "PR 머지 전 전체 품질 점검 — 보안, 성능, 가독성 종합 리뷰",
+            "레거시 리팩터링 후보 파악 — 기술 부채 우선순위 분류",
+            "에러 핸들링 일관성 및 로깅 품질 점검",
+            "테스트 커버리지 누락 및 엣지 케이스 점검",
+            "코드 중복 제거 및 모듈화 개선 기회 파악"
+          ],
+          "en": [
+            "Full quality check before PR merge — comprehensive security, performance, and readability review",
+            "Identify legacy refactoring candidates — classify technical debt by priority",
+            "Review consistency of error handling and logging quality",
+            "Identify missing test coverage and edge cases",
+            "Find opportunities to eliminate code duplication and improve modularity"
+          ]
+        },
+        "concept-learn": {
+          "ko": [
+            "실무 프로젝트에 바로 적용할 수 있는 수준으로 이해",
+            "다음 주 기술 면접 준비",
+            "팀 내 코드 리뷰 시 해당 개념 기반 피드백 제공 가능 수준",
+            "사이드 프로젝트에서 직접 구현해볼 수 있는 실전 지식 습득"
+          ],
+          "en": [
+            "Understand deeply enough to apply directly in a real project",
+            "Prepare for a technical interview next week",
+            "Reach a level where I can give concept-based feedback during team code reviews",
+            "Gain practical knowledge to implement it myself in a side project"
+          ]
+        }
       }
     }
   },

@@ -18,16 +18,27 @@ jest.mock('../../../src/server/domain-loader', () => ({
   loadDomainOverlay: jest.fn().mockReturnValue(null),
   loadRoleMappings: jest.fn().mockReturnValue({
     domainRoles: {
-      general: { default: ['소프트웨어 엔지니어'] },
+      general: { default: [{ ko: '소프트웨어 엔지니어', en: 'Software Engineer' }] },
       'web-backend': {
-        default: ['백엔드 엔지니어', 'API 개발자'],
-        'error-solving': ['백엔드 SRE', 'API 디버깅 전문가'],
-        'code-review': ['시니어 백엔드 개발자', '보안 엔지니어'],
+        default: [
+          { ko: '백엔드 엔지니어', en: 'Backend Engineer' },
+          { ko: 'API 개발자', en: 'API Developer' },
+        ],
+        'error-solving': [
+          { ko: '백엔드 SRE', en: 'Backend SRE' },
+          { ko: 'API 디버깅 전문가', en: 'API Debugging Specialist' },
+        ],
+        'code-review': [
+          { ko: '시니어 백엔드 개발자', en: 'Senior Backend Developer' },
+          { ko: '보안 엔지니어', en: 'Security Engineer' },
+        ],
       },
     },
     frameworkRoles: {},
   }),
-  loadTreesMeta: jest.fn().mockReturnValue([{ id: 'error-solving' }, { id: 'code-review', roleSuffix: '코드 리뷰 전문가' }]),
+  loadTreesMeta: jest
+    .fn()
+    .mockReturnValue([{ id: 'error-solving' }, { id: 'code-review', roleSuffix: { ko: '코드 리뷰 전문가', en: 'Code Review Specialist' } }]),
 }));
 
 jest.mock('../../../src/server/scan-debug', () => ({

@@ -28,6 +28,7 @@
 | `DELETE` | `/api/history/:id`      | 히스토리 삭제                   |
 | `GET`    | `/api/config`           | 설정 조회                       |
 | `PUT`    | `/api/config`           | 설정 수정                       |
+| `GET`    | `/api/locale`           | 현재 해소된 언어                |
 | `GET`    | `/api/mention/suggest`  | @멘션 파일 자동완성             |
 | `POST`   | `/api/mention/read`     | 멘션 파일 읽기                  |
 

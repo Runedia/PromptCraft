@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { resolveRoleSuggestions } from '../../../src/core/builder/role-resolver.js';
+import { type RoleMappings, resolveRoleSuggestions } from '../../../src/core/builder/role-resolver.js';
 import type { SelectOption } from '../../../src/core/types/card.js';
 import type { ScanResult } from '../../../src/core/types.js';
 
@@ -20,7 +20,36 @@ function makeScan(overrides: Partial<ScanResult> = {}): ScanResult {
   return { ...BASE_SCAN, ...overrides };
 }
 
-const BASE_MAPPINGS = {
+/** 한국어 string 기반 fixture를 RoleMappings(I18nText)로 래핑한다(en=ko, 테스트는 기본 lang='ko'로 검증). */
+type RawMappings = {
+  domainRoles: Record<string, Record<string, string[]>>;
+  frameworkRoles: Record<string, string>;
+  languageRoles?: Record<string, string>;
+};
+function wrapMappings(raw: RawMappings): RoleMappings {
+  const domainRoles: RoleMappings['domainRoles'] = {};
+  for (const [domain, treeMap] of Object.entries(raw.domainRoles)) {
+    const wrappedTree: Record<string, { ko: string; en: string }[]> = {};
+    for (const [treeId, roles] of Object.entries(treeMap)) {
+      wrappedTree[treeId] = roles.map((r) => ({ ko: r, en: r }));
+    }
+    domainRoles[domain] = wrappedTree;
+  }
+  const frameworkRoles: RoleMappings['frameworkRoles'] = {};
+  for (const [fw, role] of Object.entries(raw.frameworkRoles)) {
+    frameworkRoles[fw] = { ko: role, en: role };
+  }
+  let languageRoles: RoleMappings['languageRoles'];
+  if (raw.languageRoles) {
+    languageRoles = {};
+    for (const [lang, role] of Object.entries(raw.languageRoles)) {
+      languageRoles[lang] = { ko: role, en: role };
+    }
+  }
+  return { domainRoles, frameworkRoles, languageRoles };
+}
+
+const BASE_MAPPINGS = wrapMappings({
   domainRoles: {
     general: {
       default: ['소프트웨어 엔지니어', '풀스택 개발자', '백엔드 엔지니어'],
@@ -47,7 +76,7 @@ const BASE_MAPPINGS = {
     TypeScript: 'TypeScript 개발자',
     Python: 'Python 개발자',
   },
-};
+});
 
 // ─── 기본 동작 ───────────────────────────────────────────────────────
 
@@ -173,7 +202,7 @@ describe('resolveRoleSuggestions() — 언어 역할 (low confidence)', () => {
 
 describe('resolveRoleSuggestions() — 중복 제거', () => {
   test('동일한 역할이 여러 경로에서 나와도 한 번만 포함된다', () => {
-    const mappings = {
+    const mappings = wrapMappings({
       domainRoles: {
         general: {
           default: ['소프트웨어 엔지니어'],
@@ -181,7 +210,7 @@ describe('resolveRoleSuggestions() — 중복 제거', () => {
         },
       },
       frameworkRoles: {},
-    };
+    });
     const result = resolveRoleSuggestions(null, 'code-review', mappings);
     const values = result.map((r: SelectOption) => r.value);
     expect(values.filter((v: string) => v === '소프트웨어 엔지니어')).toHaveLength(1);
@@ -192,7 +221,7 @@ describe('resolveRoleSuggestions() — 중복 제거', () => {
 
 describe('resolveRoleSuggestions() — general fallback', () => {
   test('도메인 역할이 3개 미만이면 general 역할로 보충한다', () => {
-    const mappings = {
+    const mappings = wrapMappings({
       domainRoles: {
         general: {
           default: ['소프트웨어 엔지니어', '풀스택 개발자', '백엔드 엔지니어'],
@@ -202,7 +231,7 @@ describe('resolveRoleSuggestions() — general fallback', () => {
         },
       },
       frameworkRoles: {},
-    };
+    });
     const scan = makeScan({ domainContext: { primary: 'game', secondary: null, confidence: 'high' } });
     const result = resolveRoleSuggestions(scan, 'default', mappings);
     const values = result.map((r: SelectOption) => r.value);
@@ -223,5 +252,73 @@ describe('resolveRoleSuggestions() — default treeId', () => {
     expect(values.slice(0, 2)).toEqual(['시스템 프로그래머', '성능 엔지니어']);
     expect(values).not.toContain('시스템 디버깅 전문가');
     expect(values).not.toContain('시니어 시스템 엔지니어');
+  });
+});
+
+// ─── lang 해소 (i18n) ────────────────────────────────────────────────
+
+describe('resolveRoleSuggestions() — lang 해소', () => {
+  const I18N_MAPPINGS: RoleMappings = {
+    domainRoles: {
+      general: {
+        default: [
+          { ko: '소프트웨어 엔지니어', en: 'Software Engineer' },
+          { ko: '풀스택 개발자', en: 'Full-Stack Developer' },
+        ],
+      },
+      'web-frontend': {
+        default: [
+          { ko: '프론트엔드 개발자', en: 'Frontend Developer' },
+          { ko: 'UI/UX 엔지니어', en: 'UI/UX Engineer' },
+        ],
+        'error-solving': [{ ko: '프론트엔드 디버깅 전문가', en: 'Frontend Debugging Specialist' }],
+      },
+    },
+    frameworkRoles: {
+      React: { ko: 'React 컴포넌트 아키텍트', en: 'React Component Architect' },
+    },
+    languageRoles: {
+      TypeScript: { ko: 'TypeScript 개발자', en: 'TypeScript Developer' },
+    },
+  };
+
+  test('lang=ko: 한국어 역할명을 반환한다', () => {
+    const scan = makeScan({
+      frameworks: [{ name: 'React', version: null, source: 'package.json' }],
+      domainContext: { primary: 'web-frontend', secondary: null, confidence: 'high' },
+    });
+    const values = resolveRoleSuggestions(scan, 'error-solving', I18N_MAPPINGS, undefined, 'ko').map((r) => r.value);
+    expect(values.slice(0, 2)).toEqual(['프론트엔드 개발자', 'UI/UX 엔지니어']);
+    expect(values).toContain('React 컴포넌트 아키텍트');
+    expect(values).toContain('프론트엔드 디버깅 전문가');
+  });
+
+  test('lang=en: 영어 역할명을 반환한다', () => {
+    const scan = makeScan({
+      frameworks: [{ name: 'React', version: null, source: 'package.json' }],
+      domainContext: { primary: 'web-frontend', secondary: null, confidence: 'high' },
+    });
+    const values = resolveRoleSuggestions(scan, 'error-solving', I18N_MAPPINGS, undefined, 'en').map((r) => r.value);
+    expect(values.slice(0, 2)).toEqual(['Frontend Developer', 'UI/UX Engineer']);
+    expect(values).toContain('React Component Architect');
+    expect(values).toContain('Frontend Debugging Specialist');
+  });
+
+  test('lang=en: 언어 기반 역할도 영어로 해소된다 (low confidence)', () => {
+    const scan = makeScan({
+      languages: [{ name: 'TypeScript', extension: '.ts', count: 1, percentage: 100, role: 'primary' }],
+      domainContext: { primary: 'general', secondary: null, confidence: 'low' },
+    });
+    const values = resolveRoleSuggestions(scan, 'default', I18N_MAPPINGS, undefined, 'en').map((r) => r.value);
+    expect(values).toContain('TypeScript Developer');
+  });
+
+  test('roleSuffix(이미 해소된 string)는 lang과 무관하게 그대로 조합된다', () => {
+    const scan = makeScan({
+      frameworks: [{ name: 'React', version: null, source: 'package.json' }],
+      domainContext: { primary: 'web-frontend', secondary: null, confidence: 'high' },
+    });
+    const values = resolveRoleSuggestions(scan, 'error-solving', I18N_MAPPINGS, 'Debugging Specialist', 'en').map((r) => r.value);
+    expect(values[0]).toBe('React Debugging Specialist');
   });
 });
