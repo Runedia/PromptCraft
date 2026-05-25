@@ -14,9 +14,9 @@ describe('PROVIDERS', () => {
     }
   });
 
-  test('copilot은 gh copilot 토큰을 쓴다', () => {
-    expect(PROVIDERS.copilot.bin).toBe('gh');
-    expect(PROVIDERS.copilot.launch).toEqual(['gh', 'copilot']);
+  test('copilot은 copilot 토큰을 쓴다', () => {
+    expect(PROVIDERS.copilot.bin).toBe('copilot');
+    expect(PROVIDERS.copilot.launch).toEqual(['copilot']);
   });
 
   test('isRunTarget 가드', () => {
