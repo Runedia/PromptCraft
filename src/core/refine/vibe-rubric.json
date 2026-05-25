@@ -1,0 +1,71 @@
+{
+  "aggregation": "conservative",
+  "dimensions": [
+    {
+      "code": "DECOMP",
+      "name": { "ko": "작업 분해", "en": "Task decomposition" },
+      "levels": {
+        "L1": { "ko": "통째 요청, 분해 없음", "en": "Single lump request, no breakdown" },
+        "L2": { "ko": "항목 나열 시작", "en": "Starts listing items" },
+        "L3": { "ko": "3단계 이상 명시 분해", "en": "Explicit 3+ step breakdown" },
+        "L4": { "ko": "모듈 단위 + 입출력 명시", "en": "Module-level with I/O specified" },
+        "L5": { "ko": "전체 설계 후 단계 위임", "en": "Designs whole then delegates steps" }
+      }
+    },
+    {
+      "code": "VERIFY",
+      "name": { "ko": "검증 전략", "en": "Verification strategy" },
+      "levels": {
+        "L1": { "ko": "검증 개념 부재", "en": "No verification concept" },
+        "L2": { "ko": "느낌 기반 확인 질문", "en": "Gut-feel confirmation questions" },
+        "L3": { "ko": "실행 결과 확인·피드백", "en": "Checks run results and gives feedback" },
+        "L4": { "ko": "경계·엣지 케이스 지적", "en": "Points out boundary/edge cases" },
+        "L5": { "ko": "검증 기준 사전 정의", "en": "Defines quality criteria upfront" }
+      }
+    },
+    {
+      "code": "ORCH",
+      "name": { "ko": "오케스트레이션", "en": "Orchestration" },
+      "levels": {
+        "L1": { "ko": "단일 도구만", "en": "Single tool only" },
+        "L2": { "ko": "도구 인식 시작", "en": "Begins tool awareness" },
+        "L3": { "ko": "복수 도구 조합", "en": "Combines multiple tools" },
+        "L4": { "ko": "워크플로우 구성", "en": "Composes workflows" },
+        "L5": { "ko": "자동화 파이프라인 설계", "en": "Designs automation pipeline" }
+      }
+    },
+    {
+      "code": "FAIL",
+      "name": { "ko": "실패 대응", "en": "Failure handling" },
+      "levels": {
+        "L1": { "ko": "포기 또는 재시도", "en": "Gives up or retries blindly" },
+        "L2": { "ko": "에러 메시지 읽기 시도", "en": "Attempts to read error messages" },
+        "L3": { "ko": "원인 파악 시도와 함께 전달", "en": "Conveys errors with cause analysis" },
+        "L4": { "ko": "체계적 디버깅", "en": "Systematic debugging" },
+        "L5": { "ko": "실패 예측·사전 방어", "en": "Predicts and pre-empts failures" }
+      }
+    },
+    {
+      "code": "CTX",
+      "name": { "ko": "맥락 관리", "en": "Context management" },
+      "levels": {
+        "L1": { "ko": "맥락 거의 없음", "en": "Almost no context" },
+        "L2": { "ko": "단편적 정보", "en": "Fragmentary info" },
+        "L3": { "ko": "파일·경로·기술 스택 제공", "en": "Provides files, paths, stack" },
+        "L4": { "ko": "제약 조건 사전 명시", "en": "States constraints upfront" },
+        "L5": { "ko": "배경·목표·제약 종합 설계", "en": "Designs background/goal/constraints holistically" }
+      }
+    },
+    {
+      "code": "META",
+      "name": { "ko": "메타인지", "en": "Metacognition" },
+      "levels": {
+        "L1": { "ko": "자기 패턴 인식 없음", "en": "No self-pattern awareness" },
+        "L2": { "ko": "불만족 표현", "en": "Expresses dissatisfaction" },
+        "L3": { "ko": "대안 모색", "en": "Seeks alternatives" },
+        "L4": { "ko": "구체적 이유로 수정 요청", "en": "Requests fixes with specific reasons" },
+        "L5": { "ko": "트레이드오프 논의·전략 조정", "en": "Discusses trade-offs, adjusts strategy" }
+      }
+    }
+  ]
+}

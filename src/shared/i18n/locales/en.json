@@ -170,6 +170,33 @@
       "hoursAgo": "{{n}}h ago",
       "yesterday": "yesterday",
       "daysAgo": "{{n}}d ago"
+    },
+    "refine": {
+      "actionLabel": "AI Refine",
+      "tooltip": "Assess/refine prompt with local LLM",
+      "title": "AI Refine",
+      "noModel": "Select a local LLM model in Settings first.",
+      "unavailable": "Cannot reach the local LLM endpoint. Start LM Studio/vllm/Ollama and check the baseURL.",
+      "insufficient": "Not enough data for LLM post-processing.",
+      "runPolish": "Assess + Refine",
+      "runCoach": "Auto-generate",
+      "running": "Assessing…",
+      "level": "Level",
+      "quality": "Quality",
+      "refinedTitle": "Refined prompt",
+      "coachingTitle": "Suggestions",
+      "copy": "Copy",
+      "copied": "Copied",
+      "failed": "Refine failed"
+    },
+    "settingsRefine": {
+      "section": "AI Refine",
+      "baseUrl": "Endpoint (OpenAI-compatible)",
+      "model": "Model",
+      "modelPlaceholder": "Pick from endpoint or type a model id",
+      "apiKey": "API key (optional)",
+      "threshold": "Refine threshold (0-100)",
+      "hint": "LM Studio, vllm, Ollama (/v1), etc. Recommended: gemma-4-E4B-it (light), Qwen3.5-9B (quality)."
     }
   },
   "cli": {
@@ -208,6 +235,13 @@
       "verbatim": "type-only imports use import type",
       "target": "target {{target}}",
       "jsx": "JSX enabled"
+    },
+    "refine": {
+      "systemIntro": "You are a prompt quality assessor. Evaluate the user's prompt against the rubric below (6 capability dimensions x L1-L5). One strong axis does not raise the overall level — aggregate conservatively.",
+      "polishDirective": "If the content is sufficient, set verdict to 'polished' and put a clearer, more structured prompt in 'refined'. If it is weak, set verdict to 'needs-improvement' and put improvement guidance in the 'coaching' array.",
+      "coachDirective": "The content is insufficient. Set verdict to 'needs-improvement' and put concrete items to strengthen toward the next level in the 'coaching' array.",
+      "schema": "Output ONLY this JSON (no code fences): {\"level\":\"L1-L5\",\"quality\":0-100,\"dimensions\":[{\"dimension\":\"DECOMP|VERIFY|ORCH|FAIL|CTX|META\",\"level\":\"L1-L5\",\"note\":\"...\"}],\"verdict\":\"polished|needs-improvement\",\"refined\":\"only when polished\",\"coaching\":[\"only when needs-improvement\"],\"rationale\":\"...\"}",
+      "userIntro": "Prompt to assess:"
     }
   }
 }

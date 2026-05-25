@@ -2,6 +2,7 @@ import type { Locale } from '@shared/i18n/types.js';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input.js';
 import { Label } from '@/components/ui/label.js';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.js';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet.js';
@@ -24,7 +25,7 @@ const LANG_KEY = 'ui.language';
 type LangSetting = 'system' | Locale;
 
 /**
- * @ui-ids WORK_SETTINGS_SHEET, WORK_SETTINGS_THEME_GROUP, WORK_SETTINGS_SHELL_GROUP, WORK_SETTINGS_LANG_GROUP
+ * @ui-ids WORK_SETTINGS_SHEET, WORK_SETTINGS_THEME_GROUP, WORK_SETTINGS_SHELL_GROUP, WORK_SETTINGS_LANG_GROUP, WORK_SETTINGS_REFINE_SECTION
  */
 export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
   const t = useT();
@@ -33,6 +34,11 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
   const [mounted, setMounted] = useState(false);
   const [shell, setShell] = useState('cmd');
   const [langSetting, setLangSetting] = useState<LangSetting>('system');
+  const [refineBaseUrl, setRefineBaseUrl] = useState('http://localhost:1234/v1');
+  const [refineModel, setRefineModel] = useState('');
+  const [refineApiKey, setRefineApiKey] = useState('');
+  const [refineThreshold, setRefineThreshold] = useState('50');
+  const [refineModels, setRefineModels] = useState<string[]>([]);
   const pendingRef = useRef(false);
   const langPendingRef = useRef(false);
 
@@ -56,12 +62,39 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
         setShell(cfg['run.shell'] ?? 'cmd');
         const stored = cfg[LANG_KEY];
         setLangSetting(stored === 'ko' || stored === 'en' ? stored : 'system');
+        setRefineBaseUrl(cfg['refine.baseUrl'] ?? 'http://localhost:1234/v1');
+        setRefineModel(cfg['refine.model'] ?? '');
+        setRefineApiKey(cfg['refine.apiKey'] ?? '');
+        setRefineThreshold(cfg['refine.threshold'] ?? '50');
       })
       .catch((e) => {
         if ((e as Error).name !== 'AbortError') toast.error(t('web.settingsSheet.loadError'));
       });
     return () => ac.abort();
   }, [open, t]);
+
+  useEffect(() => {
+    if (!open) return;
+    const ac = new AbortController();
+    fetch('/api/llm/status', { signal: ac.signal })
+      .then((r) => (r.ok ? r.json() : { models: [] }))
+      .then((s: { models?: string[] }) => setRefineModels(s.models ?? []))
+      .catch(() => {});
+    return () => ac.abort();
+  }, [open]);
+
+  const saveRefine = async (key: string, value: string) => {
+    try {
+      const res = await fetch('/api/config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [key]: value }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch (e) {
+      if ((e as Error).name !== 'AbortError') toast.error(t('web.settingsSheet.saveError'));
+    }
+  };
 
   const handleShellChange = async (value: string) => {
     if (pendingRef.current) return;
@@ -215,6 +248,76 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
               </RadioGroup>
               <p className="text-[11px] text-muted-foreground">{t('web.settingsSheet.shellHint')}</p>
             </div>
+          </section>
+
+          {/* AI 다듬기 */}
+          <section className="space-y-3" data-ui-id={UI_IDS.WORK_SETTINGS_REFINE_SECTION}>
+            <h3 className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">{t('web.settingsRefine.section')}</h3>
+            <div className="space-y-2">
+              <Label htmlFor="refine-baseurl" className="text-[13px]">
+                {t('web.settingsRefine.baseUrl')}
+              </Label>
+              <Input
+                id="refine-baseurl"
+                value={refineBaseUrl}
+                onChange={(e) => setRefineBaseUrl(e.target.value)}
+                onBlur={() => saveRefine('refine.baseUrl', refineBaseUrl)}
+                className="h-8 text-[13px]"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="refine-model" className="text-[13px]">
+                {t('web.settingsRefine.model')}
+              </Label>
+              <Input
+                id="refine-model"
+                list="refine-model-list"
+                value={refineModel}
+                placeholder={t('web.settingsRefine.modelPlaceholder')}
+                onChange={(e) => setRefineModel(e.target.value)}
+                onBlur={() => saveRefine('refine.model', refineModel)}
+                className="h-8 text-[13px]"
+              />
+              <datalist id="refine-model-list">
+                {refineModels.map((m) => (
+                  <option key={m} value={m} />
+                ))}
+              </datalist>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="refine-apikey" className="text-[13px]">
+                {t('web.settingsRefine.apiKey')}
+              </Label>
+              <Input
+                id="refine-apikey"
+                type="password"
+                value={refineApiKey}
+                onChange={(e) => setRefineApiKey(e.target.value)}
+                onBlur={() => saveRefine('refine.apiKey', refineApiKey)}
+                className="h-8 text-[13px]"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="refine-threshold" className="text-[13px]">
+                {t('web.settingsRefine.threshold')}
+              </Label>
+              <Input
+                id="refine-threshold"
+                type="number"
+                min={0}
+                max={100}
+                value={refineThreshold}
+                onChange={(e) => setRefineThreshold(e.target.value)}
+                onBlur={() => {
+                  const clamped = String(Math.min(100, Math.max(0, Number(refineThreshold) || 0)));
+                  setRefineThreshold(clamped);
+                  saveRefine('refine.threshold', clamped);
+                }}
+                step={1}
+                className="h-8 text-[13px] w-24"
+              />
+            </div>
+            <p className="text-[11px] text-muted-foreground">{t('web.settingsRefine.hint')}</p>
           </section>
         </div>
       </SheetContent>

@@ -23,6 +23,8 @@
 | `POST`   | `/api/prompt/build`     | 프롬프트 빌드 + 히스토리 저장   |
 | `POST`   | `/api/prompt/run`       | Run as — 새 터미널 창 실행      |
 | `GET`    | `/api/prompt/providers` | provider 설치 여부 맵           |
+| `POST`   | `/api/prompt/structural`| 구조 휴리스틱 완성도 점수(LLM 없음) |
+| `POST`   | `/api/prompt/refine`    | 로컬 LLM 다듬기/코칭(사용자 트리거)  |
 | `GET`    | `/api/history`          | 히스토리 목록 조회              |
 | `GET`    | `/api/history/:id`      | 히스토리 단건 조회              |
 | `DELETE` | `/api/history/:id`      | 히스토리 삭제                   |
@@ -31,6 +33,7 @@
 | `GET`    | `/api/locale`           | 현재 해소된 언어                |
 | `GET`    | `/api/mention/suggest`  | @멘션 파일 자동완성             |
 | `POST`   | `/api/mention/read`     | 멘션 파일 읽기                  |
+| `GET`    | `/api/llm/status`       | 로컬 LLM 엔드포인트 도달성·모델 목록 |
 
 ## 기타
 

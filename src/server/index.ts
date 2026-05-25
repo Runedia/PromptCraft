@@ -10,6 +10,7 @@ import browseRouter from './routes/browse.js';
 import cardsRouter from './routes/cards.js';
 import configRouter from './routes/config.js';
 import historyRouter from './routes/history.js';
+import llmRouter from './routes/llm.js';
 import localeRouter from './routes/locale.js';
 import mentionRouter from './routes/mention.js';
 import promptRouter from './routes/prompt.js';
@@ -40,6 +41,7 @@ export async function createServer(port: number): Promise<void> {
   app.use('/api/config', configRouter);
   app.use('/api/locale', localeRouter);
   app.use('/api/mention', mentionRouter);
+  app.use('/api/llm', llmRouter);
 
   // 정적 파일 서빙 (프로덕션 빌드)
   app.use(express.static(WEB_DIST));

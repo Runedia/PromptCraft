@@ -5,6 +5,7 @@ import request from 'supertest';
 import * as connection from '../../../src/core/db/connection.js';
 import * as db from '../../../src/core/db/index.js';
 import type { SectionCard } from '../../../src/core/types/card.js';
+import * as refineService from '../../../src/server/refine/refineService.js';
 import router from '../../../src/server/routes/prompt.js';
 import { makeApp } from '../../helpers/make-app.js';
 
@@ -129,5 +130,47 @@ describe('POST /api/prompt/run', () => {
     expect(res.body.error).toBe('launch_failed');
     whichSpy.mockRestore();
     spawnSpy.mockRestore();
+  });
+});
+
+// ─── POST /structural ─────────────────────────────────────────────────
+describe('POST /api/prompt/structural', () => {
+  test('채워진 카드 → completeness>0, belowThreshold 플래그', async () => {
+    const cards = [makeCard({ value: '새 기능' })];
+    const res = await request(app).post('/structural').send({ cards });
+    expect(res.status).toBe(200);
+    expect(res.body.completeness).toBeGreaterThan(0);
+    expect(typeof res.body.belowThreshold).toBe('boolean');
+    expect(Array.isArray(res.body.missing)).toBe(true);
+  });
+
+  test('cards 비배열 → 400', async () => {
+    const res = await request(app).post('/structural').send({ cards: 'x' });
+    expect(res.status).toBe(400);
+  });
+});
+
+// ─── POST /refine ─────────────────────────────────────────────────────
+describe('POST /api/prompt/refine', () => {
+  test('모델 미설정 → 409 no_model', async () => {
+    const res = await request(app)
+      .post('/refine')
+      .send({ cards: [makeCard({ value: 'x' })], treeId: 't', lang: 'ko' });
+    expect(res.status).toBe(409);
+    expect(res.body.error).toBe('no_model');
+  });
+
+  test('모델 설정 시 assessPrompt 결과 반환', async () => {
+    const { config } = await import('../../../src/core/db/index.js');
+    config.set('refine.model', 'm1');
+    const spy = spyOn(refineService, 'assessPrompt').mockResolvedValue({ level: 'L3', quality: 70, dimensions: [], verdict: 'polished', refined: '다듬음' });
+    const res = await request(app)
+      .post('/refine')
+      .send({ cards: [makeCard({ value: 'x' })], treeId: 't', lang: 'ko' });
+    expect(res.status).toBe(200);
+    expect(res.body.verdict).toBe('polished');
+    expect(res.body.refined).toBe('다듬음');
+    expect(typeof res.body.completeness).toBe('number');
+    spy.mockRestore();
   });
 });

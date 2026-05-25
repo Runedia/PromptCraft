@@ -7,6 +7,7 @@ import type { ActionBarHandle } from '@/components/ActionBar/ActionBar.js';
 import { CardPoolSidebar } from '@/components/CardPool/CardPoolSidebar.js';
 import { HistorySheet } from '@/components/HistorySheet/HistorySheet.js';
 import { PromptPreview } from '@/components/PromptPreview/PromptPreview.js';
+import { RefineSheet } from '@/components/RefineSheet/RefineSheet.js';
 import { PINNED_CARD_IDS, SectionCard } from '@/components/SectionCard/SectionCard.js';
 import { SettingsSheet } from '@/components/SettingsSheet/SettingsSheet.js';
 import { TopBar } from '@/components/TopBar/TopBar.js';
@@ -41,6 +42,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   const [roleMappings, setRoleMappings] = useState<RoleMappings | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showRefine, setShowRefine] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
@@ -122,6 +124,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         onRescan={(p) => scan(p)}
         onHistory={() => setShowHistory(true)}
         onSettings={() => setShowSettings(true)}
+        onRefine={() => setShowRefine(true)}
         actionBarRef={actionBarRef}
       />
 
@@ -160,6 +163,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
 
       <HistorySheet open={showHistory} onClose={() => setShowHistory(false)} currentTreeId={treeId} />
       <SettingsSheet open={showSettings} onClose={() => setShowSettings(false)} />
+      <RefineSheet open={showRefine} onClose={() => setShowRefine(false)} />
     </div>
   );
 }

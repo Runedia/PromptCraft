@@ -22,13 +22,14 @@ interface TopBarProps {
   onRescan: (path: string) => void;
   onHistory: () => void;
   onSettings: () => void;
+  onRefine?: () => void;
   actionBarRef: RefObject<ActionBarHandle | null>;
 }
 
 /**
  * @ui-ids WORK_TOPBAR, WORK_TOPBAR_BREADCRUMB, WORK_TOPBAR_DOMAIN, WORK_TOPBAR_RESCAN, WORK_LEFT_BACK_BTN
  */
-export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onBack, onRescan, onHistory, onSettings, actionBarRef }: TopBarProps) {
+export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onBack, onRescan, onHistory, onSettings, onRefine, actionBarRef }: TopBarProps) {
   const t = useT();
   const treeStyle = treeConfig ? getTreeCardStyle(treeConfig.id) : null;
   const [scanInput, setScanInput] = useState(projectPath);
@@ -133,7 +134,7 @@ export function TopBar({ treeConfig, projectPath, scanResult, isScanLoading, onB
           </PopoverContent>
         </Popover>
 
-        <ActionBar ref={actionBarRef} onHistory={onHistory} onSettings={onSettings} projectPath={projectPath} />
+        <ActionBar ref={actionBarRef} onHistory={onHistory} onSettings={onSettings} onRefine={onRefine} projectPath={projectPath} />
 
         <ThemeToggle />
       </div>

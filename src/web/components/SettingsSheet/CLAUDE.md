@@ -7,6 +7,7 @@
   - open 시 `GET /api/config` → `run.shell` 현재값 로드(없으면 'cmd')
   - 변경 시 낙관적 갱신 + `PUT /api/config { "run.shell": value }`, 실패 시 롤백. `pendingRef` 재진입 가드로 키보드 연속 변경 시 PUT 중복 발화 방지
 - 사용자 정의 셸 템플릿(`run.shells`) 편집은 범위 외(고급 기능)
+- 섹션 "AI 다듬기": refine.baseUrl/model/apiKey/threshold 키. onBlur 시 PUT /api/config(낙관적 아님 — 단순 저장+실패 toast). 모델 목록은 GET /api/llm/status로 조회해 datalist 제안.
 
 ## Props
 - `open: boolean` / `onClose: () => void` — 부모(WorkspacePage)가 제어 (HistorySheet와 동일 패턴)

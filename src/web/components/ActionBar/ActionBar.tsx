@@ -1,5 +1,5 @@
 import { PROVIDERS, RUN_TARGETS, type RunTarget } from '@core/run/providers.js';
-import { ChevronDown, Copy, History, Play, Redo2, Settings, Undo2 } from 'lucide-react';
+import { ChevronDown, Copy, History, Play, Redo2, Settings, Sparkles, Undo2 } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button.js';
@@ -23,6 +23,7 @@ const DEFAULT_TARGET: RunTarget = 'claude-code';
 interface ActionBarProps {
   onHistory?: () => void;
   onSettings?: () => void;
+  onRefine?: () => void;
   projectPath?: string;
 }
 
@@ -33,9 +34,10 @@ export interface ActionBarHandle {
 
 /**
  * @ui-ids WORK_ACTIONBAR_UNDO, WORK_ACTIONBAR_REDO,
- *   WORK_ACTIONBAR_COPY, WORK_ACTIONBAR_RUN, WORK_ACTIONBAR_HISTORY, WORK_ACTIONBAR_SETTINGS
+ *   WORK_ACTIONBAR_COPY, WORK_ACTIONBAR_RUN, WORK_ACTIONBAR_HISTORY, WORK_ACTIONBAR_SETTINGS,
+ *   WORK_ACTIONBAR_REFINE
  */
-export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistory, onSettings, projectPath }, ref) => {
+export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistory, onSettings, onRefine, projectPath }, ref) => {
   const t = useT();
   const prompt = useCardStore((s) => s.prompt);
   const treeId = useCardStore((s) => s.treeId);
@@ -192,6 +194,25 @@ export const ActionBar = forwardRef<ActionBarHandle, ActionBarProps>(({ onHistor
             </Button>
           </TooltipTrigger>
           <TooltipContent>{t('web.actionBar.settingsTooltip')}</TooltipContent>
+        </Tooltip>
+      )}
+
+      {onRefine && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              data-ui-id={UI_IDS.WORK_ACTIONBAR_REFINE}
+              onClick={onRefine}
+              aria-label={t('web.refine.actionLabel')}
+              className="size-8"
+            >
+              <Sparkles size={15} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('web.refine.tooltip')}</TooltipContent>
         </Tooltip>
       )}
 

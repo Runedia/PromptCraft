@@ -297,6 +297,14 @@ export const UI_IDS = {
    */
   WORK_ACTIONBAR_SETTINGS: 'WORK_ACTIONBAR_SETTINGS',
 
+  /**
+   * @screen WorkspacePage
+   * @region ActionBar
+   * @description AI 다듬기 Sheet 열기 버튼
+   * @file src/web/components/ActionBar/ActionBar.tsx
+   */
+  WORK_ACTIONBAR_REFINE: 'WORK_ACTIONBAR_REFINE',
+
   // ── HistorySheet ─────────────────────────────────────────────────────────
 
   /**
@@ -372,6 +380,14 @@ export const UI_IDS = {
    * @file src/web/components/SettingsSheet/SettingsSheet.tsx
    */
   WORK_SETTINGS_LANG_GROUP: 'WORK_SETTINGS_LANG_GROUP',
+
+  /**
+   * @screen WorkspacePage
+   * @region Settings
+   * @description AI 다듬기 설정 섹션(baseURL/모델/apiKey/임계값)
+   * @file src/web/components/SettingsSheet/SettingsSheet.tsx
+   */
+  WORK_SETTINGS_REFINE_SECTION: 'WORK_SETTINGS_REFINE_SECTION',
 
   // ── ScanBanner / V6 Tree-Select ──────────────────────────────────────────
 
@@ -466,6 +482,30 @@ export const UI_IDS = {
    * @file src/web/components/inputs/MentionInput.tsx
    */
   WORK_MENTION_HINTS: 'WORK_MENTION_HINTS',
+
+  // ── RefineSheet 컴포넌트 ─────────────────────────────────────────────────
+
+  /**
+   * @screen WorkspacePage
+   * @region Refine
+   * @description AI 다듬기 Sheet 루트
+   * @file src/web/components/RefineSheet/RefineSheet.tsx
+   */
+  WORK_REFINE_SHEET: 'WORK_REFINE_SHEET',
+  /**
+   * @screen WorkspacePage
+   * @region Refine
+   * @description 평가/다듬기/자동생성 실행 버튼
+   * @file src/web/components/RefineSheet/RefineSheet.tsx
+   */
+  WORK_REFINE_RUN_BTN: 'WORK_REFINE_RUN_BTN',
+  /**
+   * @screen WorkspacePage
+   * @region Refine
+   * @description 다듬기 결과 영역(레벨/질/다듬은 프롬프트/코칭)
+   * @file src/web/components/RefineSheet/RefineSheet.tsx
+   */
+  WORK_REFINE_RESULT: 'WORK_REFINE_RESULT',
 } as const;
 
 export type UiId = (typeof UI_IDS)[keyof typeof UI_IDS];
