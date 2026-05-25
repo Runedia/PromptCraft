@@ -83,14 +83,6 @@ export const UI_IDS = {
 
   /**
    * @screen WorkspacePage
-   * @region Restore
-   * @description 이전 작업 복원 여부 확인 다이얼로그
-   * @file src/web/pages/WorkspacePage.tsx
-   */
-  WORK_RESTORE_DIALOG: 'WORK_RESTORE_DIALOG',
-
-  /**
-   * @screen WorkspacePage
    * @region Left
    * @description 좌측 패널 (헤더 + 카드 목록 + 카드 풀)
    * @file src/web/pages/WorkspacePage.tsx

@@ -32,11 +32,13 @@ export default defineConfig({
     stdout: 'ignore',
     stderr: 'pipe',
     // 주의: 이 env는 Playwright가 직접 spawn한 서버에만 적용된다. reuseExistingServer가
-    // 외부에서 띄운 4173 서버를 재활용하면 PROMPTCRAFT_DB_PATH가 주입되지 않아 프로덕션 DB를
-    // 쓰게 된다 — E2E 실행 시 4173 포트를 Playwright가 직접 기동하도록 비워둘 것.
+    // 외부에서 띄운 4173 서버를 재활용하면 (1) PROMPTCRAFT_DB_PATH가 주입되지 않아 프로덕션 DB를
+    // 쓰게 되고, (2) VITE_E2E 없이 빌드된 번들이 쓰여 window.__promptcraftTest가 노출되지 않는다
+    // — E2E 실행 시 4173 포트를 Playwright가 직접 기동하도록 비워둘 것.
     env: {
       PORT: String(PERF_PORT),
       PROMPTCRAFT_DB_PATH: path.join(os.tmpdir(), `promptcraft-e2e-${Date.now()}.db`),
+      VITE_E2E: '1',
     },
   },
 });

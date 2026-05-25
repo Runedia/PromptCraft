@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { buildSeedSession } from './seed-session.js';
+import { buildSeedSession, enterWorkspaceWithSession, injectSession } from './seed-session.js';
 
 const TREE_ID = 'feature-impl';
 const ACTIVE_CARD_COUNT = 5;
@@ -26,22 +26,8 @@ test('PromptPreview 토글 — default 원문 / 미리보기 전환 / localStora
   const session = buildSeedSession(TREE_ID, ACTIVE_CARD_COUNT);
   const targetCard = session.cards.find((c) => c.id === GFM_CARD_ID);
   if (targetCard) targetCard.value = GFM_VALUE;
-  const sessionKey = `promptcraft:session:${TREE_ID}`;
 
-  await page.addInitScript(
-    (args: { session: unknown; key: string; treeId: string }) => {
-      localStorage.setItem(args.key, JSON.stringify(args.session));
-      history.replaceState({ type: 'workspace', treeId: args.treeId, projectPath: '' }, '', `/workspace/${args.treeId}`);
-    },
-    { session, key: sessionKey, treeId: TREE_ID }
-  );
-
-  await page.goto('/');
-
-  const restore = page.locator('[data-ui-id="WORK_RESTORE_DIALOG"]');
-  await restore.waitFor({ state: 'visible', timeout: 15_000 });
-  await page.getByRole('button', { name: '이어서 하기' }).click();
-  await restore.waitFor({ state: 'hidden', timeout: 10_000 });
+  await enterWorkspaceWithSession(page, session);
 
   const rawBtn = page.locator('[data-ui-id="WORK_PREVIEW_TOGGLE_RAW"]');
   const renderedBtn = page.locator('[data-ui-id="WORK_PREVIEW_TOGGLE_RENDERED"]');
@@ -76,11 +62,11 @@ test('PromptPreview 토글 — default 원문 / 미리보기 전환 / localStora
   expect(persisted).not.toBeNull();
   expect(JSON.parse(persisted ?? '{}')?.state?.previewMode).toBe('rendered');
 
-  // 4. 새로고침 후에도 'rendered' 유지
+  // 4. 새로고침 후에도 'rendered' 유지 (reload도 마운트 effect 재실행 → /api/trees 재fetch race 동일)
+  const treesResp = page.waitForResponse((r) => r.url().includes(`/api/trees/${TREE_ID}`), { timeout: 15_000 });
   await page.reload();
-  await restore.waitFor({ state: 'visible', timeout: 15_000 });
-  await page.getByRole('button', { name: '이어서 하기' }).click();
-  await restore.waitFor({ state: 'hidden', timeout: 10_000 });
+  await treesResp;
+  await injectSession(page, session);
   await expect(renderedBtn).toHaveAttribute('aria-pressed', 'true');
   await expect(previewContent.locator('table')).toHaveCount(1);
 

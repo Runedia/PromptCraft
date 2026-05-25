@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { appendHistory, evaluatePass, formatReport, summarize } from '../perf/perf-reporter.js';
-import { buildSeedSession } from './seed-session.js';
+import { buildSeedSession, enterWorkspaceWithSession } from './seed-session.js';
 
 const BENCHMARK_NAME = 'preview-latency';
 const THRESHOLD_MS = 100;
@@ -19,22 +19,8 @@ test.describe.configure({ mode: 'serial' });
 
 test('카드 입력 → 프리뷰 갱신 (PRD §5.2.3 반응속도 < 100ms 중앙값)', async ({ page }) => {
   const session = buildSeedSession(TREE_ID, ACTIVE_CARD_COUNT);
-  const sessionKey = `promptcraft:session:${TREE_ID}`;
 
-  await page.addInitScript(
-    (args: { session: unknown; key: string; treeId: string }) => {
-      localStorage.setItem(args.key, JSON.stringify(args.session));
-      history.replaceState({ type: 'workspace', treeId: args.treeId, projectPath: '' }, '', `/workspace/${args.treeId}`);
-    },
-    { session, key: sessionKey, treeId: TREE_ID }
-  );
-
-  await page.goto('/');
-
-  const restore = page.locator('[data-ui-id="WORK_RESTORE_DIALOG"]');
-  await restore.waitFor({ state: 'visible', timeout: 15_000 });
-  await page.getByRole('button', { name: '이어서 하기' }).click();
-  await restore.waitFor({ state: 'hidden', timeout: 10_000 });
+  await enterWorkspaceWithSession(page, session);
 
   const activeCards = page.locator('[data-ui-id="WORK_SECTION_CARD"]');
   await expect(activeCards).toHaveCount(ACTIVE_CARD_COUNT, { timeout: 15_000 });

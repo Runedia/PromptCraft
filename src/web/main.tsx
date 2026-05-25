@@ -23,3 +23,9 @@ createRoot(root).render(
     </LocaleProvider>
   </ThemeProvider>
 );
+
+if (import.meta.env.VITE_E2E) {
+  import('./test-hooks.js')
+    .then((m) => m.installTestHooks())
+    .catch((e) => console.error('[e2e] test-hooks load failed', e));
+}

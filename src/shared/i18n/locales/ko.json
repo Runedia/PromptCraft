@@ -71,10 +71,6 @@
       "selectFolder": "이 폴더 선택"
     },
     "workspacePage": {
-      "restoreTitle": "이전 작업을 이어서 할까요?",
-      "restoreDesc": "저장된 세션이 있습니다.",
-      "restoreYes": "이어서 하기",
-      "restoreNo": "새로 시작",
       "pageTitle": "프롬프트 작성"
     },
     "topBar": {

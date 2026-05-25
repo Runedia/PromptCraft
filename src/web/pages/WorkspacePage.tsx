@@ -10,8 +10,6 @@ import { PromptPreview } from '@/components/PromptPreview/PromptPreview.js';
 import { PINNED_CARD_IDS, SectionCard } from '@/components/SectionCard/SectionCard.js';
 import { SettingsSheet } from '@/components/SettingsSheet/SettingsSheet.js';
 import { TopBar } from '@/components/TopBar/TopBar.js';
-import { Button } from '@/components/ui/button.js';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog.js';
 import { useCardSession } from '@/hooks/useCardSession.js';
 import { useKeyboard } from '@/hooks/useKeyboard.js';
 import { useScan } from '@/hooks/useScan.js';
@@ -28,21 +26,19 @@ interface WorkspacePageProps {
 }
 
 /**
- * @ui-ids WORK_RESTORE_DIALOG, WORK_SECTION_LIST, WORK_RIGHT_PANEL
+ * @ui-ids WORK_SECTION_LIST, WORK_RIGHT_PANEL
  */
 export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePageProps) {
   const t = useT();
   const { lang } = useLocale();
   const { activeCards, reorderCards, scanResult } = useCardStore();
-  const { initSession, reresolveCardsForLang, getSavedSession, restoreSession, clearSavedSession } = useCardSession();
+  const { initSession, reresolveCardsForLang } = useCardSession();
   const { scan, isScanLoading } = useScan();
   const actionBarRef = useRef<ActionBarHandle | null>(null);
 
   const [treeConfig, setTreeConfig] = useState<ResolvedTree | null>(null);
   const [cardDefs, setCardDefs] = useState<Record<string, CardDefinition> | null>(null);
   const [roleMappings, setRoleMappings] = useState<RoleMappings | null>(null);
-  const [showRestorePrompt, setShowRestorePrompt] = useState(false);
-  const [pendingRestore, setPendingRestore] = useState<ReturnType<typeof getSavedSession>>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -66,18 +62,10 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
           setTreeConfig(tree);
           setCardDefs(defs);
           if (rm) setRoleMappings(rm);
-          const normalizePath = (p: string) => p.replace(/\\/g, '/').replace(/\/+$/, '');
-          const saved = getSavedSession(treeId);
-          const savedPathMatches = saved?.projectPath === undefined || normalizePath(saved.projectPath) === normalizePath(projectPath);
-          if (saved && savedPathMatches) {
-            setPendingRestore(saved);
-            setShowRestorePrompt(true);
-          } else {
-            const existingScan = useCardStore.getState().scanResult;
-            const scanMatchesPath = existingScan?.path === projectPath;
-            initSession(tree, defs, scanMatchesPath ? existingScan : null, undefined, rm ?? null);
-            if (projectPath && !scanMatchesPath) await scan(projectPath, { silent: true });
-          }
+          const existingScan = useCardStore.getState().scanResult;
+          const scanMatchesPath = existingScan?.path === projectPath;
+          initSession(tree, defs, scanMatchesPath ? existingScan : null, undefined, rm ?? null);
+          if (projectPath && !scanMatchesPath) await scan(projectPath, { silent: true });
         }
       );
   }, [treeId]);
@@ -95,26 +83,6 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
     if (!treeConfig || !cardDefs || useCardStore.getState().cards.length === 0) return;
     reresolveCardsForLang(treeConfig, cardDefs, roleMappings, lang);
   }, [lang]);
-
-  const handleRestoreYes = useCallback(() => {
-    if (pendingRestore) restoreSession(pendingRestore);
-    setShowRestorePrompt(false);
-  }, [pendingRestore, restoreSession]);
-
-  const handleRestoreNo = useCallback(() => {
-    if (treeConfig) {
-      fetch('/api/cards')
-        .then((r) => r.json())
-        .then((defs: Record<string, CardDefinition>) => {
-          setCardDefs(defs);
-          const existingScan = useCardStore.getState().scanResult;
-          const scanMatchesPath = existingScan?.path === projectPath;
-          initSession(treeConfig, defs, scanMatchesPath ? existingScan : null, undefined, roleMappings);
-          clearSavedSession(treeId);
-        });
-    }
-    setShowRestorePrompt(false);
-  }, [treeConfig, treeId, projectPath, initSession, clearSavedSession, roleMappings]);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -144,25 +112,6 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
 
   return (
     <div className="h-screen flex flex-col bg-background text-foreground">
-      {/* 이전 작업 복원 다이얼로그 */}
-      <Dialog open={showRestorePrompt}>
-        <DialogContent
-          data-ui-id={UI_IDS.WORK_RESTORE_DIALOG}
-          onInteractOutside={(e) => e.preventDefault()}
-          onEscapeKeyDown={(e) => e.preventDefault()}
-          className="max-w-sm text-center"
-        >
-          <DialogTitle>{t('web.workspacePage.restoreTitle')}</DialogTitle>
-          <DialogDescription>{t('web.workspacePage.restoreDesc')}</DialogDescription>
-          <div className="flex gap-3 justify-center pt-2">
-            <Button onClick={handleRestoreYes}>{t('web.workspacePage.restoreYes')}</Button>
-            <Button variant="outline" onClick={handleRestoreNo}>
-              {t('web.workspacePage.restoreNo')}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* 상단 44px TopBar */}
       <TopBar
         treeConfig={treeConfig}

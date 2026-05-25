@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { buildSeedSession } from './seed-session.js';
+import { buildSeedSession, enterWorkspaceWithSession } from './seed-session.js';
 
 const TREE_ID = 'feature-impl';
 const ACTIVE_CARD_COUNT = 5;
@@ -14,27 +14,12 @@ test.describe.configure({ mode: 'serial' });
  */
 test('언어 전환 — 카드 라벨·chrome·프리뷰 헤더 동시 전환 + value 보존', async ({ page, context }) => {
   const session = buildSeedSession(TREE_ID, ACTIVE_CARD_COUNT);
-  const sessionKey = `promptcraft:session:${TREE_ID}`;
 
   // M4: value 보존 검증이 의미를 가지려면 seed role value가 non-empty여야 한다(조건부 silent pass 방지).
   const seedRoleValue = session.cards.find((c) => c.id === 'role')?.value ?? '';
   expect(seedRoleValue.length).toBeGreaterThan(0);
 
-  await page.addInitScript(
-    (args: { session: unknown; key: string; treeId: string }) => {
-      localStorage.setItem(args.key, JSON.stringify(args.session));
-      history.replaceState({ type: 'workspace', treeId: args.treeId, projectPath: '' }, '', `/workspace/${args.treeId}`);
-    },
-    { session, key: sessionKey, treeId: TREE_ID }
-  );
-
-  await page.goto('/');
-
-  // 세션 복원 → 워크스페이스 진입 (복원 버튼 텍스트는 현재 언어에 따라 ko/en — role 별 선택)
-  const restore = page.locator('[data-ui-id="WORK_RESTORE_DIALOG"]');
-  await restore.waitFor({ state: 'visible', timeout: 15_000 });
-  await restore.getByRole('button').first().click();
-  await restore.waitFor({ state: 'hidden', timeout: 10_000 });
+  await enterWorkspaceWithSession(page, session);
 
   const sectionList = page.locator('[data-ui-id="WORK_SECTION_LIST"]');
   const previewContent = page.locator('[data-ui-id="WORK_PREVIEW_CONTENT"]');

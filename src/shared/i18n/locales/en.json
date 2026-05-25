@@ -71,10 +71,6 @@
       "selectFolder": "Select this folder"
     },
     "workspacePage": {
-      "restoreTitle": "Continue previous session?",
-      "restoreDesc": "A saved session was found.",
-      "restoreYes": "Continue",
-      "restoreNo": "Start fresh",
       "pageTitle": "Build prompt"
     },
     "topBar": {

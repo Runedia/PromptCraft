@@ -4,20 +4,10 @@ import type { RoleMappings } from '@core/builder/role-resolver.js';
 import type { CardDefinition, TreeConfig } from '@core/types/card.js';
 import type { ScanResult } from '@core/types.js';
 import type { Locale } from '@shared/i18n/types.js';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useLocale } from '@/i18n/LocaleContext.js';
 import { useCardStore } from '@/store/cardStore.js';
 import type { ResolvedTree } from '@/types/tree.js';
-
-const SESSION_KEY_PREFIX = 'promptcraft:session:';
-const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24시간
-
-interface SavedSession {
-  treeId: string;
-  projectPath?: string;
-  cards: ReturnType<typeof useCardStore.getState>['cards'];
-  savedAt: number;
-}
 
 /**
  * ResolvedTree → TreeConfig. 유일한 차이는 label/description가 string(해소됨) vs I18nText인데,
@@ -31,49 +21,7 @@ function toCoreTree(treeConfig: ResolvedTree): TreeConfig {
 export function useCardSession() {
   const setSession = useCardStore((s) => s.setSession);
   const reresolveStoreCards = useCardStore((s) => s.reresolveCards);
-  const cards = useCardStore((s) => s.cards);
-  const treeId = useCardStore((s) => s.treeId);
-  const scanResultPath = useCardStore((s) => s.scanResult?.path);
   const { lang } = useLocale();
-
-  /** localStorage에 세션 자동 저장 (debounce 1초) */
-  useEffect(() => {
-    if (!treeId || cards.length === 0) return;
-    // 사용자가 실제로 값을 입력한 카드가 없으면 저장하지 않음 (기본값 상태 저장 방지)
-    const hasUserInput = cards.some((c) => typeof c.value === 'string' && c.value.trim() !== '');
-    if (!hasUserInput) return;
-    const timer = setTimeout(() => {
-      const key = `${SESSION_KEY_PREFIX}${treeId}`;
-      const payload: SavedSession = { treeId, projectPath: scanResultPath, cards, savedAt: Date.now() };
-      try {
-        localStorage.setItem(key, JSON.stringify(payload));
-      } catch {
-        // localStorage 쓰기 실패 무시
-      }
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [treeId, cards, scanResultPath]);
-
-  /** 저장된 세션 조회 (24시간 TTL) */
-  const getSavedSession = useCallback((id: string): SavedSession | null => {
-    try {
-      const raw = localStorage.getItem(`${SESSION_KEY_PREFIX}${id}`);
-      if (!raw) return null;
-      const parsed: SavedSession = JSON.parse(raw);
-      if (Date.now() - parsed.savedAt > SESSION_TTL_MS) {
-        localStorage.removeItem(`${SESSION_KEY_PREFIX}${id}`);
-        return null;
-      }
-      return parsed;
-    } catch {
-      return null;
-    }
-  }, []);
-
-  /** 저장된 세션 삭제 */
-  const clearSavedSession = useCallback((id: string) => {
-    localStorage.removeItem(`${SESSION_KEY_PREFIX}${id}`);
-  }, []);
 
   /** 새 세션 초기화. ResolvedTree(서버 반환 형태)를 받아 createCardSession에 위임한다. */
   const initSession = useCallback(
@@ -115,18 +63,5 @@ export function useCardSession() {
     [reresolveStoreCards, lang]
   );
 
-  /** 저장된 세션 복원 */
-  const restoreSession = useCallback(
-    (saved: SavedSession) => {
-      setSession({
-        treeId: saved.treeId,
-        cards: saved.cards,
-        scanResult: null,
-        createdAt: new Date(saved.savedAt),
-      });
-    },
-    [setSession]
-  );
-
-  return { initSession, reresolveCardsForLang, restoreSession, getSavedSession, clearSavedSession };
+  return { initSession, reresolveCardsForLang };
 }
