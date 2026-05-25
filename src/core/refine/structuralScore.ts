@@ -2,7 +2,7 @@ import type { SectionCard } from '../types/card.js';
 import type { StructuralScore } from './types.js';
 
 const UPPER_CARDS = ['constraints', 'acceptance-criteria', 'review-focus', 'output-format'];
-const FILE_PATH_RE_G = /[A-Za-z0-9_./\\-]+\.[A-Za-z]{2,6}(?::\d+)?/g;
+const FILE_PATH_RE_G = /[A-Za-z0-9_./-]+\.[A-Za-z]{2,6}(?::\d+)?/g;
 const STEP_LINE_RE = /(^|\n)\s*(\d+[.)]|[-*])\s+\S/g;
 const PER_CARD = 12;
 const FILE_BONUS = 16;

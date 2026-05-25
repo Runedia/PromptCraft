@@ -1,6 +1,5 @@
 # 의존성 및 패키지 매니저
 node_modules/
-.pnpm-store/
 
 # 빌드 및 출력
 dist/
@@ -54,6 +53,7 @@ $RECYCLE.BIN/
 
 # AI 및 LLM 지원 도구
 .agents/
+.codegraph
 .claude/
 .omc/
 .serena/
@@ -61,11 +61,6 @@ $RECYCLE.BIN/
 .playwright-mcp/
 ui-map.md
 docs/superpowers
-
-# HAM — AI agent scaffolding (local, do not commit)
-.ham/
-.memory/
-# end HAM
 
 # 테스트 및 커버리지
 coverage/

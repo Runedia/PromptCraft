@@ -11,7 +11,7 @@ describe('parseRefineResponse', () => {
   });
 
   test('코드펜스로 감싼 JSON도 파싱', () => {
-    const raw = '```json\n' + JSON.stringify({ ...base, verdict: 'polished', refined: 'x' }) + '\n```';
+    const raw = `\`\`\`json\n${JSON.stringify({ ...base, verdict: 'polished', refined: 'x' })}\n\`\`\``;
     expect(parseRefineResponse(raw).refined).toBe('x');
   });
 

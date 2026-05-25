@@ -1,6 +1,6 @@
 import type { I18nText, Locale } from '../../shared/i18n/types.js';
-import rubric from './vibe-rubric.json' with { type: 'json' };
 import type { VibeDimension, VibeLevel } from './types.js';
+import rubric from './vibe-rubric.json' with { type: 'json' };
 
 export interface RubricDimension {
   code: VibeDimension;

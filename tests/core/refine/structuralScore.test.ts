@@ -1,9 +1,20 @@
 import { describe, expect, test } from 'bun:test';
-import type { SectionCard } from '../../../src/core/types/card.js';
 import { structuralScore } from '../../../src/core/refine/structuralScore.js';
+import type { SectionCard } from '../../../src/core/types/card.js';
 
 function card(overrides: Partial<SectionCard>): SectionCard {
-  return { id: 'goal', label: '목표', required: false, active: true, order: 1, inputType: 'text', value: '', template: '{{value}}', scanSuggested: false, ...overrides };
+  return {
+    id: 'goal',
+    label: '목표',
+    required: false,
+    active: true,
+    order: 1,
+    inputType: 'text',
+    value: '',
+    template: '{{value}}',
+    scanSuggested: false,
+    ...overrides,
+  };
 }
 
 describe('structuralScore', () => {
