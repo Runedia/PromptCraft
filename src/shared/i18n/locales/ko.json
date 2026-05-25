@@ -193,7 +193,10 @@
       "section": "AI 다듬기",
       "baseUrl": "엔드포인트 (OpenAI 호환)",
       "model": "모델",
-      "modelPlaceholder": "엔드포인트의 모델 선택 또는 직접 입력",
+      "modelPlaceholder": "모델 선택",
+      "modelSearch": "모델 검색…",
+      "modelEmpty": "모델이 없습니다. 엔드포인트 확인 후 새로고침하세요.",
+      "refresh": "모델 목록 새로고침",
       "apiKey": "API 키 (선택)",
       "threshold": "다듬기 임계값 (0–100)",
       "hint": "LM Studio·vllm·Ollama(/v1) 등. 권장: gemma-4-E4B-it(가벼움), Qwen3.5-9B(고품질)."

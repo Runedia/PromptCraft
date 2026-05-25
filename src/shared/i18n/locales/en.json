@@ -193,7 +193,10 @@
       "section": "AI Refine",
       "baseUrl": "Endpoint (OpenAI-compatible)",
       "model": "Model",
-      "modelPlaceholder": "Pick from endpoint or type a model id",
+      "modelPlaceholder": "Select a model",
+      "modelSearch": "Search models…",
+      "modelEmpty": "No models. Check the endpoint and refresh.",
+      "refresh": "Refresh model list",
       "apiKey": "API key (optional)",
       "threshold": "Refine threshold (0-100)",
       "hint": "LM Studio, vllm, Ollama (/v1), etc. Recommended: gemma-4-E4B-it (light), Qwen3.5-9B (quality)."

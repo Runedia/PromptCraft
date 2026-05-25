@@ -388,6 +388,20 @@ export const UI_IDS = {
    * @file src/web/components/SettingsSheet/SettingsSheet.tsx
    */
   WORK_SETTINGS_REFINE_SECTION: 'WORK_SETTINGS_REFINE_SECTION',
+  /**
+   * @screen WorkspacePage
+   * @region Settings
+   * @description AI 다듬기 모델 선택 combobox 트리거 (목록은 /api/llm/status)
+   * @file src/web/components/SettingsSheet/SettingsSheet.tsx
+   */
+  WORK_SETTINGS_REFINE_MODEL: 'WORK_SETTINGS_REFINE_MODEL',
+  /**
+   * @screen WorkspacePage
+   * @region Settings
+   * @description AI 다듬기 모델 목록 새로고침 버튼 (엔드포인트 재조회)
+   * @file src/web/components/SettingsSheet/SettingsSheet.tsx
+   */
+  WORK_SETTINGS_REFINE_REFRESH: 'WORK_SETTINGS_REFINE_REFRESH',
 
   // ── ScanBanner / V6 Tree-Select ──────────────────────────────────────────
 

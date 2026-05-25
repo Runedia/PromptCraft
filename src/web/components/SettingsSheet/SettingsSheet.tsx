@@ -1,13 +1,18 @@
 import type { Locale } from '@shared/i18n/types.js';
+import { Check, ChevronsUpDown, RefreshCw } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button.js';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command.js';
 import { Input } from '@/components/ui/input.js';
 import { Label } from '@/components/ui/label.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.js';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet.js';
 import { useLocale } from '@/i18n/LocaleContext.js';
 import { useT } from '@/i18n/useT.js';
+import { cn } from '@/lib/utils';
 import { UI_IDS } from '@/ui-ids.js';
 
 interface SettingsSheetProps {
@@ -25,7 +30,7 @@ const LANG_KEY = 'ui.language';
 type LangSetting = 'system' | Locale;
 
 /**
- * @ui-ids WORK_SETTINGS_SHEET, WORK_SETTINGS_THEME_GROUP, WORK_SETTINGS_SHELL_GROUP, WORK_SETTINGS_LANG_GROUP, WORK_SETTINGS_REFINE_SECTION
+ * @ui-ids WORK_SETTINGS_SHEET, WORK_SETTINGS_THEME_GROUP, WORK_SETTINGS_SHELL_GROUP, WORK_SETTINGS_LANG_GROUP, WORK_SETTINGS_REFINE_SECTION, WORK_SETTINGS_REFINE_MODEL, WORK_SETTINGS_REFINE_REFRESH
  */
 export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
   const t = useT();
@@ -39,8 +44,25 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
   const [refineApiKey, setRefineApiKey] = useState('');
   const [refineThreshold, setRefineThreshold] = useState('50');
   const [refineModels, setRefineModels] = useState<string[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(false);
+  const [modelOpen, setModelOpen] = useState(false);
   const pendingRef = useRef(false);
   const langPendingRef = useRef(false);
+
+  // /api/llm/status는 저장된 config(refine.baseUrl/apiKey) 기준으로 모델을 조회한다.
+  // 따라서 새로고침 전에는 현재 입력값을 먼저 저장해야 한다(handleRefreshModels 참고).
+  const loadModels = useCallback(async (signal?: AbortSignal) => {
+    setModelsLoading(true);
+    try {
+      const r = await fetch('/api/llm/status', signal ? { signal } : {});
+      const s = (r.ok ? await r.json() : { models: [] }) as { models?: string[] };
+      setRefineModels(s.models ?? []);
+    } catch (e) {
+      if ((e as Error).name !== 'AbortError') setRefineModels([]);
+    } finally {
+      setModelsLoading(false);
+    }
+  }, []);
 
   // THEME_OPTIONS labels resolved inside component via t()
   const themeOptions = [
@@ -76,12 +98,9 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
   useEffect(() => {
     if (!open) return;
     const ac = new AbortController();
-    fetch('/api/llm/status', { signal: ac.signal })
-      .then((r) => (r.ok ? r.json() : { models: [] }))
-      .then((s: { models?: string[] }) => setRefineModels(s.models ?? []))
-      .catch(() => {});
+    void loadModels(ac.signal);
     return () => ac.abort();
-  }, [open]);
+  }, [open, loadModels]);
 
   const saveRefine = async (key: string, value: string) => {
     try {
@@ -94,6 +113,13 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
     } catch (e) {
       if ((e as Error).name !== 'AbortError') toast.error(t('web.settingsSheet.saveError'));
     }
+  };
+
+  const handleRefreshModels = async () => {
+    // /api/llm/status는 저장된 config 기준이므로, 현재 입력한 연결 설정을 먼저 저장한 뒤 재조회한다.
+    await saveRefine('refine.baseUrl', refineBaseUrl);
+    await saveRefine('refine.apiKey', refineApiKey);
+    await loadModels();
   };
 
   const handleShellChange = async (value: string) => {
@@ -257,32 +283,76 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
               <Label htmlFor="refine-baseurl" className="text-[13px]">
                 {t('web.settingsRefine.baseUrl')}
               </Label>
-              <Input
-                id="refine-baseurl"
-                value={refineBaseUrl}
-                onChange={(e) => setRefineBaseUrl(e.target.value)}
-                onBlur={() => saveRefine('refine.baseUrl', refineBaseUrl)}
-                className="h-8 text-[13px]"
-              />
+              <div className="flex items-center gap-2">
+                <Input
+                  id="refine-baseurl"
+                  value={refineBaseUrl}
+                  onChange={(e) => setRefineBaseUrl(e.target.value)}
+                  onBlur={() => saveRefine('refine.baseUrl', refineBaseUrl)}
+                  className="h-8 text-[13px]"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  onClick={handleRefreshModels}
+                  disabled={modelsLoading}
+                  title={t('web.settingsRefine.refresh')}
+                  aria-label={t('web.settingsRefine.refresh')}
+                  data-ui-id={UI_IDS.WORK_SETTINGS_REFINE_REFRESH}
+                >
+                  <RefreshCw className={cn('h-4 w-4', modelsLoading && 'animate-spin')} />
+                </Button>
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="refine-model" className="text-[13px]">
                 {t('web.settingsRefine.model')}
               </Label>
-              <Input
-                id="refine-model"
-                list="refine-model-list"
-                value={refineModel}
-                placeholder={t('web.settingsRefine.modelPlaceholder')}
-                onChange={(e) => setRefineModel(e.target.value)}
-                onBlur={() => saveRefine('refine.model', refineModel)}
-                className="h-8 text-[13px]"
-              />
-              <datalist id="refine-model-list">
-                {refineModels.map((m) => (
-                  <option key={m} value={m} />
-                ))}
-              </datalist>
+              {/* 네이티브 datalist는 Radix 모달 Dialog의 focus-trap에 막혀 선택이 커밋되지 않는다.
+                  Popover+Command combobox로 대체하고, Dialog 안에서 동작하도록 Popover에 modal을 켠다. */}
+              <Popover open={modelOpen} onOpenChange={setModelOpen} modal>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="refine-model"
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={modelOpen}
+                    className="h-8 w-full justify-between text-[13px] font-normal"
+                    data-ui-id={UI_IDS.WORK_SETTINGS_REFINE_MODEL}
+                  >
+                    <span className={cn('truncate', !refineModel && 'text-muted-foreground')}>{refineModel || t('web.settingsRefine.modelPlaceholder')}</span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder={t('web.settingsRefine.modelSearch')} className="h-8 text-[13px]" />
+                    <CommandList>
+                      <CommandEmpty>{t('web.settingsRefine.modelEmpty')}</CommandEmpty>
+                      <CommandGroup>
+                        {refineModels.map((m) => (
+                          <CommandItem
+                            key={m}
+                            value={m}
+                            onSelect={() => {
+                              setRefineModel(m);
+                              saveRefine('refine.model', m);
+                              setModelOpen(false);
+                            }}
+                            className="text-[13px]"
+                          >
+                            <Check className={cn('h-4 w-4', refineModel === m ? 'opacity-100' : 'opacity-0')} />
+                            {m}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="space-y-2">
               <Label htmlFor="refine-apikey" className="text-[13px]">
