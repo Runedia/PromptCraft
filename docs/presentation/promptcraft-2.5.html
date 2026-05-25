@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptCraft 2.5 — 구조화 프롬프트 생성·실행 도구</title>
+
+  <!-- Pretendard -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+  <!-- JetBrains Mono -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0a;
+      --text: #f0f0f0;
+      --text-secondary: #888;
+      --accent: #3b82f6;
+      --accent-hover: #60a5fa;
+      --surface: #1a1a1a;
+      --border: #2a2a2a;
+      --code-bg: #111;
+      --hint-bg: #1a1a1a;
+      --hint-border: #333;
+      --hint-color: #666;
+      --good: #22c55e;
+      --bad: #ef4444;
+      --warn: #eab308;
+      --font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Pretendard Variable', Pretendard, monospace;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: var(--accent);
+      transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 1000;
+    }
+
+    .slide-counter {
+      position: fixed; bottom: 24px; right: 32px;
+      font-family: var(--font-mono); font-size: 13px;
+      color: var(--text-secondary); z-index: 900; user-select: none;
+    }
+
+    .hint {
+      position: fixed; bottom: 24px; left: 32px;
+      display: flex; gap: 8px; align-items: center; z-index: 900; user-select: none;
+    }
+    .hint kbd {
+      display: inline-block; background: var(--hint-bg); border: 1px solid var(--hint-border);
+      color: var(--hint-color); font-family: var(--font-mono); font-size: 11px;
+      padding: 2px 7px; border-radius: 4px; line-height: 1.6;
+    }
+    .hint span { color: var(--hint-color); font-size: 11px; margin-right: 4px; }
+
+    .fullscreen-btn {
+      position: fixed; top: 16px; right: 24px;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text-secondary); font-family: var(--font-body); font-size: 13px;
+      padding: 6px 14px; border-radius: 6px; cursor: pointer; z-index: 900;
+      transition: all 0.2s ease; user-select: none;
+    }
+    .fullscreen-btn:hover { background: var(--border); color: var(--text); }
+
+    .deck { width: 100vw; height: 100vh; position: relative; }
+
+    .slide {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 56px 80px; opacity: 0; visibility: hidden; overflow-y: auto;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .slide.active { opacity: 1; visibility: visible; }
+
+    /* Wide layout — left aligned, full width */
+    .slide.left { align-items: flex-start; text-align: left; }
+    .slide.left h1, .slide.left h2 { width: 100%; }
+    .wrap { width: 100%; max-width: 1100px; }
+    .slide.left .wrap { margin: 0; }
+
+    /* Stagger */
+    .slide.active .a { animation: staggerIn 0.55s ease forwards; opacity: 0; transform: translateY(16px); }
+    .slide.active .a:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .a:nth-child(2) { animation-delay: 0.12s; }
+    .slide.active .a:nth-child(3) { animation-delay: 0.19s; }
+    .slide.active .a:nth-child(4) { animation-delay: 0.26s; }
+    .slide.active .a:nth-child(5) { animation-delay: 0.33s; }
+    .slide.active .a:nth-child(6) { animation-delay: 0.40s; }
+    .slide.active .a:nth-child(7) { animation-delay: 0.47s; }
+    @keyframes staggerIn { to { opacity: 1; transform: translateY(0); } }
+
+    h1 { font-size: 3.2rem; font-weight: 800; line-height: 1.12; letter-spacing: -0.03em; margin-bottom: 16px; }
+    h2 { font-size: 2.1rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 14px; }
+    h3 { font-size: 1.25rem; font-weight: 600; line-height: 1.3; margin-bottom: 8px; }
+    p { font-size: 1.12rem; line-height: 1.7; color: var(--text-secondary); }
+    .hi { color: var(--accent); }
+    .good-t { color: var(--good); }
+    .bad-t { color: var(--bad); }
+    .warn-t { color: var(--warn); }
+
+    .overline {
+      font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
+    }
+
+    /* Title */
+    .slide-title { text-align: center; max-width: 900px; }
+    .slide-title .tag {
+      display: inline-block; background: var(--accent); color: #fff; font-size: 0.75rem;
+      font-weight: 600; padding: 5px 14px; border-radius: 100px; letter-spacing: 0.04em;
+      text-transform: uppercase; margin-bottom: 22px;
+    }
+    .slide-title .subtitle { font-size: 1.25rem; color: var(--text-secondary); margin: 0 auto 22px; font-weight: 400; max-width: 640px; }
+    .slide-title .date { font-family: var(--font-mono); font-size: 0.9rem; color: var(--hint-color); letter-spacing: 0.05em; }
+    .flowmap { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top: 30px; }
+    .flowmap span { font-size: 0.78rem; color: var(--hint-color); padding: 5px 12px; border:1px solid var(--border); border-radius: 100px; }
+    .flowmap span.cur { color: var(--accent); border-color: var(--accent); }
+
+    /* Content body */
+    .content-body { width: 100%; }
+    .content-body p { margin-bottom: 14px; max-width: 900px; }
+    .content-body ul { list-style: none; padding: 0; }
+    .content-body ul li {
+      position: relative; padding-left: 24px; margin-bottom: 12px;
+      font-size: 1.1rem; color: var(--text-secondary); line-height: 1.6; max-width: 940px;
+    }
+    .content-body ul li::before { content: ''; position: absolute; left: 0; top: 9px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+    .content-body ul li strong { color: var(--text); font-weight: 600; }
+
+    /* Metrics row */
+    .metrics { display: flex; gap: 22px; width: 100%; }
+    .metric { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 26px 22px; }
+    .metric .num { font-family: var(--font-mono); font-size: 2.5rem; font-weight: 700; color: var(--accent); line-height: 1.05; }
+    .metric .num.good { color: var(--good); }
+    .metric .lbl { font-size: 0.92rem; color: var(--text-secondary); margin-top: 12px; line-height: 1.5; }
+    .metric .lbl strong { color: var(--text); font-weight: 600; }
+
+    /* Duo value cards */
+    .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; width: 100%; margin-bottom: 24px; }
+    .duo .vbox { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+    .duo .vbox .k { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .duo .vbox h3 { color: var(--text); margin-bottom: 6px; }
+    .duo .vbox p { font-size: 0.95rem; }
+
+    /* Comparison */
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; }
+    .comparison-col { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; }
+    .comparison-col h3 { margin-bottom: 14px; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison-col.before h3 { color: var(--text-secondary); }
+    .comparison-col.after h3 { color: var(--accent); }
+    .comparison-col ul { list-style: none; padding: 0; }
+    .comparison-col ul li { padding: 9px 0; font-size: 0.98rem; color: var(--text-secondary); border-bottom: 1px solid var(--border); line-height: 1.5; }
+    .comparison-col ul li:last-child { border-bottom: none; }
+    .comparison-col.before ul li::before { content: '\2717  '; color: var(--bad); }
+    .comparison-col.after ul li::before { content: '\2713  '; color: var(--good); }
+
+    /* Cards */
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
+    .cards.c2 { grid-template-columns: repeat(2, 1fr); }
+    .cards.c4 { grid-template-columns: repeat(4, 1fr); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 22px; transition: border-color 0.2s ease, transform 0.2s ease; }
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .card-icon { font-size: 1.8rem; margin-bottom: 12px; display: block; }
+    .card h3 { font-size: 1.02rem; margin-bottom: 8px; color: var(--text); }
+    .card p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; }
+    .card .tagline { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* Steps */
+    .steps { display: flex; align-items: flex-start; gap: 0; width: 100%; justify-content: center; }
+    .step { display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1; max-width: 200px; }
+    .step-num { width: 46px; height: 46px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 700; font-size: 1rem; margin-bottom: 12px; flex-shrink: 0; }
+    .step-title { font-weight: 600; font-size: 0.98rem; margin-bottom: 6px; color: var(--text); }
+    .step-desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45; }
+    .step-arrow { display: flex; align-items: center; justify-content: center; padding-top: 12px; color: var(--border); font-size: 1.4rem; flex-shrink: 0; width: 40px; }
+
+    /* Vertical flow (causal chain / layers) */
+    .vflow { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 760px; }
+    .vrow { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 13px 20px; font-size: 1rem; color: var(--text); position: relative; }
+    .vrow .meta { color: var(--text-secondary); font-size: 0.88rem; }
+    .vflow .arrow { text-align: center; color: var(--accent); font-size: 1.1rem; line-height: 1; }
+    .vrow.accent { border-color: var(--accent); }
+
+    /* Data table */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    .data-table th, .data-table td { border: 1px solid var(--border); padding: 11px 15px; text-align: left; vertical-align: top; }
+    .data-table th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.9rem; }
+    .data-table td { color: var(--text-secondary); line-height: 1.5; }
+    .data-table td strong { color: var(--text); }
+    .data-table .good { color: var(--good); font-weight: 600; }
+    .data-table .bad { color: var(--bad); font-weight: 600; }
+    .data-table .mono { font-family: var(--font-mono); }
+    .data-table caption { caption-side: bottom; font-size: 0.8rem; color: var(--hint-color); margin-top: 10px; text-align: left; }
+
+    /* Bar chart */
+    .chart { display: flex; align-items: flex-end; gap: 28px; height: 220px; width: 100%; max-width: 560px; padding: 0 10px; margin: 0 auto; }
+    .chart-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+    .chart-bar { width: 70px; border-radius: 6px 6px 0 0; transition: height 0.6s ease; }
+    .chart-bar.a-bar { background: var(--text-secondary); }
+    .chart-bar.b-bar { background: var(--accent); }
+    .chart-value { font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .chart-label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 10px; text-align: center; }
+    .chart-baseline { width: 100%; max-width: 560px; height: 1px; background: var(--border); margin: 0 auto; }
+
+    /* Callout */
+    .callout { background: rgba(59,130,246,0.08); border-left: 3px solid var(--accent); border-radius: 8px; padding: 15px 20px; font-size: 0.95rem; color: var(--text-secondary); width: 100%; line-height: 1.6; }
+    .callout strong { color: var(--text); }
+    .callout.warn { background: rgba(234,179,8,0.08); border-left-color: var(--warn); }
+
+    /* Code container */
+    .code-container { width: 100%; max-width: 820px; background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .code-header { display: flex; align-items: center; gap: 8px; padding: 11px 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .code-dot.red { background: #ef4444; } .code-dot.yellow { background: #eab308; } .code-dot.green { background: #22c55e; }
+    .code-filename { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-secondary); margin-left: 8px; }
+    .code-container pre { margin: 0; padding: 18px 20px; overflow-x: auto; }
+    .code-container pre code { font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.65; color: var(--text); white-space: pre; }
+    .code-container .cmt { color: var(--hint-color); }
+    .code-container .ok { color: var(--good); }
+    .code-container .no { color: var(--bad); }
+
+    /* Closing */
+    .slide-closing { text-align: center; }
+    .slide-closing h1 { font-size: 3.4rem; margin-bottom: 14px; }
+    .slide-closing p { text-align: center; margin: 0 auto; max-width: 640px; }
+
+    .lead { font-size: 1.05rem; color: var(--text); line-height: 1.6; max-width: 940px; margin-bottom: 18px; }
+    .sub { font-size: 0.92rem; color: var(--text-secondary); margin-top: 12px; }
+
+    @media print {
+      body { overflow: visible; background: #0a0a0a; }
+      .progress-bar, .slide-counter, .hint, .fullscreen-btn { display: none !important; }
+      .deck { width: auto; height: auto; position: static; }
+      .slide { position: relative; opacity: 1; visibility: visible; page-break-after: always; page-break-inside: avoid; width: 100vw; height: 100vh; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .slide .a { opacity: 1 !important; transform: none !important; animation: none !important; }
+      @page { size: landscape; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar" id="progress"></div>
+  <div class="slide-counter" id="counter"></div>
+  <div class="hint">
+    <kbd>Space</kbd><span>다음</span>
+    <kbd>&larr;</kbd><kbd>&rarr;</kbd><span>이동</span>
+    <kbd>F</kbd><span>전체화면</span>
+    <kbd>S</kbd><span>발표자 노트</span>
+  </div>
+  <button class="fullscreen-btn" onclick="toggleFullscreen()">&#x26F6; 전체화면</button>
+
+  <div class="deck">
+
+    <!-- 1: Title -->
+    <div class="slide active" data-notes="[0:30] 안녕하세요. PromptCraft를 발표하겠습니다. PromptCraft는 AI 바이브 코딩을 위한 로컬 웹 기반 구조화 프롬프트 생성·실행 도구입니다. 오늘은 결론부터 말씀드린 뒤, 왜 이 도구가 필요한지, 어떻게 만들었는지, 그리고 그 효과를 실측 데이터로 어떻게 검증했는지 순서로 말씀드리겠습니다.">
+      <div class="slide-title">
+        <div class="a tag">기술 발표 · v2.5</div>
+        <h1 class="a">PromptCraft</h1>
+        <p class="a subtitle">AI 바이브 코딩을 위한<br>로컬 웹 기반 <span class="hi">구조화 프롬프트 생성·실행</span> 도구</p>
+        <div class="a flowmap">
+          <span class="cur">결론</span><span>왜</span><span>어떻게</span><span>검증</span><span>마무리</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2: 핵심 결론 선언 -->
+    <div class="slide left" data-notes="[1:30] 먼저 결론입니다. PromptCraft는 이중 가치를 제공합니다. 하나는 비용 제로 — 프롬프트를 만드는 단계에서 LLM을 전혀 쓰지 않습니다. 다른 하나는 질문 행동 교정 — 규칙 파일이 자동화하지 못하는 사용자의 질문 습관 자체를 구조적으로 교정합니다. 그리고 이 효과는 추측이 아니라 두 차례 평가로 실측되었습니다. 첫째, 낮은 숙련 구간에서 결정적입니다. 자연어로 막연히 요청하면 핵심 의도를 하나도 못 채우지만, 구조화하면 floor가 올라가고 한 모델에서는 D에서 B로 두 등급 상승했습니다. 둘째, 높은 숙련 구간에서 제약 위반율이 자연어 11.1퍼센트에서 구조화 0퍼센트로 떨어졌고 세 모델 모두 일관됩니다. 셋째, 실제 코드 18개 단위가 전부 빌드를 통과했습니다. 생성 비용은 0, 실제 AI 호출은 단 1회입니다. 지금부터 근거를 제시하겠습니다.">
+      <div class="overline a">결론 먼저 · The Bottom Line</div>
+      <h2 class="a">검증으로 입증된 <span class="hi">이중 가치</span></h2>
+      <div class="wrap">
+        <div class="duo a">
+          <div class="vbox"><div class="k">기술적 가치</div><h3>비용 제로</h3><p>프롬프트 생성·조립 단계에서 LLM을 일절 사용하지 않음. 실제 AI 호출 1회로 완결.</p></div>
+          <div class="vbox"><div class="k">행동적 가치</div><h3>질문 행동 교정</h3><p>규칙 파일이 자동화 못 하는 사용자의 질문 습관을 구조적으로 교정(L2→L3).</p></div>
+        </div>
+        <div class="metrics a">
+          <div class="metric"><div class="num">0/3 → 1.5/3</div><div class="lbl"><strong>L1 결정적</strong> · 자연어는 핵심 의도 미달, 구조화는 floor 상승 (R3 D→B)</div></div>
+          <div class="metric"><div class="num good">0%</div><div class="lbl"><strong>L3 제약 위반율</strong> · 자연어 11.1% 대비 (3개 모델 일관)</div></div>
+          <div class="metric"><div class="num good">18/18</div><div class="lbl"><strong>전 단위 빌드 통과</strong> · 생성 비용 0, 실제 호출 1회</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3: 문제 정의 -->
+    <div class="slide left" data-notes="[1:30] 왜 이 도구가 필요한가. AI 코딩 도구를 쓰면 세 가지 문제가 반복됩니다. 잦은 재질문 — AI가 의도를 못 잡아 핑퐁이 이어집니다. 토큰 낭비 — 재질문 한 번마다 대화 전체가 다시 전송됩니다. 엉뚱한 결과물 — '에러 났는데 고쳐줘' 한 줄로는 환경도 증상도 알 수 없습니다. 근본 원인은 입력의 구체성 부족입니다. 그런데 이 문제를 푼다는 기존 도구들도 한계가 있습니다. 다음 장에서 보겠습니다.">
+      <div class="overline a">PART 1 · 왜 — 문제</div>
+      <h2 class="a">AI 코딩에서 <span class="hi">반복되는 3대 문제</span></h2>
+      <div class="cards a" style="margin-top:8px;">
+        <div class="card"><span class="card-icon">🔁</span><h3>잦은 재질문</h3><p>의도 파악에 실패한 AI와의 불필요한 핑퐁. "혹시 이런 뜻인가요?"가 반복됩니다.</p></div>
+        <div class="card"><span class="card-icon">💸</span><h3>토큰 낭비</h3><p>재질문 왕복마다 누적 컨텍스트 전체가 재전송됩니다. 비용이 쌓입니다.</p></div>
+        <div class="card"><span class="card-icon">🎯</span><h3>엉뚱한 결과물</h3><p>구체성이 부족한 입력은 저품질 코드를 부릅니다. 환경도 증상도 모릅니다.</p></div>
+      </div>
+      <div class="callout a" style="margin-top:24px;">근본 원인은 <strong>입력의 구체성 부족</strong>. 그런데 이를 해결한다는 기존 도구들도 구조적 한계를 가집니다. →</div>
+    </div>
+
+    <!-- 4: 경쟁 비교 -->
+    <div class="slide left" data-notes="[2:00] '다른 도구를 쓰면 되지 않나'라는 질문에 답하겠습니다. 비교 대상이 셋입니다. 첫째, 프롬프트 생성·최적화 도구. 이들은 프롬프트를 만들 때 LLM API를 씁니다. 즉 생성에 한 번, 실제 작업에 한 번 — 비용이 이중입니다. PromptCraft는 생성 단계가 완전히 로컬·규칙 기반이라 비용 발생 지점이 단 1회입니다. 둘째, AI 도구의 규칙 파일 — CLAUDE.md, .cursorrules 같은 것들입니다. 이들은 프로젝트 컨텍스트는 자동화하지만 사용자의 질문 습관은 교정하지 못합니다. 규칙 파일이 있어도 '고쳐줘' 식 질문은 그대로입니다. PromptCraft는 빈 카드를 회색으로 띄워 시각적으로 압박해 사용자가 파일·경로·에러 증거를 채우도록 행동을 교정합니다. 셋째, LLM에 직접 입력 — 구조가 없고 코드가 외부로 전송됩니다. PromptCraft는 100퍼센트 로컬에서 동작하고 완성된 프롬프트를 대상 CLI로 직접 실행까지 해서 복사-붙여넣기마저 없앱니다.">
+      <div class="overline a">PART 1 · 왜 PromptCraft인가</div>
+      <h2 class="a">세 분류를 <span class="hi">동시에 능가</span></h2>
+      <table class="data-table a">
+        <thead><tr><th style="width:26%">비교 대상</th><th style="width:37%">그들의 한계</th><th style="width:37%">PromptCraft의 우위</th></tr></thead>
+        <tbody>
+          <tr><td><strong>① 프롬프트 생성·최적화 도구</strong></td><td class="bad">생성·보정에 LLM API 사용 → 이중 비용(생성 1회 + 실행 1회)</td><td class="good">생성 단계 LLM-free → 비용 발생 단 1회</td></tr>
+          <tr><td><strong>② AI 도구 규칙 파일</strong><br><span class="mono" style="font-size:0.78rem">CLAUDE.md · .cursorrules · copilot-instructions</span></td><td class="bad">프로젝트 자동 컨텍스트만 해결, 사용자 질문 행동은 미교정</td><td class="good">빈 카드 시각 압박으로 질문 행동 L2→L3 교정</td></tr>
+          <tr><td><strong>③ LLM 직접 입력</strong> (웹 채팅)</td><td class="bad">구조 없음, 코드 외부 전송</td><td class="good">100% 로컬 + Run as 직접 실행(복붙 제거)</td></tr>
+        </tbody>
+      </table>
+      <div class="callout a" style="margin-top:20px;">= <strong>이중 가치 제안</strong> : 비용 제로(기술적 가치) + 질문 행동 교정(행동적 가치)</div>
+    </div>
+
+    <!-- 5: 해결 전략 -->
+    <div class="slide left" data-notes="[1:30] 해결의 핵심은 단순합니다. 프롬프트를 만드는 동안 LLM을 쓰지 않는 것. 사용자가 요청하면 로컬에서 프로젝트를 스캔하고 SectionCard로 프롬프트를 조립합니다. 이 과정 비용은 0입니다. 완성된 프롬프트는 대상 AI에 단 한 번 투입됩니다. 왜 한 번으로 끝나는가. 역할·목표·컨텍스트·제약이 섹션으로 분리된 프롬프트를 받으면 모델은 '이게 무슨 뜻이지'를 고민하는 단계를 건너뜁니다. 사고 토큰이 전량 문제 해결에 집중되고 One-Shot 성공률이 오르며 재질문 왕복이 사라집니다. 다만 토큰 절감의 정확한 수치는 LLM 응답의 비결정성 때문에 본질적으로 분산이 커서, 자체 계측 대신 후속 평가에서 외부 도구로 검증할 계획입니다.">
+      <div class="overline a">PART 2 · 어떻게 — 해결 전략</div>
+      <h2 class="a">생성 단계 <span class="hi">LLM-free</span> + One-Shot 인과 구조</h2>
+      <div class="wrap">
+        <div class="code-container a" style="margin-bottom:20px;max-width:1100px;">
+          <div class="code-header"><span class="code-dot red"></span><span class="code-dot yellow"></span><span class="code-dot green"></span><span class="code-filename">cost-structure</span></div>
+<pre><code><span class="cmt"># 기존 도구</span>
+요청 → <span class="no">[LLM 호출 1] 프롬프트 생성</span> → <span class="no">[LLM 호출 2] 실제 작업</span>  <span class="no"># 비용 2배+</span>
+
+<span class="cmt"># PromptCraft</span>
+요청 → <span class="ok">[로컬] 스캔 + SectionCard 조립 + 질문 교정  # 비용 0</span> → [LLM 호출 1회] 작업</code></pre>
+        </div>
+        <div class="vflow a" style="max-width:1100px;">
+          <div class="vrow accent">구조화 프롬프트 <span class="meta">— 역할·목표·컨텍스트·제약을 섹션으로 명시 분리</span></div>
+          <div class="arrow">↓</div>
+          <div class="vrow">모델이 의도 파악 단계를 생략 → 사고 토큰이 전량 문제 해결에 집중</div>
+          <div class="arrow">↓</div>
+          <div class="vrow">One-Shot 성공률 상승 → 재질문 왕복 제거 → 총 호출 비용 최소화</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6: L1~L5 -->
+    <div class="slide left" data-notes="[1:00] PromptCraft의 카드 정의는 Anthropic, OpenAI, Google의 프롬프팅 가이드에서 수렴하는 원칙을 내재화한 것입니다. 단순 템플릿이 아니라 사용자의 AI 활용 레벨을 끌어올리는 장치입니다. 레벨은 다섯입니다. L1 관찰자는 통째 요청, L3 협업자는 파일·경로·분해를 제시합니다. 핵심 전환점은 L2에서 L3로 넘어가는 지점입니다. '왜?'는 묻지만 파일과 경로를 안 주는 구간이죠. PromptCraft는 멘션과 에러 증거 카드로 이 구체성을 강제합니다. 규칙 파일은 'AI가 프로젝트를 이해하는 것'만 자동화합니다. '사용자가 L2에서 L3로 올라가는 것'은 자동화하지 못합니다. 그 전환을 강제하는 것이 PromptCraft입니다.">
+      <div class="overline a">PART 2 · 이론적 토대</div>
+      <h2 class="a">vibe-coding 역량 모델 <span class="hi">L1~L5</span></h2>
+      <table class="data-table a">
+        <thead><tr><th style="width:22%">레벨</th><th style="width:40%">특징</th><th style="width:38%">PromptCraft가 강제하는 것</th></tr></thead>
+        <tbody>
+          <tr><td>L1 Observer</td><td>"이거 만들어줘"식 통째 요청 (회피 또는 일탈)</td><td>대상 외 — 스스로 도구를 찾지 않음</td></tr>
+          <tr><td class="hi"><strong>L2 → L3 전환점</strong></td><td class="hi"><strong>"왜?"는 묻지만 파일·함수·경로 미제공</strong></td><td class="hi"><strong>@멘션 + 에러 증거 카드로 구체성 강제</strong></td></tr>
+          <tr><td>L3 Collaborator</td><td>파일명·경로·3단계 분해 포함</td><td>target-code·tried-methods·expected-behavior 내재화</td></tr>
+          <tr><td>L4 Pilot</td><td>제약·검증 기준 사전 명시</td><td>constraints·acceptance-criteria 카드 사전 제공</td></tr>
+          <tr><td>L5 Architect</td><td>AI 한계를 예측해 태스크 설계</td><td>output-format × review-focus × 도메인 조합 지원</td></tr>
+        </tbody>
+      </table>
+      <div class="callout a" style="margin-top:18px;">규칙 파일은 "AI의 프로젝트 이해"만 자동화. <strong>"사용자의 L2→L3 전환"은 빈 카드 시각 압박만이 강제</strong>합니다.</div>
+    </div>
+
+    <!-- 7: 아키텍처 -->
+    <div class="slide left" data-notes="[1:00] 구조는 5계층입니다. 브라우저의 React 웹앱, Express 5 API 서버, 순수 비즈니스 로직의 코어 엔진, 로컬 파일시스템과 SQLite, 그리고 대상 AI CLI를 호출하는 실행 계층입니다. 런타임은 Bun 단일 런타임으로 통일했습니다. 실행, 테스트, 번들 환경이 일관됩니다. 데이터베이스는 Bun 내장 SQLite를 씁니다. 가장 중요한 원칙은 모든 데이터가 localhost 안에서만 처리된다는 것입니다. 외부 네트워크 접근은 차단되고 코드는 기기를 떠나지 않습니다.">
+      <div class="overline a">PART 2 · 시스템 아키텍처</div>
+      <h2 class="a">5계층 + <span class="hi">localhost 완전 격리</span></h2>
+      <div class="wrap">
+        <div class="vflow a" style="max-width:860px;">
+          <div class="vrow"><strong>① 브라우저 (Web)</strong> <span class="meta">— React 19 · Vite · Tailwind v4 · shadcn/ui · Zustand</span></div>
+          <div class="vrow"><strong>② API 서버</strong> <span class="meta">— Express 5 · REST 12 라우트 · 보안 미들웨어(CSP·CORS·경로순회 차단)</span></div>
+          <div class="vrow"><strong>③ 코어 엔진</strong> <span class="meta">— 순수 로직 · 스캐너 · SectionCard · promptBuilder</span></div>
+          <div class="vrow"><strong>④ 데이터</strong> <span class="meta">— 로컬 FS · bun:sqlite (히스토리·설정)</span></div>
+          <div class="vrow accent"><strong>⑤ 실행 계층</strong> <span class="meta">— Run as: Claude Code · Gemini · Copilot · Codex CLI</span></div>
+        </div>
+        <div class="callout a" style="margin-top:18px;max-width:860px;">런타임 <strong>Bun</strong> 단일화 · 모든 데이터가 <strong>localhost 경계</strong> 안에서만 처리 · 코드는 기기를 떠나지 않음</div>
+      </div>
+    </div>
+
+    <!-- 8: 데이터 모델 -->
+    <div class="slide left" data-notes="[1:30] 핵심 데이터 모델은 SectionCard입니다. 프롬프트의 각 섹션이 독립 카드로 존재하며 총 27개 카드, 입력 타입 5종입니다. 빌드 규칙은 단순합니다. 활성 상태이고 값이 채워진 카드만 순서대로 조립합니다. 빈 활성 카드는 프리뷰에서 회색으로 표시돼 출력에선 빠지지만 시각적 압박으로 남습니다. 사용자는 상황에 따라 5개 트리 중 하나를 고릅니다. 에러 해결, 기능 구현, 코드 리뷰, 개념 학습, 그리고 리팩터링입니다. 마지막 리팩터링 트리가 이번 평가에 실제로 쓰였습니다. 여기에 11개 도메인 적응이 더해집니다. 프로젝트를 스캔해 도메인을 감지하면 base, tree, domain 3계층으로 카드의 기본값과 힌트, 역할 제안이 병합됩니다. 같은 카드라도 Rust 시스템 프로젝트냐 웹 프론트엔드냐에 따라 다르게 채워집니다.">
+      <div class="overline a">PART 2 · 핵심 데이터 모델</div>
+      <h2 class="a">SectionCard — 컨텍스트에 <span class="hi">동적 적응</span></h2>
+      <div class="metrics a" style="margin-bottom:22px;">
+        <div class="metric"><div class="num">27</div><div class="lbl"><strong>SectionCard</strong> · 입력 타입 5종, 13속성. active + 값 있는 카드만 order순 조립</div></div>
+        <div class="metric"><div class="num">5</div><div class="lbl"><strong>워크플로우 트리</strong> · 에러해결 · 기능구현 · 코드리뷰 · 개념학습 · 리팩터링</div></div>
+        <div class="metric"><div class="num">11</div><div class="lbl"><strong>도메인 분류</strong> · 스캔 감지 → base→tree→domain 3계층 오버레이 병합</div></div>
+      </div>
+      <div class="callout a">빈 값의 active 카드는 프리뷰에서 <strong>회색 표시(시각적 압박)</strong> — 출력엔 미포함하되 구체 정보 입력을 유도. 같은 카드도 도메인(Rust systems vs web-frontend)에 따라 기본값·힌트·역할이 달라집니다.</div>
+    </div>
+
+    <!-- 9: 실행 UX + 시연 전환 -->
+    <div class="slide left" data-notes="[1:00] 작업 화면은 3열 구성입니다. 좌측 카드 풀, 가운데 편집기, 우측 실시간 마크다운 프리뷰. 카드를 입력하면 프리뷰가 즉시 갱신됩니다. 컨텍스트 주입은 멘션으로 합니다. 경로 콜론 시작-끝처럼 라인 범위까지 지정하면 해당 코드가 인라인으로 들어갑니다. 평가에서 이 라인 범위 멘션이 작업 단계 분리를 유도하는 것이 관찰됐습니다. 완성하면 Run as로 Claude Code, Gemini, Copilot, Codex 중 하나를 골라 새 터미널에서 직접 실행합니다. 복사-붙여넣기 단계가 사라집니다. 마지막으로 AI 다듬기가 있습니다. 이건 선택 기능입니다. 코어 생성 플로우는 LLM을 전혀 쓰지 않고, AI 다듬기만 사용자가 명시적으로 켤 때 로컬 LLM으로 입력 완성도를 평가해 다듬거나 코칭합니다. 모델을 설정하지 않으면 비활성이고 원본은 손대지 않습니다. 그럼 실제로 동작하는 모습을 잠시 보여드리겠습니다. [→ 라이브 시연]">
+      <div class="overline a">PART 2 · 실행까지 잇는 워크스페이스</div>
+      <h2 class="a">작성에서 <span class="hi">실행</span>까지</h2>
+      <div class="cards c4 a">
+        <div class="card"><span class="card-icon">🖥️</span><h3>Three-Column</h3><p>카드 풀 · 편집기 · 실시간 프리뷰. 입력 즉시 갱신.</p></div>
+        <div class="card"><span class="card-icon">@</span><h3>@멘션 라인범위</h3><p><span class="mono">@경로:시작-끝</span>로 코드 인라인 삽입. 단계 분리 유도.</p></div>
+        <div class="card"><span class="card-icon">▶</span><h3>Run as 직접 실행</h3><p>Claude·Gemini·Copilot·Codex 새 터미널 실행. 복붙 제거.</p></div>
+        <div class="card"><span class="card-icon">✨</span><h3>AI 다듬기 <span class="tagline">선택</span></h3><p>코어는 LLM-free. 옵트인 시 로컬 LLM 후처리.</p></div>
+      </div>
+      <div class="callout a" style="margin-top:24px;">▶ 여기서 <strong>라이브 시연</strong> — 스캔 → 트리 선택 → 카드 작성(@멘션) → 프리뷰 → Run as <span style="color:var(--hint-color)">(발표 시간 계획 외)</span></div>
+    </div>
+
+    <!-- 10: 평가 설계 -->
+    <div class="slide left" data-notes="[1:00] 이제 검증입니다. 효과를 두 차원에서 측정했습니다. 1차는 분석 모드 — 코드 리뷰 과제로 응답 텍스트의 품질을 봤습니다. 2차는 실행 모드 — Rust 프로젝트 obscura-cli의 함수 분해 리팩터링을 실제 코드로 적용하고 빌드까지 돌렸습니다. 매트릭스는 동일합니다. 세 모델 곱하기 세 레벨 곱하기 두 입력 방식, 18단위입니다. R3는 평가자 편향을 막으려 모델을 비공개로 뒀습니다. 핵심 측정 지표는 핵심 3목표 충족률, 제약 위반율, 빌드 통과율, 그리고 응답과 실제 구현의 정합성입니다.">
+      <div class="overline a">PART 3 · 입증 — 평가 설계</div>
+      <h2 class="a">2회 평가 사이클 · <span class="hi">18단위 매트릭스</span></h2>
+      <div class="comparison a" style="margin-bottom:20px;">
+        <div class="comparison-col before"><h3>1차 — 분석 모드</h3><ul><li style="border:none;color:var(--text)">code review (markitdown)</li><li style="border:none">자연어 텍스트 응답 품질</li><li style="border:none">재질문·커버리지·인용 정확도</li></ul></div>
+        <div class="comparison-col after"><h3>2차 — 실행 모드</h3><ul><li style="border:none;color:var(--text)">refactoring (obscura-cli)</li><li style="border:none">실제 코드 적용 + cargo check</li><li style="border:none">핵심 3목표·제약 위반·빌드 통과</li></ul></div>
+      </div>
+      <div class="callout a"><strong>매트릭스</strong> : 3 모델 (R1·R2·R3) × 3 레벨 (L1·L2·L3) × 2 입력 (A 자연어 / B 구조화) = <strong>18 단위</strong>. R3는 평가자 편향 차단 위해 모델 비공개.</div>
+    </div>
+
+    <!-- 11: A vs B -->
+    <div class="slide left" data-notes="[1:30] 자연어 A와 구조화 B를 레벨별로 비교합니다. L1, 낮은 숙련. 자연어는 핵심 의도를 거의 못 채웁니다. 등급으로 C, C, D입니다. 특히 한 모델은 의도와 무관하게 6개 크레이트 39개 파일을 건드리는 광역 scope creep으로 D를 받았고 변경의 92퍼센트를 응답에서 누락했습니다. 다른 두 모델은 반대로 파일 분할만 하는 안전한 회피였습니다. 구조화하면 양극단이 모두 차단됩니다. 등급이 B, C, B로 올라가고 scope creep 모델은 D에서 B로 두 등급 상승했습니다. L3, 높은 숙련. 여기선 자연어도 핵심 목표는 3분의 3 채웁니다. 그런데 등급은 구조화가 세 모델 모두 한 등급 이상 우위입니다. 차이는 제약 준수와 응답-구현 일치 같은 부가 요건에서 납니다. L2, 중간 구간. 여기선 모델별로 방향이 반전합니다. 구조화의 효과를 모델 비결정성이 부분적으로 상쇄합니다. 정직하게, 모든 구간에서 결정적이지는 않다는 뜻입니다.">
+      <div class="overline a">PART 3 · A vs B 비교</div>
+      <h2 class="a">자연어 vs 구조화 — <span class="hi">레벨별 등급</span></h2>
+      <table class="data-table a">
+        <thead><tr><th>레벨</th><th>A 자연어 (R1·R2·R3)</th><th>B 구조화 (R1·R2·R3)</th><th>효과</th></tr></thead>
+        <tbody>
+          <tr><td><strong>L1</strong> 낮은 숙련</td><td class="bad mono">C / C / D</td><td class="good mono">B / C / B</td><td class="good">결정적 (R3 D→B)</td></tr>
+          <tr><td><strong>L2</strong> 중간</td><td class="mono">S / B+ / B+</td><td class="mono">A / B / A−</td><td class="warn-t">부분 (방향 반전)</td></tr>
+          <tr><td><strong>L3</strong> 높은 숙련</td><td class="mono">A− / B+ / A−</td><td class="good mono">A / A / A</td><td class="good">결정적 (전부 B≥A)</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn a" style="margin-top:18px;"><strong>정직한 한계</strong> : L1·L3은 결정적이나 L2는 모델 비결정성이 효과를 상쇄(방향 반전). L1-A는 "안전한 회피"(R1·R2 C) 또는 "광역 scope creep"(R3 D, 39파일·변경 92% 누락) 양극단으로 일탈.</div>
+    </div>
+
+    <!-- 12: 모델·가설 검증 -->
+    <div class="slide left" data-notes="[1:30] 세 모델을 비교하면 평균 등급은 R1과 R3가 R2보다 높지만 분산이 중요합니다. R3는 최고와 최저의 폭이 가장 큽니다. A에서 D까지 7등급 폭입니다. 즉 자연어는 운에 따라 천장이 높을 수 있지만 구조화는 바닥을 안정적으로 끌어올립니다. 가설은 1차와 2차 합쳐 H1부터 H8을 검증했습니다. 가장 강하게 입증된 둘은 H7 항목 누락 감소와 H3 제약 위반 차단입니다. 반대로 H5, H6처럼 약화되거나 반증된 것도 정직하게 기록했습니다. 그리고 가장 결정적인 한 지표, 제약 조건 위반율입니다. 자연어는 11.1퍼센트, 구조화는 0퍼센트. 18개 단위 모두, 세 모델 모두 일관됩니다. 외부 크레이트를 추가하지 말라는 제약을 구조화 입력은 한 번도 어기지 않았습니다. 그리고 18개 단위 전부 cargo check를 통과했습니다.">
+      <div class="overline a">PART 3 · 모델 · 가설 검증</div>
+      <h2 class="a">3-way 비교 + <span class="hi">가장 결정적 지표</span></h2>
+      <div class="wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;">
+        <div class="a">
+          <p style="text-align:center;margin-bottom:14px;color:var(--text)">제약 위반율 (낮을수록 좋음)</p>
+          <div class="chart" style="height:180px;max-width:340px;">
+            <div class="chart-bar-group"><div class="chart-value bad-t">11.1%</div><div class="chart-bar a-bar" style="height:80%;"></div><div class="chart-label">A 자연어<br>2/18</div></div>
+            <div class="chart-bar-group"><div class="chart-value good-t">0%</div><div class="chart-bar b-bar" style="height:2%;"></div><div class="chart-label">B 구조화<br>0/18</div></div>
+          </div>
+          <div class="chart-baseline" style="max-width:340px;"></div>
+        </div>
+        <div class="a">
+          <table class="data-table">
+            <tbody>
+              <tr><td><strong>분산 폭</strong></td><td>R3 = 7등급(A~D), 자연어 천장 높으나 바닥 낮음</td></tr>
+              <tr><td><strong>강하게 지지</strong></td><td class="good">H7 항목 누락 감소 · H3 제약 차단</td></tr>
+              <tr><td><strong>약화/반증</strong></td><td class="warn-t">H5·H6·H8 (정직 기록)</td></tr>
+              <tr><td><strong>빌드</strong></td><td class="good">18/18 cargo check exit 0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="callout a" style="margin-top:18px;">핵심 결론: <strong>구조화 B는 floor를 끌어올리고, 자연어 A는 운에 따라 ceiling이 높을 수 있다.</strong></div>
+    </div>
+
+    <!-- 13: 효과 등급화 + 한계 -->
+    <div class="slide left" data-notes="[1:00] 검증 결과를 정직하게 세 등급으로 종합하겠습니다. 결정적 효과 — L1 회피·scope creep 차단, L3 제약 0퍼센트 위반, 항목 누락 감소. 이 넷은 1차와 2차 모두 일관 입증됐습니다. 부분 효과 — L2 구간은 모델 비결정성이 커서 효과가 부분적입니다. 검증 보류 — 토큰 효율과 응답 지연은 LLM 비결정성 때문에 자체 측정 대신 외부 도구에 위임하고 후속 평가로 넘깁니다. 그리고 본 평가의 한계도 분명히 하겠습니다. 단일 회 실행이라 비결정성 보정이 부재하고, 토큰·지연 데이터가 없으며, release 빌드는 별도 검증이 필요합니다. 이 한계를 인정하는 것이 결과의 신뢰를 높입니다.">
+      <div class="overline a">PART 3 · 효과 등급화</div>
+      <h2 class="a">정직한 <span class="hi">효과 등급화</span></h2>
+      <div class="cards a">
+        <div class="card" style="border-color:rgba(34,197,94,0.4)"><span class="card-icon">✅</span><h3 class="good-t">결정적</h3><p>L1 회피·scope creep 차단 · L3 제약 0% 위반 · 항목 누락 감소. 1·2차 일관 입증.</p></div>
+        <div class="card" style="border-color:rgba(234,179,8,0.4)"><span class="card-icon">🟡</span><h3 class="warn-t">부분</h3><p>L2 섹션 정렬·등급 우위. 모델별 비결정성 큼(방향 반전).</p></div>
+        <div class="card"><span class="card-icon">⏸️</span><h3>검증 보류</h3><p>토큰 효율·응답 지연. 외부 도구 위임, 후속 평가로 이관.</p></div>
+      </div>
+      <!-- <div class="callout warn a" style="margin-top:22px;"><strong>본 평가의 한계</strong> : 단일 회 실행(비결정성 보정 부재) · 토큰·지연 데이터 부재(외부 도구 위임) · release 빌드 미검증. 결정적 효과는 이 한계에도 불구하고 1·2차 일관 입증된 영역입니다.</div> -->
+    </div>
+
+    <!-- 14: 결론 재확인 (수미상관) -->
+    <div class="slide" data-notes="[1:00] 처음 말씀드린 결론으로 돌아갑니다. PromptCraft는 비용 제로와 질문 행동 교정이라는 이중 가치를 제공하며, 그 효과는 낮은 숙련 구간의 결정적 개선, 높은 숙련 구간의 제약 위반 0퍼센트, 전 단위 빌드 통과로 실측 검증됐습니다. 생성에 LLM을 쓰지 않고 실제 호출은 단 한 번입니다. 향후로는 환경 제약 컨텍스트 보강, 근거 문서화 자동 삽입, DB 스키마 마이그레이션이 남아 있습니다. 이상입니다. 질문 받겠습니다.">
+      <div class="slide-closing">
+        <div class="overline a" style="text-align:center">PART 4 · 마무리</div>
+        <h1 class="a">검증된 이중 가치</h1>
+        <p class="a">비용 제로(생성 LLM-free) + 질문 행동 교정(L2→L3)</p>
+        <div class="a metrics" style="margin-top:30px;max-width:900px;">
+          <div class="metric"><div class="num">0/3 → 1.5/3</div><div class="lbl"><strong>L1 결정적</strong></div></div>
+          <div class="metric"><div class="num good">0%</div><div class="lbl"><strong>L3 제약 위반율</strong></div></div>
+          <div class="metric"><div class="num good">18/18</div><div class="lbl"><strong>전 단위 빌드 통과</strong></div></div>
+        </div>
+        <!-- <p class="a sub" style="margin-top:28px;">향후 과제 — 환경 제약 컨텍스트 보강 · Rationale 자동 삽입 · DB 마이그레이션</p> -->
+        <p class="a sub" style="margin-top:14px;font-size:1.1rem;color:var(--text)">감사합니다 · 질문 받겠습니다</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const progressBar = document.getElementById('progress');
+      const counter = document.getElementById('counter');
+      let current = 0;
+      const total = slides.length;
+
+      function goTo(index) {
+        if (index < 0 || index >= total) return;
+        slides[current].classList.remove('active');
+        current = index;
+        slides[current].classList.add('active');
+        updateUI();
+      }
+      function next() { goTo(current + 1); }
+      function prev() { goTo(current - 1); }
+
+      function updateUI() {
+        progressBar.style.width = ((current + 1) / total) * 100 + '%';
+        counter.textContent = (current + 1) + ' / ' + total;
+        updateNotes();
+      }
+
+      // ===== Speaker Notes — popup window =====
+      let notesWindow = null;
+      function toggleNotes() {
+        if (notesWindow && !notesWindow.closed) { notesWindow.close(); notesWindow = null; return; }
+        notesWindow = window.open('', 'SpeakerNotes', 'width=540,height=460,top=80,left=80');
+        notesWindow.document.write('<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>발표자 노트</title><style>'
+          + '*{margin:0;padding:0;box-sizing:border-box;}'
+          + 'body{font-family:-apple-system,BlinkMacSystemFont,"Pretendard Variable",Pretendard,sans-serif;background:#1a1a1a;color:#e0e0e0;padding:24px;}'
+          + '.slide-num{font-size:12px;color:#3b82f6;margin-bottom:10px;font-family:monospace;}'
+          + '.label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:8px;}'
+          + '.notes{font-size:16px;line-height:1.85;color:#ccc;margin-bottom:20px;white-space:pre-wrap;}'
+          + '.next{border-top:1px solid #333;padding-top:14px;}.next .label{margin-bottom:6px;}.next .nt{font-size:14px;color:#999;}'
+          + '</style></head><body><div class="slide-num" id="sn"></div><div class="label">Speaker Notes</div><div class="notes" id="nt"></div>'
+          + '<div class="next"><div class="label">다음 슬라이드</div><div class="nt" id="nx"></div></div></body></html>');
+        notesWindow.document.close();
+        updateNotes();
+      }
+      function updateNotes() {
+        if (!notesWindow || notesWindow.closed) return;
+        try {
+          const note = slides[current].getAttribute('data-notes') || '(노트 없음)';
+          notesWindow.document.getElementById('nt').textContent = note;
+          notesWindow.document.getElementById('sn').textContent = 'Slide ' + (current + 1) + ' / ' + total;
+          const nx = notesWindow.document.getElementById('nx');
+          if (current + 1 < total) {
+            const t = slides[current + 1].querySelector('h1, h2');
+            nx.textContent = t ? t.textContent : '(제목 없음)';
+          } else { nx.textContent = '(발표 종료)'; }
+        } catch (e) {}
+      }
+
+      window.toggleFullscreen = function () {
+        if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(function () {}); }
+        else { document.exitFullscreen().catch(function () {}); }
+      };
+
+      document.addEventListener('keydown', function (e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        switch (e.key) {
+          case 'ArrowRight': case 'ArrowDown': case ' ': e.preventDefault(); next(); break;
+          case 'ArrowLeft': case 'ArrowUp': e.preventDefault(); prev(); break;
+          case 'f': case 'F': e.preventDefault(); window.toggleFullscreen(); break;
+          case 's': case 'S': e.preventDefault(); toggleNotes(); break;
+          case 'Home': e.preventDefault(); goTo(0); break;
+          case 'End': e.preventDefault(); goTo(total - 1); break;
+        }
+      });
+
+      document.querySelector('.deck').addEventListener('click', function (e) {
+        if (e.target.closest('a, button, .code-container, .data-table')) return;
+        const x = e.clientX, width = window.innerWidth;
+        if (x < width / 3) prev(); else next();
+      });
+
+      let touchStartX = 0, touchStartY = 0;
+      document.addEventListener('touchstart', function (e) { touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY; }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        const dx = touchStartX - e.changedTouches[0].screenX, dy = touchStartY - e.changedTouches[0].screenY;
+        if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+        if (dx > 0) next(); else prev();
+      }, { passive: true });
+
+      updateUI();
+    })();
+  </script>
+
+</body>
+</html>
