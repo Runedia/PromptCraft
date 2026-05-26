@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { closeConnection, initialize } from '../core/db/index.js';
 import { errorHandler } from './middleware/errorHandler.js';
-import { corsLocalhost, securityHeaders } from './middleware/security.js';
+import { corsLocalhost, hostGuard, securityHeaders } from './middleware/security.js';
 import browseRouter from './routes/browse.js';
 import cardsRouter from './routes/cards.js';
 import configRouter from './routes/config.js';
@@ -28,7 +28,8 @@ export async function createServer(port: number): Promise<void> {
   const app = express();
 
   app.use(securityHeaders);
-  app.use(corsLocalhost);
+  app.use(hostGuard(port));
+  app.use(corsLocalhost(port));
   app.use(express.json({ limit: '5mb' }));
 
   // API 라우트
