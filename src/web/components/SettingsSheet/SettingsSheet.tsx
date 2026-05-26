@@ -51,14 +51,17 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
 
   // /api/llm/status는 저장된 config(refine.baseUrl/apiKey) 기준으로 모델을 조회한다.
   // 따라서 새로고침 전에는 현재 입력값을 먼저 저장해야 한다(handleRefreshModels 참고).
-  const loadModels = useCallback(async (signal?: AbortSignal) => {
+  const loadModels = useCallback(async (signal?: AbortSignal): Promise<string[]> => {
     setModelsLoading(true);
     try {
       const r = await fetch('/api/llm/status', signal ? { signal } : {});
       const s = (r.ok ? await r.json() : { models: [] }) as { models?: string[] };
-      setRefineModels(s.models ?? []);
+      const models = s.models ?? [];
+      setRefineModels(models);
+      return models;
     } catch (e) {
       if ((e as Error).name !== 'AbortError') setRefineModels([]);
+      return [];
     } finally {
       setModelsLoading(false);
     }
@@ -119,7 +122,13 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
     // /api/llm/status는 저장된 config 기준이므로, 현재 입력한 연결 설정을 먼저 저장한 뒤 재조회한다.
     await saveRefine('refine.baseUrl', refineBaseUrl);
     await saveRefine('refine.apiKey', refineApiKey);
-    await loadModels();
+    const models = await loadModels();
+    // 기존 선택 모델이 새 목록에 없으면(엔드포인트 변경·모델 삭제 등) 선택을 비운다.
+    // 영속화까지 해야 시트 재오픈 시 stale 선택이 부활하지 않는다.
+    if (refineModel && !models.includes(refineModel)) {
+      setRefineModel('');
+      await saveRefine('refine.model', '');
+    }
   };
 
   const handleShellChange = async (value: string) => {
