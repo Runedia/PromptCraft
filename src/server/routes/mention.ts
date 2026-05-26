@@ -3,6 +3,7 @@ import path from 'node:path';
 import { Router } from 'express';
 import { extractLines, inferLanguage } from '../../core/builder/mentionParser.js';
 import { validatePath } from '../middleware/pathGuard.js';
+import { isAllowedScanRoot } from '../scanRegistry.js';
 
 const router = Router();
 
@@ -15,6 +16,10 @@ router.get('/suggest', async (req, res, next) => {
 
     if (!root) {
       res.status(400).json({ error: 'root가 필요합니다.' });
+      return;
+    }
+    if (!isAllowedScanRoot(root)) {
+      res.status(403).json({ error: '스캔되지 않은 루트입니다.' });
       return;
     }
 
@@ -77,6 +82,10 @@ router.post('/read', async (req, res, next) => {
 
     if (!filePath || !scanRoot) {
       res.status(400).json({ error: 'filePath와 scanRoot가 필요합니다.' });
+      return;
+    }
+    if (!isAllowedScanRoot(scanRoot)) {
+      res.status(403).json({ error: '스캔되지 않은 루트입니다.' });
       return;
     }
 

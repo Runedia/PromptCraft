@@ -8,6 +8,7 @@ import { pickText } from '../../shared/i18n/pickLang.js';
 import { loadDomainOverlay, loadRoleMappings, loadTreesMeta } from '../domain-loader.js';
 import { resolveLang } from '../locale.js';
 import { writeScanDebugLog } from '../scan-debug.js';
+import { registerScanRoot } from '../scanRegistry.js';
 
 const router = Router();
 const LAST_SCAN_PATH = path.join(os.homedir(), '.promptcraft', 'last-scan.json');
@@ -53,6 +54,9 @@ router.post('/', async (req, res, next) => {
     const responseData = { ...result, elapsedMs, domainOverlay, roleSuggestions, roleSuggestionsByTree };
 
     res.json(responseData);
+
+    // 스캔 루트를 mention 게이트 허용 집합에 등록 (인메모리 동기 + 디스크 영속)
+    registerScanRoot(responseData.path);
 
     // 디버그 로그 저장 (DEBUG_SCAN=true 일 때만)
     writeScanDebugLog({ startTime, endTime, elapsedMs, scanPath, result: responseData });

@@ -3,11 +3,26 @@ import os from 'node:os';
 import path from 'node:path';
 import request from 'supertest';
 import router from '../../../src/server/routes/mention.js';
+import { _resetForTest, registerScanRoot } from '../../../src/server/scanRegistry.js';
 import { makeApp } from '../../helpers/make-app.js';
 
 const app = makeApp(router);
 
+// 스캔 루트 레지스트리를 격리된 임시 파일로 고정 (사용자 실제 ~/.promptcraft 비참조).
+const ROOTS_FILE = path.join(os.tmpdir(), `pc-scanned-roots-${process.pid}.json`);
+
 let tmpDir: string;
+
+beforeAll(() => {
+  process.env.PROMPTCRAFT_SCANNED_ROOTS_PATH = ROOTS_FILE;
+  fs.rmSync(ROOTS_FILE, { force: true });
+  _resetForTest();
+});
+
+afterAll(() => {
+  fs.rmSync(ROOTS_FILE, { force: true });
+  delete process.env.PROMPTCRAFT_SCANNED_ROOTS_PATH;
+});
 
 beforeEach(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mention-test-'));
@@ -15,6 +30,7 @@ beforeEach(() => {
   fs.writeFileSync(path.join(tmpDir, 'src', 'index.ts'), 'export {}');
   fs.writeFileSync(path.join(tmpDir, 'README.md'), '# Project');
   fs.mkdirSync(path.join(tmpDir, 'node_modules'));
+  registerScanRoot(tmpDir); // 스캔된 루트로 등록 → mention 게이트 통과
 });
 
 afterEach(() => {
@@ -47,6 +63,12 @@ describe('GET /api/mention/suggest', () => {
     expect(res.status).toBe(200);
     const paths = res.body.suggestions.map((s: { path: string; display: string; isDir: boolean }) => s.path);
     expect(paths.every((p: string) => p.startsWith('src'))).toBe(true);
+  });
+
+  test('스캔되지 않은 루트는 403', async () => {
+    const unregistered = path.join(os.tmpdir(), 'pc-never-scanned-root');
+    const res = await request(app).get(`/suggest?root=${encodeURIComponent(unregistered)}`);
+    expect(res.status).toBe(403);
   });
 });
 
@@ -108,5 +130,14 @@ describe('POST /api/mention/read', () => {
     });
     expect(res.status).toBe(200);
     expect(res.body.content).toBe('# Project');
+  });
+
+  test('스캔되지 않은 루트는 403 (validatePath 이전 차단)', async () => {
+    const unregistered = path.join(os.tmpdir(), 'pc-never-scanned-root');
+    const res = await request(app).post('/read').send({
+      filePath: 'README.md',
+      scanRoot: unregistered,
+    });
+    expect(res.status).toBe(403);
   });
 });

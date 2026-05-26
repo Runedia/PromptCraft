@@ -7,7 +7,9 @@
 - Express import 이 레이어에서만 허용
 - 비즈니스 로직은 core 레이어에 위임
 - `127.0.0.1`에서만 listen — 외부 네트워크 노출 금지
+- `securityHeaders`/`corsLocalhost(port)`/`hostGuard(port)` 미들웨어: CORS는 자기 포트 오리진만 허용, Host 불일치 차단(DNS rebinding 방어)
 - `pathGuard` 미들웨어: 경로 traversal 방지 — 파일시스템 접근 라우트에 적용
+- `scanRegistry`: 스캔된 루트를 영속(`~/.promptcraft/scanned-roots.json`). mention 라우트는 `isAllowedScanRoot`로 미스캔 루트 접근 차단
 - JSON body limit: 5mb
 
 ## API 라우트
