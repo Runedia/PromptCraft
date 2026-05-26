@@ -22,6 +22,7 @@ export async function assessPrompt(opts: AssessOpts): Promise<RefineAssessment> 
   const client = create(opts.cfg);
   const messages = buildRefineMessages(opts.promptText, opts.lang);
   const raw = await chatComplete(client, messages, { model });
+  console.error(`[refine] raw model response (${raw.length} chars):`, raw.slice(0, 2000));
   return parseRefineResponse(raw);
 }
 

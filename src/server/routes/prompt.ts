@@ -3,6 +3,7 @@ import { buildPrompt } from '../../core/builder/promptBuilder.js';
 import { estimateTokens } from '../../core/builder/tokenEstimator.js';
 import { history, initialize } from '../../core/db/index.js';
 import { RefineParseError } from '../../core/refine/parse.js';
+import { buildStructuredRefineInput } from '../../core/refine/structuredInput.js';
 import { structuralScore } from '../../core/refine/structuralScore.js';
 import { isRunTarget, PROVIDERS } from '../../core/run/providers.js';
 import type { SectionCard } from '../../core/types/card.js';
@@ -98,10 +99,10 @@ router.post('/refine', async (req, res, next) => {
       return;
     }
     const score = structuralScore(cards);
-    const promptText = buildPrompt(cards);
     const resolvedLang: Locale = LOCALES.includes(lang as Locale) ? (lang as Locale) : 'ko';
+    const refineInput = buildStructuredRefineInput(cards, resolvedLang);
     try {
-      const assessment = await refineService.assessPrompt({ cfg, promptText, lang: resolvedLang });
+      const assessment = await refineService.assessPrompt({ cfg, promptText: refineInput, lang: resolvedLang });
       res.json({ available: true, completeness: score.completeness, ...assessment });
     } catch (err) {
       if (err instanceof RefineParseError) {

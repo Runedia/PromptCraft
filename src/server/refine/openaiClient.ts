@@ -10,7 +10,7 @@ export interface LlmClient {
         messages: ChatMessage[];
         temperature?: number;
         max_tokens?: number;
-        response_format?: { type: 'json_object' };
+        response_format?: { type: 'json_schema' | 'text' };
         stream?: false;
       }): Promise<{ choices: { message: { content: string | null } }[] }>;
     };
@@ -23,14 +23,13 @@ export function makeClient(cfg: RefineConfig): LlmClient {
   return new OpenAI({ baseURL: cfg.baseUrl, apiKey: cfg.apiKey || 'local' }) as unknown as LlmClient;
 }
 
-/** JSON mode + max_tokens로 호출한다. response_format은 LM Studio/Ollama/vllm 공통 지원 모드. */
+/** JSON mode + max_tokens로 호출한다. response_format은 LM Studio가 json_object를 지원하지 않아 제거(프롬프트 지시만으로 JSON 유도). */
 export async function chatComplete(client: LlmClient, messages: ChatMessage[], opts: { model: string; temperature?: number }): Promise<string> {
   const res = await client.chat.completions.create({
     model: opts.model,
     messages,
     temperature: opts.temperature ?? 0.2,
     max_tokens: 4096,
-    response_format: { type: 'json_object' },
     stream: false,
   });
   return res.choices[0]?.message?.content ?? '';

@@ -238,10 +238,9 @@
       "jsx": "JSX enabled"
     },
     "refine": {
-      "systemIntro": "You are an assistant that refines prompts meant for a coding agent. Rewrite the prompt below to be clearer, more structured, and more actionable while preserving its intent. Do not fabricate information; leave anything uncertain or missing as a suggestion.",
-      "directive": "Put the full rewritten prompt in 'refined'. Put concrete items the user could add to improve the result in 'suggestions' (empty array if none), and a 1-2 sentence summary of what you changed in 'rationale'.",
-      "schema": "Output ONLY this JSON (no code fences): {\"refined\":\"full refined prompt\",\"suggestions\":[\"item\"],\"rationale\":\"summary\"}",
-      "userIntro": "Prompt to refine:"
+      "systemStructured": "## Role\nCoding agent prompt refiner\n\n## Input\nThe user has written a feature spec using card-based sections. The input shows filled sections under `--- Input structure ---` and missing sections under `--- Unfilled sections ---`.\n\n## Task\nRewrite the input into a natural-language prompt that a coding agent (Claude Code, etc.) can consume directly. Preserve all intent and information.\n- Do not echo the `[label (id)]` structure — reconstruct it as a natural markdown document\n- Never fabricate; leave uncertain or missing parts as suggestions\n- Include concrete file paths, commands, API function names where available\n\n## Output Format\nOutput ONLY this JSON. `refined` must be natural markdown, NOT a card-structured listing:\n{\"refined\":\"## Goal\\n...\\n\\n## Scope\\n... (natural markdown)\",\"suggestions\":[\"specific suggestion\"],\"rationale\":\"summary of changes\"}",
+      "structuredHeader": "--- Input structure ---",
+      "structuredEmpty": "--- Unfilled sections ---"
     }
   }
 }

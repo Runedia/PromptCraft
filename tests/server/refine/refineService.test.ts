@@ -21,13 +21,13 @@ describe('assessPrompt', () => {
     expect(r.rationale).toBe('요지');
   });
 
-  test('create 호출 시 response_format=json_object와 max_tokens 전달', async () => {
-    let captured: { response_format?: { type: string }; max_tokens?: number } | null = null;
+  test('create 호출 시 max_tokens=4096 전달', async () => {
+    let capturedMaxTokens: number | undefined;
     const recording: LlmClient = {
       chat: {
         completions: {
           create: async (args) => {
-            captured = { response_format: args.response_format, max_tokens: args.max_tokens };
+            capturedMaxTokens = args.max_tokens;
             return { choices: [{ message: { content: JSON.stringify({ refined: 'x', suggestions: [] }) } }] };
           },
         },
@@ -35,8 +35,7 @@ describe('assessPrompt', () => {
       models: { list: async () => ({ data: [] }) },
     };
     await assessPrompt({ cfg, promptText: 'p', lang: 'ko', createClient: () => recording });
-    expect(captured?.response_format).toEqual({ type: 'json_object' });
-    expect(captured?.max_tokens).toBe(4096);
+    expect(capturedMaxTokens).toBe(4096);
   });
 
   test('model 미설정 시 throw', async () => {
