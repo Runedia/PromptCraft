@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { globSync } from 'tinyglobby';
 import type { IgnoreRules, ScanLanguage } from '../types.js';
-import { shouldIgnore, toGlobIgnorePatterns } from './gitignore.js';
+import { defaultGlobIgnore, shouldIgnore, toGlobIgnorePatterns } from './gitignore.js';
 
 type LangRole = 'primary' | 'template' | 'config';
 
@@ -34,9 +34,7 @@ const LANGUAGE_GLOB = `**/*.{${KNOWN_EXTENSIONS.join(',')}}`;
  * - template/config: 존재하면 전부 반환 (비율은 해당 그룹 내 기준)
  */
 function detectLanguages(targetPath: string, ignoreRules?: IgnoreRules): ScanLanguage[] {
-  const globIgnore = ignoreRules
-    ? toGlobIgnorePatterns(ignoreRules)
-    : ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/build/**', '**/.cache/**', '**/.gradle/**', '**/.idea/**', '**/.vscode/**', '**/.claude/**'];
+  const globIgnore = ignoreRules ? toGlobIgnorePatterns(ignoreRules) : defaultGlobIgnore();
 
   let files = globSync(LANGUAGE_GLOB, {
     cwd: targetPath,

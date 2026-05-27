@@ -2,9 +2,7 @@ import type { Dirent } from 'node:fs';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import type { IgnoreRules, ScanStructureNode } from '../types.js';
-import { shouldIgnore } from './gitignore.js';
-
-const FALLBACK_EXCLUDE_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '.cache', '.next', 'coverage', '.gradle', '.idea', '.vscode', '.claude']);
+import { DEFAULT_IGNORE_DIR_SET, shouldIgnore } from './gitignore.js';
 
 /**
  * 재귀적으로 디렉토리 트리를 비동기 빌드한다.
@@ -29,7 +27,7 @@ async function buildStructure(dirPath: string, currentDepth: number, maxDepth = 
         const relativePath = path.relative(rootPath, path.join(dirPath, entry.name));
         if (shouldIgnore(ignoreRules, relativePath)) continue;
       } else {
-        if (FALLBACK_EXCLUDE_DIRS.has(entry.name)) continue;
+        if (DEFAULT_IGNORE_DIR_SET.has(entry.name)) continue;
       }
 
       if (currentDepth < maxDepth) {
