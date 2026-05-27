@@ -115,4 +115,4 @@ function shouldIgnore(ignoreRules: IgnoreRules, relativePath: string): boolean {
   return ignoreRules.ig.ignores(relativePath);
 }
 
-export { DEFAULT_IGNORE_DIRS, DEFAULT_IGNORE_DIR_SET, defaultGlobIgnore, loadIgnoreRules, shouldIgnore, toGlobIgnorePatterns };
+export { DEFAULT_IGNORE_DIR_SET, DEFAULT_IGNORE_DIRS, defaultGlobIgnore, loadIgnoreRules, shouldIgnore, toGlobIgnorePatterns };

@@ -329,6 +329,7 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={modelOpen}
+                    aria-controls="refine-model-listbox"
                     className="h-8 w-full justify-between text-[13px] font-normal"
                     data-ui-id={UI_IDS.WORK_SETTINGS_REFINE_MODEL}
                   >
@@ -339,7 +340,7 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
                 <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
                   <Command>
                     <CommandInput placeholder={t('web.settingsRefine.modelSearch')} className="h-8 text-[13px]" />
-                    <CommandList>
+                    <CommandList id="refine-model-listbox">
                       <CommandEmpty>{t('web.settingsRefine.modelEmpty')}</CommandEmpty>
                       <CommandGroup>
                         {refineModels.map((m) => (

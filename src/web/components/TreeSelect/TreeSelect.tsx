@@ -38,18 +38,19 @@ export function TreeSelect({ onSelect }: TreeSelectProps) {
   const [defaultRoles, setDefaultRoles] = useState<string[]>([]);
   const [rolesByTree, setRolesByTree] = useState<Record<string, string[]>>({});
   const [selectedTreeId, setSelectedTreeId] = useState<string | null>(null);
-  const [host, setHost] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const host = window.location.host;
 
   useEffect(() => {
-    setHost(window.location.host);
+    let focusTimer: ReturnType<typeof setTimeout> | undefined;
     fetch('/api/trees')
       .then((r) => r.json())
       .then((data: TreeMeta[]) => setTrees(data))
       .finally(() => {
         setLoading(false);
-        setTimeout(() => inputRef.current?.focus(), 50);
+        focusTimer = setTimeout(() => inputRef.current?.focus(), 50);
       });
+    return () => clearTimeout(focusTimer);
   }, []);
 
   useEffect(() => {

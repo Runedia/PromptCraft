@@ -1,7 +1,7 @@
+import { t } from '../../shared/i18n/t.js';
+import type { Locale } from '../../shared/i18n/types.js';
 import { resolveMentionLinks } from '../builder/promptBuilder.js';
 import type { SectionCard } from '../types/card.js';
-import type { Locale } from '../../shared/i18n/types.js';
-import { t } from '../../shared/i18n/t.js';
 
 export function buildStructuredRefineInput(cards: SectionCard[], lang: Locale): string {
   const active = cards.filter((c) => c.active).sort((a, b) => a.order - b.order);

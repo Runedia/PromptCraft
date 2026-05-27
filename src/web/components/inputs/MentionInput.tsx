@@ -67,6 +67,7 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
         setPreview(null);
       }
     }, 200);
+    return () => clearTimeout(previewDebounceRef.current ?? undefined);
   }, [selectedIdx, suggestions, scanRoot]);
 
   const closeSuggestions = useCallback(() => {
@@ -202,6 +203,7 @@ export function MentionInput({ value, hint, onChange, scanRoot }: MentionInputPr
         ref={ref}
         className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-base text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
         value={value}
+        aria-label={hint ?? t('web.mentionInput.placeholder')}
         placeholder={hint ?? t('web.mentionInput.placeholder')}
         rows={4}
         onChange={handleChange}
