@@ -17,8 +17,8 @@ describe('scanner', () => {
     expect(names).toContain('TypeScript');
   });
 
-  test('언어 감지: percentage 합계가 100에 가까움', () => {
-    const total = result.languages.reduce((s, l) => s + l.percentage, 0);
+  test('언어 감지: primary percentage 합계가 100에 가까움', () => {
+    const total = result.languages.filter((l) => l.role === 'primary').reduce((s, l) => s + l.percentage, 0);
     expect(total).toBeCloseTo(100, 0);
   });
 

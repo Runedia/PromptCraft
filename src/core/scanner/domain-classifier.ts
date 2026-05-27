@@ -16,6 +16,9 @@ const LANGUAGE_DOMAIN_HINTS: Record<string, ProgrammingDomain> = {
   R: 'data-ml',
   Lua: 'game',
   Scala: 'data-ml',
+  Vue: 'web-frontend',
+  Svelte: 'web-frontend',
+  Astro: 'web-frontend',
 };
 
 /**

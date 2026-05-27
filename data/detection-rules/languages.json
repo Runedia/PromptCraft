@@ -1,26 +1,1034 @@
 {
-  ".js": "JavaScript",
-  ".jsx": "JavaScript",
-  ".ts": "TypeScript",
-  ".tsx": "TypeScript",
-  ".py": "Python",
-  ".java": "Java",
-  ".go": "Go",
-  ".rs": "Rust",
-  ".cpp": "C++",
-  ".cc": "C++",
-  ".c": "C",
-  ".h": "C",
-  ".cs": "C#",
-  ".rb": "Ruby",
-  ".php": "PHP",
-  ".swift": "Swift",
-  ".kt": "Kotlin",
-  ".dart": "Dart",
-  ".lua": "Lua",
-  ".scala": "Scala",
-  ".r": "R",
-  ".R": "R",
-  ".zig": "Zig",
-  ".zon": "Zig Object Notation"
+  "._js": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".4dform": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".4dproject": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".adml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".admx": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ant": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".astro": {
+    "name": "Astro",
+    "role": "primary"
+  },
+  ".avsc": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".aw": {
+    "name": "PHP",
+    "role": "primary"
+  },
+  ".axaml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".axml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".bones": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".builder": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".builds": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".c": {
+    "name": "C",
+    "role": "primary"
+  },
+  ".c++": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".cake": {
+    "name": "C#",
+    "role": "primary"
+  },
+  ".cats": {
+    "name": "C",
+    "role": "primary"
+  },
+  ".cc": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".ccproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ccxml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".cgi": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".cjs": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".clixml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".cp": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".cpp": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".cppm": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".cproject": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".cs": {
+    "name": "C#",
+    "role": "primary"
+  },
+  ".cscfg": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".csdef": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".csl": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".csproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".csx": {
+    "name": "C#",
+    "role": "primary"
+  },
+  ".ct": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ctp": {
+    "name": "PHP",
+    "role": "primary"
+  },
+  ".cts": {
+    "name": "TypeScript",
+    "role": "primary"
+  },
+  ".cxx": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".dart": {
+    "name": "Dart",
+    "role": "primary"
+  },
+  ".depproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".dita": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ditamap": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ditaval": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".dotsettings": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".es": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".es6": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".eye": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".filters": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".frag": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".fsproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".fxml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".gemspec": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".geojson": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".glade": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".gltf": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".gml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".gmx": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".go": {
+    "name": "Go",
+    "role": "primary"
+  },
+  ".god": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".gpx": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".grxml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".gs": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".gst": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".gyp": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".gypi": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".h": {
+    "name": "C",
+    "role": "primary"
+  },
+  ".h++": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".har": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".hh": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".hpp": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".hxx": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".hzp": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ice": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".icls": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".idc": {
+    "name": "C",
+    "role": "primary"
+  },
+  ".iml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".inl": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".ino": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".ipp": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".ivy": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ixx": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".jake": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".jav": {
+    "name": "Java",
+    "role": "primary"
+  },
+  ".java": {
+    "name": "Java",
+    "role": "primary"
+  },
+  ".javascript": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".jbuilder": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".jelly": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".js": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".jsb": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".jscad": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".jsfl": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".jsh": {
+    "name": "Java",
+    "role": "primary"
+  },
+  ".jslib": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".jsm": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".json": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".json-tmlanguage": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".jsonl": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".jsp": {
+    "name": "JSP",
+    "role": "template"
+  },
+  ".jspre": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".jsproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".jss": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".jsx": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".kml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".kojo": {
+    "name": "Scala",
+    "role": "primary"
+  },
+  ".kt": {
+    "name": "Kotlin",
+    "role": "primary"
+  },
+  ".ktm": {
+    "name": "Kotlin",
+    "role": "primary"
+  },
+  ".kts": {
+    "name": "Kotlin",
+    "role": "primary"
+  },
+  ".launch": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".linq": {
+    "name": "C#",
+    "role": "primary"
+  },
+  ".lmi": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".lua": {
+    "name": "Lua",
+    "role": "primary"
+  },
+  ".mcmeta": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".mdpolicy": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".mir": {
+    "name": "YAML",
+    "role": "config"
+  },
+  ".mjml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".mjs": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".mm": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".mod": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".mojo": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".mspec": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".mts": {
+    "name": "TypeScript",
+    "role": "primary"
+  },
+  ".mxml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".natvis": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ncl": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ndproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".njs": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".nproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".nse": {
+    "name": "Lua",
+    "role": "primary"
+  },
+  ".nuspec": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".odd": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".osm": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".p8": {
+    "name": "Lua",
+    "role": "primary"
+  },
+  ".pac": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".pd_lua": {
+    "name": "Lua",
+    "role": "primary"
+  },
+  ".php": {
+    "name": "PHP",
+    "role": "primary"
+  },
+  ".php3": {
+    "name": "PHP",
+    "role": "primary"
+  },
+  ".php4": {
+    "name": "PHP",
+    "role": "primary"
+  },
+  ".php5": {
+    "name": "PHP",
+    "role": "primary"
+  },
+  ".phps": {
+    "name": "PHP",
+    "role": "primary"
+  },
+  ".phpt": {
+    "name": "PHP",
+    "role": "primary"
+  },
+  ".pkgproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".podspec": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".prawn": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".proj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".props": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ps1xml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".psc1": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".pt": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".pubxml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".py": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".py3": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".pyde": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".pyi": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".pyp": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".pyt": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".pyw": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".qhelp": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".r": {
+    "name": "R",
+    "role": "primary"
+  },
+  ".rabl": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".rake": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".rb": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".rbi": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".rbuild": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".rbw": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".rbx": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".rbxs": {
+    "name": "Lua",
+    "role": "primary"
+  },
+  ".rd": {
+    "name": "R",
+    "role": "primary"
+  },
+  ".rdf": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".re": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".reek": {
+    "name": "YAML",
+    "role": "config"
+  },
+  ".res": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".resx": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".rockspec": {
+    "name": "Lua",
+    "role": "primary"
+  },
+  ".rpy": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".rs": {
+    "name": "Rust",
+    "role": "primary"
+  },
+  ".rss": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".rsx": {
+    "name": "R",
+    "role": "primary"
+  },
+  ".ru": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".ruby": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".rviz": {
+    "name": "YAML",
+    "role": "config"
+  },
+  ".sarif": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".sbt": {
+    "name": "Scala",
+    "role": "primary"
+  },
+  ".sc": {
+    "name": "Scala",
+    "role": "primary"
+  },
+  ".scala": {
+    "name": "Scala",
+    "role": "primary"
+  },
+  ".sch": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".scxml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".sfproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".shproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".sjs": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".slnx": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".srdf": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ssjs": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".storyboard": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".sublime-snippet": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".sublime-syntax": {
+    "name": "YAML",
+    "role": "config"
+  },
+  ".svelte": {
+    "name": "Svelte",
+    "role": "primary"
+  },
+  ".sw": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".swift": {
+    "name": "Swift",
+    "role": "primary"
+  },
+  ".syntax": {
+    "name": "YAML",
+    "role": "config"
+  },
+  ".tac": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".tact": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".targets": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".tcc": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".tfstate": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".thor": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".tml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".topojson": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".tpp": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".ts": {
+    "name": "TypeScript",
+    "role": "primary"
+  },
+  ".tsx": {
+    "name": "TypeScript",
+    "role": "primary"
+  },
+  ".txx": {
+    "name": "C++",
+    "role": "primary"
+  },
+  ".typ": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ui": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".urdf": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".ux": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".vbproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".vcxproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".vsixmanifest": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".vssettings": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".vstemplate": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".vue": {
+    "name": "Vue",
+    "role": "primary"
+  },
+  ".vxml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".watchr": {
+    "name": "Ruby",
+    "role": "primary"
+  },
+  ".webapp": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".webmanifest": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".wixproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".wlua": {
+    "name": "Lua",
+    "role": "primary"
+  },
+  ".workflow": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".wsdl": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".wsf": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".wsgi": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".wxi": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".wxl": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".wxs": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".x3d": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xacro": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xaml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xib": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xlf": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xliff": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xmi": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xmp": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xproj": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xpy": {
+    "name": "Python",
+    "role": "primary"
+  },
+  ".xsd": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xsjs": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".xsjslib": {
+    "name": "JavaScript",
+    "role": "primary"
+  },
+  ".xspec": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".xul": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".yaml": {
+    "name": "YAML",
+    "role": "config"
+  },
+  ".yaml-tmlanguage": {
+    "name": "YAML",
+    "role": "config"
+  },
+  ".yml": {
+    "name": "YAML",
+    "role": "config"
+  },
+  ".yy": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".yyp": {
+    "name": "JSON",
+    "role": "config"
+  },
+  ".zcml": {
+    "name": "XML",
+    "role": "config"
+  },
+  ".zig": {
+    "name": "Zig",
+    "role": "primary"
+  },
+  ".zon": {
+    "name": "Zig Object Notation",
+    "role": "config"
+  }
 }

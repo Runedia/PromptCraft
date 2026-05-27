@@ -7,17 +7,18 @@ const moduleDirname = path.dirname(__filename);
 
 const RULES_DIR = path.join(moduleDirname, '../../../data/detection-rules');
 
-let languageMapCache = null;
+type LanguageMap = Record<string, { name: string; role: 'primary' | 'template' | 'config' }>;
+
+let languageMapCache: LanguageMap | null = null;
 let frameworkRulesCache = null;
 
 /**
  * 언어 확장자 맵을 로딩한다 (캐시됨).
- * @returns {Record<string, string>}
  */
-function getLanguageMap(): Record<string, string> {
+function getLanguageMap(): LanguageMap {
   if (!languageMapCache) {
     const filePath = path.join(RULES_DIR, 'languages.json');
-    languageMapCache = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    languageMapCache = JSON.parse(fs.readFileSync(filePath, 'utf8')) as LanguageMap;
   }
   return languageMapCache;
 }

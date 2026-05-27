@@ -24,6 +24,7 @@
     "benchmark:shutdown": "bun tests/perf/graceful-shutdown-check.ts",
     "benchmark:preview": "bunx playwright test --project=chromium tests/e2e/preview-latency.spec.ts",
     "benchmark:nfr": "bun run benchmark:api-scan && bun run benchmark:api-build && bun run benchmark:shutdown && bun run benchmark:preview",
+    "sync:linguist": "bun scripts/sync-linguist.ts",
     "ui-map:generate": "bun run scripts/generate-ui-map.ts",
     "ui-map:check": "bun run scripts/generate-ui-map.ts --check",
     "postinstall": "bun run ui-map:generate",

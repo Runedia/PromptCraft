@@ -295,7 +295,14 @@
     "PHP": { "ko": "PHP 개발자", "en": "PHP Developer" },
     "Swift": { "ko": "Swift 개발자", "en": "Swift Developer" },
     "Kotlin": { "ko": "Kotlin 개발자", "en": "Kotlin Developer" },
-    "Zig": { "ko": "Zig 시스템 프로그래머", "en": "Zig Systems Programmer" }
+    "Zig": { "ko": "Zig 시스템 프로그래머", "en": "Zig Systems Programmer" },
+    "Dart": { "ko": "Dart 개발자", "en": "Dart Developer" },
+    "Scala": { "ko": "Scala 개발자", "en": "Scala Developer" },
+    "Lua": { "ko": "Lua 개발자", "en": "Lua Developer" },
+    "R": { "ko": "R 데이터 분석가", "en": "R Data Analyst" },
+    "Vue": { "ko": "Vue.js 프론트엔드 개발자", "en": "Vue.js Frontend Developer" },
+    "Svelte": { "ko": "Svelte 프론트엔드 개발자", "en": "Svelte Frontend Developer" },
+    "Astro": { "ko": "Astro 웹 개발자", "en": "Astro Web Developer" }
   },
   "frameworkRoles": {
     "React": { "ko": "React 컴포넌트 아키텍트", "en": "React Component Architect" },
