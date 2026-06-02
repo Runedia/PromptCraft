@@ -56,7 +56,12 @@
       "restore": "Restore",
       "otherWorkflow": "Different workflow — copy only",
       "copy": "Copy",
-      "deleteLabel": "Delete"
+      "deleteLabel": "Delete",
+      "clearAll": "Clear all",
+      "clearConfirm": "Delete all {{count}}",
+      "clearCancel": "Cancel",
+      "clearSuccess": "{{count}} deleted",
+      "clearError": "Failed to clear history"
     },
     "folderBrowser": {
       "browseError": "Browse failed",

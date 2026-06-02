@@ -349,6 +349,20 @@ export const UI_IDS = {
    * @file src/web/components/HistorySheet/HistorySheet.tsx
    */
   WORK_HISTORY_EMPTY: 'WORK_HISTORY_EMPTY',
+  /**
+   * @screen WorkspacePage
+   * @region History
+   * @description 전체 삭제 버튼
+   * @file src/web/components/HistorySheet/HistorySheet.tsx
+   */
+  WORK_HISTORY_CLEAR_BTN: 'WORK_HISTORY_CLEAR_BTN',
+  /**
+   * @screen WorkspacePage
+   * @region History
+   * @description 전체 삭제 확인 버튼
+   * @file src/web/components/HistorySheet/HistorySheet.tsx
+   */
+  WORK_HISTORY_CLEAR_CONFIRM_BTN: 'WORK_HISTORY_CLEAR_CONFIRM_BTN',
 
   // ── SettingsSheet ────────────────────────────────────────────────────────
 

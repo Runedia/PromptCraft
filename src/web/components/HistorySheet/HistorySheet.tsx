@@ -26,23 +26,35 @@ export function HistorySheet({ open, onClose, currentTreeId }: HistorySheetProps
   const t = useT();
   const { lang } = useLocale();
   const [records, setRecords] = useState<HistoryRecord[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const restoreAnswers = useCardStore((s) => s.restoreAnswers);
 
   useEffect(() => {
     if (!open) {
       setLoading(false);
+      setConfirming(false);
       return;
     }
     const ac = new AbortController();
     setLoading(true);
     fetch('/api/history', { signal: ac.signal })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then((data: HistoryRecord[]) => setRecords(data))
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const count = Number(r.headers.get('X-Total-Count'));
+        const data = (await r.json()) as HistoryRecord[];
+        return { count, data };
+      })
+      .then(({ count, data }) => {
+        setRecords(data);
+        setTotal(Number.isFinite(count) ? count : data.length);
+      })
       .catch((e) => {
         if ((e as Error).name !== 'AbortError') {
           toast.error(t('web.historySheet.loadError'));
           setRecords([]);
+          setTotal(0);
         }
       })
       .finally(() => setLoading(false));
@@ -66,6 +78,7 @@ export function HistorySheet({ open, onClose, currentTreeId }: HistorySheetProps
 
   const handleDelete = async (id: number) => {
     setRecords((prev) => prev.filter((r) => r.id !== id));
+    setTotal((n) => Math.max(0, n - 1));
     try {
       const res = await fetch(`/api/history/${id}`, { method: 'DELETE' });
       if (!res.ok) toast.error(t('web.historySheet.deleteError'));
@@ -74,11 +87,63 @@ export function HistorySheet({ open, onClose, currentTreeId }: HistorySheetProps
     }
   };
 
+  const handleClearAll = async () => {
+    setConfirming(false);
+    const prevRecords = records;
+    const prevTotal = total;
+    setRecords([]);
+    setTotal(0);
+    try {
+      const res = await fetch('/api/history', { method: 'DELETE' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const { deleted } = (await res.json()) as { deleted: number };
+      toast.success(t('web.historySheet.clearSuccess', { count: deleted }));
+    } catch {
+      setRecords(prevRecords);
+      setTotal(prevTotal);
+      toast.error(t('web.historySheet.clearError'));
+    }
+  };
+
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent side="right" data-ui-id={UI_IDS.WORK_HISTORY_SHEET} className="w-[420px] sm:max-w-[420px] p-0 flex flex-col gap-0">
         <SheetHeader className="px-4 py-3 border-b border-border text-left">
-          <SheetTitle className="text-sm">{t('web.historySheet.title')}</SheetTitle>
+          <div className="flex items-center gap-2">
+            <SheetTitle className="text-sm">
+              {t('web.historySheet.title')}
+              {total > 0 && <span className="ml-1.5 text-xs font-code text-muted-foreground">{total}</span>}
+            </SheetTitle>
+            {total > 0 &&
+              (confirming ? (
+                <div className="flex items-center gap-1 ml-auto">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    data-ui-id={UI_IDS.WORK_HISTORY_CLEAR_CONFIRM_BTN}
+                    onClick={handleClearAll}
+                    className="h-7 gap-1 text-[11px]"
+                  >
+                    <Trash2 size={12} /> {t('web.historySheet.clearConfirm', { count: total })}
+                  </Button>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setConfirming(false)} className="h-7 text-[11px]">
+                    {t('web.historySheet.clearCancel')}
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  data-ui-id={UI_IDS.WORK_HISTORY_CLEAR_BTN}
+                  onClick={() => setConfirming(true)}
+                  className="h-7 gap-1 text-[11px] ml-auto text-destructive"
+                >
+                  <Trash2 size={12} /> {t('web.historySheet.clearAll')}
+                </Button>
+              ))}
+          </div>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto">

@@ -56,7 +56,12 @@
       "restore": "복원",
       "otherWorkflow": "다른 워크플로우 — 복사만 가능",
       "copy": "복사",
-      "deleteLabel": "삭제"
+      "deleteLabel": "삭제",
+      "clearAll": "전체 삭제",
+      "clearConfirm": "{{count}}개 모두 삭제",
+      "clearCancel": "취소",
+      "clearSuccess": "{{count}}개 삭제됨",
+      "clearError": "전체 삭제 실패"
     },
     "folderBrowser": {
       "browseError": "탐색 실패",

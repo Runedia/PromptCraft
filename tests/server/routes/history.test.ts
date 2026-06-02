@@ -37,6 +37,13 @@ describe('GET /api/history', () => {
     expect(res.body).toHaveLength(1);
     expect(res.body[0].treeId).toBe('feature-impl');
   });
+
+  test('X-Total-Count 헤더에 전체 건수 반영', async () => {
+    db.history.save(SAMPLE);
+    db.history.save({ ...SAMPLE, treeId: 'refactoring' });
+    const res = await request(app).get('/');
+    expect(res.headers['x-total-count']).toBe('2');
+  });
 });
 
 // ─── GET /:id ────────────────────────────────────────────────────────
@@ -112,5 +119,24 @@ describe('POST /api/history', () => {
   test('prompt 비면 400', async () => {
     const res = await request(app).post('/').send({ treeId: 'feature-impl', prompt: '   ', answers: {} });
     expect(res.status).toBe(400);
+  });
+});
+
+// ─── DELETE / (전체 삭제) ──────────────────────────────────────────────
+
+describe('DELETE /api/history (clear all)', () => {
+  test('전체 삭제 → { deleted: N }, DB 비워짐', async () => {
+    db.history.save(SAMPLE);
+    db.history.save({ ...SAMPLE, treeId: 'refactoring' });
+    const res = await request(app).delete('/');
+    expect(res.status).toBe(200);
+    expect(res.body.deleted).toBe(2);
+    expect(db.history.count()).toBe(0);
+  });
+
+  test('빈 DB에서도 성공 → { deleted: 0 }', async () => {
+    const res = await request(app).delete('/');
+    expect(res.status).toBe(200);
+    expect(res.body.deleted).toBe(0);
   });
 });

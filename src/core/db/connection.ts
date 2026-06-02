@@ -5,6 +5,7 @@ import { DB_PATH } from '../../shared/constants.js';
 import { DBError } from '../../shared/errors.js';
 
 let _db: Database | null = null;
+let _exitHandlerRegistered = false;
 
 function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -34,6 +35,9 @@ function initialize(dbPath?: string): Database {
   }
 
   _db.exec('PRAGMA journal_mode = WAL');
+  // 멀티 인스턴스 동시 실행 시 writer 경합으로 즉시 SQLITE_BUSY가 나는 대신 최대 5초 대기 후 재시도.
+  // journal_mode는 파일에 영속되지만 busy_timeout은 연결 범위 설정이므로 연결을 열 때마다 설정한다.
+  _db.exec('PRAGMA busy_timeout = 5000');
 
   _db.exec(`
     CREATE TABLE IF NOT EXISTS history (
@@ -53,8 +57,13 @@ function initialize(dbPath?: string): Database {
     );
   `);
 
-  process.removeAllListeners('exit');
-  process.on('exit', closeConnection);
+  // exit 핸들러는 프로세스 생애 1회만 등록한다. removeAllListeners('exit')는 다른 모듈의
+  // exit 핸들러까지 제거하는 부작용이 있어, 가드 플래그로 중복 등록만 방지한다.
+  // closeConnection은 _db가 null이면 무시하므로 init/close 반복(테스트)에도 안전하다.
+  if (!_exitHandlerRegistered) {
+    process.on('exit', closeConnection);
+    _exitHandlerRegistered = true;
+  }
 
   return _db;
 }
