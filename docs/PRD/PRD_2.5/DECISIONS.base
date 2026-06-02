@@ -4,7 +4,8 @@ filters:
     - file.hasTag("prd/2-5")
     - file.folder == "adr"
 formulas:
-  status_icon: if(status == "active", "🟢", if(status == "completed", "✅", if(status == "superseded", "⚠️", "—")))
+  status_icon: if(status == "active", "🟢 Active", if(status == "completed", "✅ Completed", if(status == "superseded", "⚠️ Superseded", "❌ Cancelled")))
+  target_link: if(superseded_by, superseded_by, "—")
 properties:
   title:
     displayName: 제목
@@ -15,59 +16,65 @@ properties:
   scope:
     displayName: 범위
   related:
-    displayName: 관련
+    displayName: 관련 결정
   superseded_by:
-    displayName: 대체됨
+    displayName: 대체한 결정
+  formula.status_icon:
+    displayName: 상태구분
+  formula.target_link:
+    displayName: 대체 링크
   file.basename:
-    displayName: ADR
+    displayName: ADR 문서
 views:
   - type: table
-    name: 전체 (최신순)
+    name: 🟢 현재 유효한 결정 (Active)
+    filters:
+      and:
+        - status == "active"
+    order:
+      - file.basename
+      - title
+      - date
+      - scope
+      - related
+    sort:
+      - property: date
+        direction: DESC
+  - type: table
+    name: ⚠️ 대체된 의사결정 이력 (Superseded)
+    filters:
+      and:
+        - status == "superseded"
+    order:
+      - file.basename
+      - title
+      - date
+      - formula.target_link
+      - scope
+    sort:
+      - property: date
+        direction: DESC
+  - type: table
+    name: ❌ 취소/결번 이력 (Cancelled)
+    filters:
+      and:
+        - status == "cancelled" || status == "rejected"
+    order:
+      - file.basename
+      - title
+      - date
+      - scope
+    sort:
+      - property: date
+        direction: DESC
+  - type: table
+    name: 🗂️ 전체 아카이브 (최신순)
     order:
       - formula.status_icon
       - file.basename
       - title
       - date
-      - status
       - scope
-    sort:
-      - property: file.basename
-        direction: DESC
-      - property: date
-        direction: DESC
-  - type: table
-    name: 상태별
-    groupBy:
-      property: status
-      direction: ASC
-    order:
-      - file.basename
-      - title
-      - date
-      - scope
-      - related
-    sort:
-      - property: date
-        direction: DESC
-  - type: table
-    name: 범위별 (스캔용)
-    order:
-      - file.basename
-      - title
-      - scope
-      - status
-      - date
-    sort:
-      - property: date
-        direction: DESC
-  - type: cards
-    name: 카드
-    order:
-      - title
-      - date
-      - status
-      - scope
-      - related
     sort:
       - property: date
         direction: DESC
