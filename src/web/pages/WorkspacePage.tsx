@@ -2,14 +2,11 @@ import type { RoleMappings } from '@core/builder/role-resolver.js';
 import type { CardDefinition } from '@core/types/card.js';
 import { closestCenter, DndContext, type DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ActionBarHandle } from '@/components/ActionBar/ActionBar.js';
 import { CardPoolSidebar } from '@/components/CardPool/CardPoolSidebar.js';
-import { HistorySheet } from '@/components/HistorySheet/HistorySheet.js';
 import { PromptPreview } from '@/components/PromptPreview/PromptPreview.js';
-import { RefineSheet } from '@/components/RefineSheet/RefineSheet.js';
 import { PINNED_CARD_IDS, SectionCard } from '@/components/SectionCard/SectionCard.js';
-import { SettingsSheet } from '@/components/SettingsSheet/SettingsSheet.js';
 import { TopBar } from '@/components/TopBar/TopBar.js';
 import { useCardSession } from '@/hooks/useCardSession.js';
 import { useKeyboard } from '@/hooks/useKeyboard.js';
@@ -19,6 +16,12 @@ import { useT } from '@/i18n/useT.js';
 import { useCardStore } from '@/store/cardStore.js';
 import type { ResolvedTree } from '@/types/tree.js';
 import { UI_IDS } from '@/ui-ids.js';
+
+// Sheet 3종은 초기 진입(트리 선택→워크스페이스)에 불필요하므로 lazy 로드해 초기 청크에서 제외한다.
+// (named export → default 매핑)
+const HistorySheet = lazy(() => import('@/components/HistorySheet/HistorySheet.js').then((m) => ({ default: m.HistorySheet })));
+const SettingsSheet = lazy(() => import('@/components/SettingsSheet/SettingsSheet.js').then((m) => ({ default: m.SettingsSheet })));
+const RefineSheet = lazy(() => import('@/components/RefineSheet/RefineSheet.js').then((m) => ({ default: m.RefineSheet })));
 
 interface WorkspacePageProps {
   treeId: string;
@@ -32,7 +35,10 @@ interface WorkspacePageProps {
 export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePageProps) {
   const t = useT();
   const { lang } = useLocale();
-  const { activeCards, reorderCards, scanResult } = useCardStore();
+  // 전체 store 구독 대신 cards + 액션만 원자 셀렉터로 구독한다. 파생(active/itemIds)은 cards 변경 시에만 재계산.
+  const cards = useCardStore((s) => s.cards);
+  const reorderCards = useCardStore((s) => s.reorderCards);
+  const scanResult = useCardStore((s) => s.scanResult);
   const { initSession, reresolveCardsForLang } = useCardSession();
   const { scan, isScanLoading } = useScan();
   const actionBarRef = useRef<ActionBarHandle | null>(null);
@@ -43,6 +49,12 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
   const [showHistory, setShowHistory] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showRefine, setShowRefine] = useState(false);
+
+  // 한 번이라도 연 Sheet는 마운트를 유지한다(lazy 청크 로드 후 open=false로의 close 애니메이션 보존).
+  const sheetMounted = useRef({ history: false, settings: false, refine: false });
+  if (showHistory) sheetMounted.current.history = true;
+  if (showSettings) sheetMounted.current.settings = true;
+  if (showRefine) sheetMounted.current.refine = true;
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
@@ -93,7 +105,12 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
       const activeId = active.id as string;
       const overId = over.id as string;
       if (PINNED_CARD_IDS.has(activeId) || PINNED_CARD_IDS.has(overId)) return;
-      const active_ids = activeCards().map((c) => c.id);
+      // 렌더와 무관한 콜백이므로 getState()로 최신 cards를 직접 읽어 deps에서 파생 배열을 제거한다.
+      const active_ids = useCardStore
+        .getState()
+        .cards.filter((c) => c.active)
+        .sort((a, b) => a.order - b.order)
+        .map((c) => c.id);
       const oldIdx = active_ids.indexOf(activeId);
       const newIdx = active_ids.indexOf(overId);
       const reordered = [...active_ids];
@@ -101,7 +118,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
       reordered.splice(newIdx, 0, activeId);
       reorderCards(reordered);
     },
-    [activeCards, reorderCards]
+    [reorderCards]
   );
 
   useKeyboard({
@@ -109,8 +126,9 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
     onRunDefault: () => actionBarRef.current?.runDefault(),
   });
 
-  const active = activeCards();
-  const emptyCount = active.filter((c) => !c.value).length;
+  const active = useMemo(() => cards.filter((c) => c.active).sort((a, b) => a.order - b.order), [cards]);
+  const itemIds = useMemo(() => active.map((c) => c.id), [active]);
+  const emptyCount = useMemo(() => active.filter((c) => !c.value).length, [active]);
 
   return (
     <div className="h-screen flex flex-col bg-background text-foreground">
@@ -144,7 +162,7 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
             {treeConfig && <p className="text-[12.5px] text-secondary-foreground max-w-prose mb-5">{treeConfig.description}</p>}
 
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <SortableContext items={active.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+              <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
                 <div className="flex flex-col gap-2" data-ui-id={UI_IDS.WORK_SECTION_LIST}>
                   {active.map((card) => (
                     <SectionCard key={card.id} card={card} variant="filled" scanRoot={scanResult?.path} />
@@ -161,9 +179,21 @@ export function WorkspacePage({ treeId, projectPath = '', onBack }: WorkspacePag
         </aside>
       </div>
 
-      <HistorySheet open={showHistory} onClose={() => setShowHistory(false)} currentTreeId={treeId} />
-      <SettingsSheet open={showSettings} onClose={() => setShowSettings(false)} />
-      <RefineSheet open={showRefine} onClose={() => setShowRefine(false)} />
+      {sheetMounted.current.history && (
+        <Suspense fallback={null}>
+          <HistorySheet open={showHistory} onClose={() => setShowHistory(false)} currentTreeId={treeId} />
+        </Suspense>
+      )}
+      {sheetMounted.current.settings && (
+        <Suspense fallback={null}>
+          <SettingsSheet open={showSettings} onClose={() => setShowSettings(false)} />
+        </Suspense>
+      )}
+      {sheetMounted.current.refine && (
+        <Suspense fallback={null}>
+          <RefineSheet open={showRefine} onClose={() => setShowRefine(false)} />
+        </Suspense>
+      )}
     </div>
   );
 }

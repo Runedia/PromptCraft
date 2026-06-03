@@ -1,4 +1,5 @@
 import { Check, Plus } from 'lucide-react';
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button.js';
 import { useT } from '@/i18n/useT.js';
 import { cn } from '@/lib/utils';
@@ -14,9 +15,12 @@ interface CardPoolProps {
  */
 export function CardPool({ variant = 'inline' }: CardPoolProps) {
   const t = useT();
-  const { activateCard, deactivateCard, inactiveCards, activeCards } = useCardStore();
-  const inactive = inactiveCards();
-  const active = activeCards();
+  // 전체 store 구독 대신 cards + 액션만 원자 셀렉터로 구독하고, 파생 목록은 cards 변경 시에만 재계산한다.
+  const cards = useCardStore((s) => s.cards);
+  const activateCard = useCardStore((s) => s.activateCard);
+  const deactivateCard = useCardStore((s) => s.deactivateCard);
+  const inactive = useMemo(() => cards.filter((c) => !c.active), [cards]);
+  const active = useMemo(() => cards.filter((c) => c.active).sort((a, b) => a.order - b.order), [cards]);
 
   if (variant === 'sidebar') {
     const all = [...active, ...inactive].sort((a, b) => a.label.localeCompare(b.label, 'ko'));

@@ -2,6 +2,7 @@ import type { SectionCard as SectionCardType } from '@core/types/card.js';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Lock, Pin, X } from 'lucide-react';
+import { memo, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.js';
@@ -22,9 +23,12 @@ interface SectionCardProps {
 /**
  * @ui-ids WORK_SECTION_CARD, WORK_SECTION_CARD_DRAG_BTN, WORK_SECTION_CARD_REMOVE_BTN
  */
-export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCardProps) {
+export const SectionCard = memo(function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCardProps) {
   const t = useT();
-  const { updateCardValue, deactivateCard } = useCardStore();
+  // 액션은 원자 셀렉터로 구독한다(함수 참조는 store 생성 시 안정 → store 변경에 리렌더되지 않음).
+  // memo와 결합해, 값이 바뀐 카드 1개의 SectionCard만 리렌더되고 나머지 카드는 격리된다.
+  const updateCardValue = useCardStore((s) => s.updateCardValue);
+  const deactivateCard = useCardStore((s) => s.deactivateCard);
   const isPinned = PINNED_CARD_IDS.has(card.id);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -32,12 +36,15 @@ export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCar
     disabled: isPinned,
   });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.85 : 1,
-    zIndex: isDragging ? 100 : undefined,
-  };
+  const style = useMemo(
+    () => ({
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.85 : 1,
+      zIndex: isDragging ? 100 : undefined,
+    }),
+    [transform, transition, isDragging]
+  );
 
   const baseClasses = variant === 'filled' ? 'bg-muted/60 border border-transparent' : 'bg-card border border-border/50 shadow-[var(--shadow-card)]';
 
@@ -118,4 +125,4 @@ export function SectionCard({ card, scanRoot, variant = 'outlined' }: SectionCar
       />
     </div>
   );
-}
+});

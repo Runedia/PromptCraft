@@ -37,6 +37,39 @@ function derivePromptState(cards: SectionCard[]) {
   return { prompt, preview, tokenEstimate };
 }
 
+/**
+ * 후행(trailing) 포함 throttle. zundo의 handleSet(히스토리 기록)에만 적용한다.
+ * zundo는 `set(...args)`로 라이브 state를 즉시 갱신한 뒤 별도로 히스토리를 기록하므로,
+ * 이 throttle은 히스토리 push 빈도만 낮추고 타이핑 응답성에는 영향을 주지 않는다.
+ */
+function throttle<A extends unknown[]>(fn: (...args: A) => void, ms: number): (...args: A) => void {
+  let lastRun = 0;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let pending: A | null = null;
+  return (...args: A) => {
+    pending = args;
+    const elapsed = Date.now() - lastRun;
+    if (elapsed >= ms) {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      lastRun = Date.now();
+      pending = null;
+      fn(...args);
+    } else if (timer === null) {
+      timer = setTimeout(() => {
+        lastRun = Date.now();
+        timer = null;
+        if (pending) fn(...pending);
+      }, ms - elapsed);
+    }
+  };
+}
+
+/** 키 입력 버스트를 하나의 undo 단위로 묶는 히스토리 기록 간격(ms). */
+const HISTORY_THROTTLE_MS = 500;
+
 export const useCardStore = create<CardStore>()(
   temporal(
     (set, get) => ({
@@ -117,12 +150,16 @@ export const useCardStore = create<CardStore>()(
     }),
     {
       limit: 10,
+      // partialize는 4개 필드를 모두 추적한다 — undo가 cards뿐 아니라 파생 필드까지 일관되게 복원해야 하므로
+      // cards만으로 줄이면 undo 후 preview/tokenEstimate가 stale해진다.
       partialize: (state) => ({
         cards: state.cards,
         prompt: state.prompt,
         preview: state.preview,
         tokenEstimate: state.tokenEstimate,
       }),
+      // 키 입력마다 히스토리를 push하던 것을 throttle로 묶는다(라이브 state 갱신은 throttle 대상 아님).
+      handleSet: (handleSet) => throttle(handleSet, HISTORY_THROTTLE_MS),
     }
   )
 );

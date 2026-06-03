@@ -17,8 +17,30 @@ interface ResolvedRoleMappings {
   languageRoles?: Record<string, string>;
 }
 
-/** RoleMappings(I18nText)를 lang으로 평탄화한다. */
+/**
+ * (roleMappings, lang) 조합별 평탄화 결과 캐시.
+ * roleMappings는 domain-loader가 모듈 수명 동안 캐싱한 단일 인스턴스이므로 WeakMap 키로 적합하다.
+ * scan 1회당 resolveRoleSuggestions가 6회(default + 트리 수) 호출되며 동일 (roleMappings, lang)을 반복 평탄화하던 비용을 1회로 줄인다.
+ */
+const _flattenCache = new WeakMap<RoleMappings, Map<Locale, ResolvedRoleMappings>>();
+
+/** RoleMappings(I18nText)를 lang으로 평탄화한다. (roleMappings, lang)별로 메모이즈된다. */
 function flattenRoleMappings(roleMappings: RoleMappings, lang: Locale): ResolvedRoleMappings {
+  let byLang = _flattenCache.get(roleMappings);
+  if (byLang) {
+    const hit = byLang.get(lang);
+    if (hit) return hit;
+  } else {
+    byLang = new Map();
+    _flattenCache.set(roleMappings, byLang);
+  }
+  const resolved = computeFlattenRoleMappings(roleMappings, lang);
+  byLang.set(lang, resolved);
+  return resolved;
+}
+
+/** flattenRoleMappings의 순수 계산부 (캐시 미스 시 호출). */
+function computeFlattenRoleMappings(roleMappings: RoleMappings, lang: Locale): ResolvedRoleMappings {
   const domainRoles: Record<string, Record<string, string[]>> = {};
   for (const [domain, treeMap] of Object.entries(roleMappings.domainRoles)) {
     const resolvedTreeMap: Record<string, string[]> = {};

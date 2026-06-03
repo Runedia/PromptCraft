@@ -66,12 +66,17 @@ async function scan(inputPath: string, options: { depth?: number; metrics?: bool
 
   const maxDepth = resolveMaxDepth(languages, options.depth);
 
-  // Phase 2: 프레임워크 감지 + 트리 빌드 병렬 실행
+  // Phase 2: 트리 빌드(비동기 I/O)를 먼저 착수해 디스크 I/O가 백그라운드 스레드풀에서 진행되는 동안
+  // 프레임워크 감지(동기 CPU)를 실행한다. 이렇게 해야 structure I/O와 framework CPU가 실제로 겹친다.
+  // (기존 Promise.all([Promise.resolve(detectFrameworks(...)), buildTree(...)])는 인자 평가 순서가
+  //  좌→우라 detectFrameworks가 먼저 동기 완료된 뒤에야 buildTree가 시작되어 오버랩이 0이었다.)
   const parallelStart = nowMs();
-  const [frameworks, structure] = await Promise.all([Promise.resolve(detectFrameworks(absolutePath)), buildTree(absolutePath, maxDepth, ignoreRules)]);
-  const parallelMs = nowMs() - parallelStart;
-  const frameworksMs = parallelMs;
-  const structureMs = parallelMs;
+  const structurePromise = buildTree(absolutePath, maxDepth, ignoreRules);
+  const frameworksStart = nowMs();
+  const frameworks = detectFrameworks(absolutePath);
+  const frameworksMs = nowMs() - frameworksStart;
+  const structure = await structurePromise;
+  const structureMs = nowMs() - parallelStart;
 
   const domainContext = classifyDomain(frameworks, languages);
 

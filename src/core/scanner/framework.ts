@@ -37,6 +37,28 @@ function getCachedRegex(pattern: string, flags = ''): RegExp {
   return re;
 }
 
+// 스캔 1회 동안 매니페스트 파일 내용을 캐시한다(존재하지 않거나 읽기 실패 시 null 캐시).
+// 16 ecosystem × 최대 30 candidate 루프에서 동일 매니페스트를 중복 존재확인·읽기하던 비용을 제거한다.
+// detectFrameworks는 동기 함수라 단일 이벤트 루프에서 원자적으로 실행되므로 모듈 스코프 캐시 공유가 안전하다(진입 시 clear).
+const _readCache = new Map<string, string | null>();
+function readManifest(absPath: string): string | null {
+  const cached = _readCache.get(absPath);
+  if (cached !== undefined) return cached;
+  let content: string | null;
+  try {
+    content = fs.readFileSync(absPath, 'utf8');
+  } catch {
+    content = null;
+  }
+  _readCache.set(absPath, content);
+  return content;
+}
+
+// 루프 내부에서 재컴파일하던 리터럴 정규식을 모듈 상수로 호이스트한다.
+// matchAll은 전역 정규식을 내부 복제하므로 공유 인스턴스의 lastIndex가 오염되지 않는다.
+const TOML_DEP_LINE_RE = /^([\w-]+)\s*=/gm;
+const YAML_PKG_LINE_RE = /^[ \t]+([\w-]+)\s*:/gm;
+
 function cleanVersion(v: string | undefined): string | null {
   return v ? v.replace(/^[\^~>=<\s]+/, '') : null;
 }
@@ -53,11 +75,12 @@ function parseJsonManifest(targetPath: string, eco: EcosystemRule): ScanFramewor
   const results: ScanFramework[] = [];
   const manifestFile = eco.manifest ?? 'package.json';
   const manifestPath = path.join(targetPath, manifestFile);
-  if (!fs.existsSync(manifestPath)) return results;
+  const raw = readManifest(manifestPath);
+  if (raw === null) return results;
 
   let pkg: Record<string, unknown>;
   try {
-    pkg = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as Record<string, unknown>;
+    pkg = JSON.parse(raw) as Record<string, unknown>;
   } catch {
     return results;
   }
@@ -86,14 +109,8 @@ function parseTextLines(targetPath: string, eco: EcosystemRule): ScanFramework[]
 
   for (const manifestFile of manifests) {
     const manifestPath = path.join(targetPath, manifestFile);
-    if (!fs.existsSync(manifestPath)) continue;
-
-    let content: string;
-    try {
-      content = fs.readFileSync(manifestPath, 'utf8');
-    } catch {
-      continue;
-    }
+    const content = readManifest(manifestPath);
+    if (content === null) continue;
 
     if (manifestFile === 'pyproject.toml') {
       for (const [pkgName, raw] of Object.entries(eco.frameworks)) {
@@ -125,14 +142,8 @@ function parseTextLines(targetPath: string, eco: EcosystemRule): ScanFramework[]
 function parseGoMod(targetPath: string, eco: EcosystemRule): ScanFramework[] {
   const results: ScanFramework[] = [];
   const manifestPath = path.join(targetPath, 'go.mod');
-  if (!fs.existsSync(manifestPath)) return results;
-
-  let content: string;
-  try {
-    content = fs.readFileSync(manifestPath, 'utf8');
-  } catch {
-    return results;
-  }
+  const content = readManifest(manifestPath);
+  if (content === null) return results;
 
   const blockMatch = content.match(/require\s*\(([^)]+)\)/ms);
   const blockDeps = blockMatch ? blockMatch[1] : '';
@@ -166,26 +177,19 @@ function parseGoMod(targetPath: string, eco: EcosystemRule): ScanFramework[] {
 function parseTomlDeps(targetPath: string, eco: EcosystemRule): ScanFramework[] {
   const results: ScanFramework[] = [];
   const manifestPath = path.join(targetPath, 'Cargo.toml');
-  if (!fs.existsSync(manifestPath)) return results;
-
-  let content: string;
-  try {
-    content = fs.readFileSync(manifestPath, 'utf8');
-  } catch {
-    return results;
-  }
+  const content = readManifest(manifestPath);
+  if (content === null) return results;
 
   const depSections = ['dependencies', 'dev-dependencies', 'build-dependencies'];
   const seen = new Set<string>();
 
   for (const section of depSections) {
-    const sectionRegex = new RegExp(`\\[${section}\\]([^[]*)`, 'ms');
+    const sectionRegex = getCachedRegex(`\\[${section}\\]([^[]*)`, 'ms');
     const sectionMatch = content.match(sectionRegex);
     if (!sectionMatch) continue;
 
     const sectionContent = sectionMatch[1];
-    const lineRegex = /^([\w-]+)\s*=/gm;
-    for (const m of sectionContent.matchAll(lineRegex)) {
+    for (const m of sectionContent.matchAll(TOML_DEP_LINE_RE)) {
       const crateName = m[1];
       if (seen.has(crateName)) continue;
 
@@ -216,12 +220,8 @@ function parseXmlManifest(targetPath: string, eco: EcosystemRule): ScanFramework
   }
 
   for (const manifestFile of manifestFiles) {
-    let content: string;
-    try {
-      content = fs.readFileSync(path.join(targetPath, manifestFile), 'utf8');
-    } catch {
-      continue;
-    }
+    const content = readManifest(path.join(targetPath, manifestFile));
+    if (content === null) continue;
 
     for (const [key, raw] of Object.entries(eco.frameworks)) {
       if (seen.has(key)) continue;
@@ -249,18 +249,12 @@ function parseDslRegex(targetPath: string, eco: EcosystemRule): ScanFramework[] 
   const results: ScanFramework[] = [];
   const manifests = eco.manifests ?? (eco.manifest ? [eco.manifest] : []);
   if (!eco.depsPattern) return results;
-  const pattern = new RegExp(eco.depsPattern, 'gm');
+  const pattern = getCachedRegex(eco.depsPattern, 'gm');
 
   for (const manifestFile of manifests) {
     const manifestPath = path.join(targetPath, manifestFile);
-    if (!fs.existsSync(manifestPath)) continue;
-
-    let content: string;
-    try {
-      content = fs.readFileSync(manifestPath, 'utf8');
-    } catch {
-      continue;
-    }
+    const content = readManifest(manifestPath);
+    if (content === null) continue;
 
     const matches: string[] = [];
     for (const m of content.matchAll(pattern)) {
@@ -297,12 +291,8 @@ function parseSolutionFile(targetPath: string, eco: EcosystemRule): ScanFramewor
   }
 
   for (const manifestFile of manifestFiles) {
-    let _content: string;
-    try {
-      _content = fs.readFileSync(path.join(targetPath, manifestFile), 'utf8');
-    } catch {
-      continue;
-    }
+    // 내용은 사용하지 않고 읽기 가능 여부만 확인한다(해당 csproj가 존재하면 프레임워크로 간주).
+    if (readManifest(path.join(targetPath, manifestFile)) === null) continue;
 
     for (const [key, raw] of Object.entries(eco.frameworks)) {
       if (seen.has(key)) continue;
@@ -319,24 +309,17 @@ function parseYamlDeps(targetPath: string, eco: EcosystemRule): ScanFramework[] 
   const results: ScanFramework[] = [];
   const manifestFile = eco.manifest ?? 'pubspec.yaml';
   const manifestPath = path.join(targetPath, manifestFile);
-  if (!fs.existsSync(manifestPath)) return results;
-
-  let content: string;
-  try {
-    content = fs.readFileSync(manifestPath, 'utf8');
-  } catch {
-    return results;
-  }
+  const content = readManifest(manifestPath);
+  if (content === null) return results;
 
   const fields = eco.depsFields ?? ['dependencies', 'dev_dependencies'];
   for (const field of fields) {
-    const sectionRegex = new RegExp(`^${field}:\\s*\\n((?:[ \\t]+\\S[^\\n]*\\n)*)`, 'm');
+    const sectionRegex = getCachedRegex(`^${field}:\\s*\\n((?:[ \\t]+\\S[^\\n]*\\n)*)`, 'm');
     const sectionMatch = content.match(sectionRegex);
     if (!sectionMatch) continue;
 
     const sectionContent = sectionMatch[1];
-    const pkgLineRegex = /^[ \t]+([\w-]+)\s*:/gm;
-    for (const m of sectionContent.matchAll(pkgLineRegex)) {
+    for (const m of sectionContent.matchAll(YAML_PKG_LINE_RE)) {
       const pkgName = m[1];
       const raw = eco.frameworks[pkgName];
       if (raw !== undefined) {
@@ -383,9 +366,10 @@ function collectCandidates(root: string): string[] {
 
   // package.json workspaces
   const pkgPath = path.join(root, 'package.json');
-  if (fs.existsSync(pkgPath)) {
+  const pkgRaw = readManifest(pkgPath);
+  if (pkgRaw !== null) {
     try {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as Record<string, unknown>;
+      const pkg = JSON.parse(pkgRaw) as Record<string, unknown>;
       const ws = pkg.workspaces;
       const patterns: string[] = Array.isArray(ws)
         ? ws
@@ -402,10 +386,10 @@ function collectCandidates(root: string): string[] {
 
   // pnpm-workspace.yaml
   const pnpmWs = path.join(root, 'pnpm-workspace.yaml');
-  if (fs.existsSync(pnpmWs)) {
+  const pnpmRaw = readManifest(pnpmWs);
+  if (pnpmRaw !== null) {
     try {
-      const content = fs.readFileSync(pnpmWs, 'utf8');
-      const patterns = [...content.matchAll(/^\s*-\s*['"]?([^'"#\n]+?)['"]?\s*$/gm)].map((m) => m[1].trim());
+      const patterns = [...pnpmRaw.matchAll(/^\s*-\s*['"]?([^'"#\n]+?)['"]?\s*$/gm)].map((m) => m[1].trim());
       if (patterns.length > 0) addGlobs(patterns);
     } catch {
       // 파싱 실패 무시
@@ -416,10 +400,10 @@ function collectCandidates(root: string): string[] {
 
   // Cargo workspace members
   const cargoPath = path.join(root, 'Cargo.toml');
-  if (fs.existsSync(cargoPath)) {
+  const cargoRaw = readManifest(cargoPath);
+  if (cargoRaw !== null) {
     try {
-      const content = fs.readFileSync(cargoPath, 'utf8');
-      const wsMatch = content.match(/\[workspace\][^[]*members\s*=\s*\[([^\]]+)\]/ms);
+      const wsMatch = cargoRaw.match(/\[workspace\][^[]*members\s*=\s*\[([^\]]+)\]/ms);
       if (wsMatch) {
         const members = [...wsMatch[1].matchAll(/["']([^"']+)["']/g)].map((m) => m[1]);
         addGlobs(members);
@@ -434,10 +418,10 @@ function collectCandidates(root: string): string[] {
   // settings.gradle(.kts) include ':module:sub'
   for (const settingsFile of ['settings.gradle', 'settings.gradle.kts']) {
     const settingsPath = path.join(root, settingsFile);
-    if (!fs.existsSync(settingsPath)) continue;
+    const settingsRaw = readManifest(settingsPath);
+    if (settingsRaw === null) continue;
     try {
-      const content = fs.readFileSync(settingsPath, 'utf8');
-      const modules = [...content.matchAll(/include\s*[('"]([^'")\n]+)['"]/g)].map((m) => m[1].replace(/:/g, '/').replace(/^\//, ''));
+      const modules = [...settingsRaw.matchAll(/include\s*[('"]([^'")\n]+)['"]/g)].map((m) => m[1].replace(/:/g, '/').replace(/^\//, ''));
       for (const mod of modules) {
         const absPath = path.join(root, mod);
         if (fs.existsSync(absPath)) candidates.add(absPath);
@@ -454,11 +438,12 @@ function collectCandidates(root: string): string[] {
   // .sln / .slnx — csproj 디렉토리 추가
   const slnFiles = globSync('{*.sln,*.slnx}', { cwd: root });
   for (const slnFile of slnFiles) {
+    const slnRaw = readManifest(path.join(root, slnFile));
+    if (slnRaw === null) continue;
     try {
-      const content = fs.readFileSync(path.join(root, slnFile), 'utf8');
       const isSln = slnFile.endsWith('.sln');
       const pattern = isSln ? /Project\([^)]+\)\s*=\s*"[^"]+"\s*,\s*"([^"]+\.csproj)"/g : /<Project\s+Path="([^"]+\.csproj)"/g;
-      for (const m of content.matchAll(pattern)) {
+      for (const m of slnRaw.matchAll(pattern)) {
         const csprojDir = path.dirname(path.join(root, m[1].replace(/\\/g, '/')));
         if (fs.existsSync(csprojDir)) candidates.add(csprojDir);
         if (candidates.size >= MAX_CANDIDATES) break;
@@ -477,6 +462,8 @@ function collectCandidates(root: string): string[] {
  * @param {string} targetPath 절대 경로
  */
 function detectFrameworks(targetPath: string): ScanFramework[] {
+  // 스캔 1회 단위로 매니페스트 읽기 캐시를 초기화한다(detectFrameworks는 동기 함수라 호출 간 간섭 없음).
+  _readCache.clear();
   const rules = getFrameworkRules() as unknown as FrameworkRules;
   const results: ScanFramework[] = [];
   const candidates = collectCandidates(targetPath);

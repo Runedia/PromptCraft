@@ -1,10 +1,24 @@
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { lazy, memo, Suspense, useDeferredValue, useMemo } from 'react';
 import { useT } from '@/i18n/useT.js';
 import { cn } from '@/lib/utils';
 import { useCardStore } from '@/store/cardStore.js';
 import { useUIStore } from '@/store/uiStore.js';
 import { UI_IDS } from '@/ui-ids.js';
+
+// 무거운 react-markdown 스택은 rendered 모드 첫 사용 시에만 로드한다(raw가 기본 모드 → 다수 사용자는 미로드).
+const MarkdownView = lazy(() => import('./MarkdownView.js'));
+
+/**
+ * 활성 카드 1개의 마크다운 섹션. label/value가 동일하면 memo로 재파싱을 건너뛴다.
+ * 마크다운 청크 로드 전에는 raw 텍스트를 fallback으로 보여준다.
+ */
+const MarkdownSection = memo(function MarkdownSection({ label, value }: { label: string; value: string }) {
+  return (
+    <Suspense fallback={<div className="whitespace-pre-wrap text-secondary-foreground">{value}</div>}>
+      <MarkdownView label={label} value={value} />
+    </Suspense>
+  );
+});
 
 /**
  * V2 Three-Column 워크스페이스 우측 440px 미리보기 패널.
@@ -20,12 +34,19 @@ import { UI_IDS } from '@/ui-ids.js';
  */
 export function PromptPreview() {
   const t = useT();
-  const { cards, tokenEstimate } = useCardStore();
+  // 원자 셀렉터로 cards/tokenEstimate만 구독한다. 무거운 마크다운 재렌더는 useDeferredValue로
+  // 입력 임계경로에서 분리해, 타이핑은 즉시 반영되고 미리보기는 유휴 프레임에서 갱신된다.
+  const cards = useCardStore((s) => s.cards);
+  const tokenEstimate = useCardStore((s) => s.tokenEstimate);
   const previewMode = useUIStore((s) => s.previewMode);
   const setPreviewMode = useUIStore((s) => s.setPreviewMode);
 
-  const activeFilled = cards.filter((c) => c.active && c.value && c.value.trim() !== '');
-  const activeEmpty = cards.filter((c) => c.active && (!c.value || c.value.trim() === ''));
+  const deferredCards = useDeferredValue(cards);
+  const { activeFilled, activeEmpty } = useMemo(() => {
+    const filled = deferredCards.filter((c) => c.active && c.value && c.value.trim() !== '');
+    const empty = deferredCards.filter((c) => c.active && (!c.value || c.value.trim() === ''));
+    return { activeFilled: filled, activeEmpty: empty };
+  }, [deferredCards]);
   const isBlank = activeFilled.length === 0 && activeEmpty.length === 0;
 
   const toggleBtnBase = 'relative h-full flex items-center text-[11px] font-code uppercase tracking-[0.07em] border-b-2 -mb-px transition-colors';
@@ -81,7 +102,7 @@ export function PromptPreview() {
                 </div>
               ) : (
                 <div key={c.id} className="mb-[18px]">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{`## ${c.label}\n\n${c.value}`}</ReactMarkdown>
+                  <MarkdownSection label={c.label} value={c.value} />
                 </div>
               )
             )}

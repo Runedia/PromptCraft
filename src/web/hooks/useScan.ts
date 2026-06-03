@@ -29,7 +29,11 @@ export function useScan() {
   const t = useT();
   const [error, setError] = useState<string | null>(null);
   const [domainOverlay, setDomainOverlay] = useState<DomainOverlay | null>(null);
-  const { setIsScanLoading, setScanResult, cards, updateCardValue: storeUpdate } = useCardStore();
+  // 액션은 안정 참조 원자 셀렉터로 구독한다. cards는 scan() 시점에 getState()로 최신값을 읽어
+  // 전체 store 구독(키 입력마다 리렌더)과 stale 클로저를 모두 제거한다.
+  const setIsScanLoading = useCardStore((s) => s.setIsScanLoading);
+  const setScanResult = useCardStore((s) => s.setScanResult);
+  const storeUpdate = useCardStore((s) => s.updateCardValue);
   const isScanLoading = useCardStore((s) => s.isScanLoading);
 
   const scan = async (scanPath: string, opts: ScanOptions = {}): Promise<ScanApiResponse | null> => {
@@ -49,8 +53,8 @@ export function useScan() {
       setScanResult(response);
       setDomainOverlay(response.domainOverlay ?? null);
 
-      // stack-environment 카드에 스캔 결과 자동 채움
-      const stackCard = cards.find((c) => c.id === 'stack-environment');
+      // stack-environment 카드에 스캔 결과 자동 채움 (getState로 최신 cards 조회)
+      const stackCard = useCardStore.getState().cards.find((c) => c.id === 'stack-environment');
       if (stackCard && !stackCard.value) {
         const parts: string[] = [];
         if (response.languages.length > 0) parts.push(t('web.useScan.stackLangs', { names: response.languages.map((l) => l.name).join(', ') }));
