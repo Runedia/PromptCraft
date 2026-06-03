@@ -42,11 +42,11 @@ function derivePromptState(cards: SectionCard[]) {
  * zundo는 `set(...args)`로 라이브 state를 즉시 갱신한 뒤 별도로 히스토리를 기록하므로,
  * 이 throttle은 히스토리 push 빈도만 낮추고 타이핑 응답성에는 영향을 주지 않는다.
  */
-function throttle<A extends unknown[]>(fn: (...args: A) => void, ms: number): (...args: A) => void {
+function throttle<A extends unknown[]>(fn: (...args: A) => void, ms: number): { (...args: A): void; cancel: () => void } {
   let lastRun = 0;
   let timer: ReturnType<typeof setTimeout> | null = null;
   let pending: A | null = null;
-  return (...args: A) => {
+  const run = (...args: A): void => {
     pending = args;
     const elapsed = Date.now() - lastRun;
     if (elapsed >= ms) {
@@ -65,10 +65,22 @@ function throttle<A extends unknown[]>(fn: (...args: A) => void, ms: number): (.
       }, ms - elapsed);
     }
   };
+  // 보류 중인 trailing push를 취소한다. 세션 전환을 히스토리 경계로 만들 때 leftover push 누수를 막는다.
+  const cancel = (): void => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    pending = null;
+  };
+  return Object.assign(run, { cancel });
 }
 
 /** 키 입력 버스트를 하나의 undo 단위로 묶는 히스토리 기록 간격(ms). */
 const HISTORY_THROTTLE_MS = 500;
+
+/** 보류 중인 히스토리 throttle push를 취소하는 핸들(handleSet에서 주입). 세션 전환 시 사용. */
+let cancelPendingHistory: (() => void) | null = null;
 
 export const useCardStore = create<CardStore>()(
   temporal(
@@ -83,6 +95,12 @@ export const useCardStore = create<CardStore>()(
 
       setSession: (session) => {
         const { prompt, preview, tokenEstimate } = derivePromptState(session.cards);
+        // 트리(세션) 전환은 사용자 편집이 아니라 새 컨텍스트 적재다. undo 히스토리의 경계로 취급한다 —
+        // 그러지 않으면 partialize가 추적하는 cards만 이전 트리 값으로 복원돼(treeId는 추적 대상이 아님)
+        // undo가 트리 경계를 넘어 카드를 이전 트리 세트로 되돌린다.
+        cancelPendingHistory?.(); // 이전 세션의 보류 중 throttle push 취소
+        const temporal = useCardStore.temporal.getState();
+        temporal.pause(); // 이 set은 히스토리에 기록하지 않는다
         set({
           treeId: session.treeId,
           cards: session.cards,
@@ -91,6 +109,8 @@ export const useCardStore = create<CardStore>()(
           preview,
           tokenEstimate,
         });
+        temporal.resume();
+        temporal.clear(); // 이전 세션의 히스토리 제거
       },
 
       // 언어 전환: 새 lang으로 해소된 카드(resolved)의 정의 필드를 받아들이되 현재 카드의
@@ -159,7 +179,12 @@ export const useCardStore = create<CardStore>()(
         tokenEstimate: state.tokenEstimate,
       }),
       // 키 입력마다 히스토리를 push하던 것을 throttle로 묶는다(라이브 state 갱신은 throttle 대상 아님).
-      handleSet: (handleSet) => throttle(handleSet, HISTORY_THROTTLE_MS),
+      // 보류 push 취소 핸들을 노출해 세션 전환(setSession)이 trailing push를 정리할 수 있게 한다.
+      handleSet: (handleSet) => {
+        const throttled = throttle(handleSet, HISTORY_THROTTLE_MS);
+        cancelPendingHistory = throttled.cancel;
+        return throttled;
+      },
     }
   )
 );
