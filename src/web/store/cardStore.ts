@@ -76,8 +76,12 @@ function throttle<A extends unknown[]>(fn: (...args: A) => void, ms: number): { 
   return Object.assign(run, { cancel });
 }
 
-/** 키 입력 버스트를 하나의 undo 단위로 묶는 히스토리 기록 간격(ms). */
-const HISTORY_THROTTLE_MS = 500;
+/**
+ * 키 입력 버스트를 하나의 undo 단위로 묶는 히스토리 기록 간격(ms).
+ * 모델 테스트는 PROMPTCRAFT_HISTORY_THROTTLE_MS=0으로 설정해 동기·결정적으로 기록한다.
+ * 브라우저 번들에는 process가 없으므로 가드 후 기본값(500)으로 폴백한다.
+ */
+const HISTORY_THROTTLE_MS = Number((typeof process !== 'undefined' ? process.env.PROMPTCRAFT_HISTORY_THROTTLE_MS : undefined) ?? 500);
 
 /** 보류 중인 히스토리 throttle push를 취소하는 핸들(handleSet에서 주입). 세션 전환 시 사용. */
 let cancelPendingHistory: (() => void) | null = null;
