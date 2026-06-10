@@ -203,6 +203,16 @@
       "apiKey": "API 키 (선택)",
       "threshold": "다듬기 임계값 (0–100)",
       "hint": "LM Studio·vllm·Ollama(/v1) 등. 권장: gemma-4-E4B-it(가벼움), Qwen3.5-9B(고품질)."
+    },
+    "settingsData": {
+      "section": "데이터",
+      "export": "내보내기",
+      "import": "가져오기",
+      "hint": "히스토리와 설정을 JSON 파일로 백업·복원합니다. 가져오기는 병합 방식 — 히스토리는 추가되고 설정은 덮어씁니다.",
+      "exportError": "내보내기에 실패했습니다.",
+      "importConfirm": "가져오면 기존 설정을 덮어씁니다. 계속하시겠습니까?",
+      "importSuccess": "추가 {{added}}건 · 중복 스킵 {{skipped}}건 · 설정 적용",
+      "importError": "가져오기 실패"
     }
   },
   "cli": {

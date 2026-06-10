@@ -10,6 +10,8 @@ const VERSION = '0.1.0';
 
 const DATA_DIR = path.join(os.homedir(), `.${APP_NAME}`);
 const DB_PATH = path.join(DATA_DIR, `${APP_NAME}.db`);
+// 테스트·e2e가 실제 ~/.promptcraft/config.json을 건드리지 않도록 PROMPTCRAFT_DB_PATH와 같은 패턴으로 env 주입을 허용한다.
+const GLOBAL_CONFIG_PATH = process.env.PROMPTCRAFT_GLOBAL_CONFIG_PATH || path.join(DATA_DIR, 'config.json');
 const LAST_SCAN_PATH = path.join(DATA_DIR, 'last-scan.json');
 const PRESET_DIR = path.join(moduleDirname, '../../data/template-presets');
 
@@ -45,4 +47,16 @@ const CONTEXT_FORMATS = {
   cursorrules: '.cursorrules',
 };
 
-export { APP_NAME, CONTEXT_FORMATS, DATA_DIR, DB_PATH, LAST_SCAN_PATH, PRESET_DIR, QNA_TREE_DESCRIPTIONS, QNA_TREE_IDS, QNA_TREE_LABELS, VERSION };
+export {
+  APP_NAME,
+  CONTEXT_FORMATS,
+  DATA_DIR,
+  DB_PATH,
+  GLOBAL_CONFIG_PATH,
+  LAST_SCAN_PATH,
+  PRESET_DIR,
+  QNA_TREE_DESCRIPTIONS,
+  QNA_TREE_IDS,
+  QNA_TREE_LABELS,
+  VERSION,
+};

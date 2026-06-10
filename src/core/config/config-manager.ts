@@ -1,8 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { DATA_DIR } from '../../shared/constants.js';
-
-const GLOBAL_CONFIG_PATH = path.join(DATA_DIR, 'config.json');
+import { GLOBAL_CONFIG_PATH } from '../../shared/constants.js';
 
 /** 설정 기본값 */
 const DEFAULTS = {

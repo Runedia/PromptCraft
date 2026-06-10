@@ -416,6 +416,21 @@ export const UI_IDS = {
    * @file src/web/components/SettingsSheet/SettingsSheet.tsx
    */
   WORK_SETTINGS_REFINE_REFRESH: 'WORK_SETTINGS_REFINE_REFRESH',
+  /**
+   * @screen WorkspacePage
+   * @file src/web/components/SettingsSheet/SettingsSheet.tsx
+   */
+  WORK_SETTINGS_DATA_SECTION: 'WORK_SETTINGS_DATA_SECTION',
+  /**
+   * @screen WorkspacePage
+   * @file src/web/components/SettingsSheet/SettingsSheet.tsx
+   */
+  WORK_SETTINGS_DATA_EXPORT: 'WORK_SETTINGS_DATA_EXPORT',
+  /**
+   * @screen WorkspacePage
+   * @file src/web/components/SettingsSheet/SettingsSheet.tsx
+   */
+  WORK_SETTINGS_DATA_IMPORT: 'WORK_SETTINGS_DATA_IMPORT',
 
   // ── ScanBanner / V6 Tree-Select ──────────────────────────────────────────
 

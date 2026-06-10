@@ -11,6 +11,9 @@
   - 모델은 **선택 전용 combobox**(Popover+Command, cmdk). 목록은 GET /api/llm/status로 조회. 자유 입력 없음 — 항목 선택 시 즉시 PUT.
     - Radix Dialog(modal) 안에서 동작하려면 Popover에 `modal`을 반드시 켠다. 네이티브 `<datalist>`는 Dialog focus-trap에 막혀 선택 커밋 불가 → combobox로 대체(P2-10 후속 수정).
   - 엔드포인트 입력 옆 새로고침 버튼: 현재 baseUrl/apiKey를 먼저 저장한 뒤 GET /api/llm/status 재조회(status가 저장된 config 기준이므로). 빈 목록 시 사용자가 엔드포인트 교정 후 재조회하는 경로.
+- 섹션 "데이터": Export/Import 버튼 — `GET /api/export`(blob 다운로드), `POST /api/import`(파일 업로드 → 병합).
+  - Import는 `window.confirm` 1단계 확인(설정 덮어쓰기 경고) 후 실행. 결과는 toast로 "추가 N건 · 중복 스킵 M건". 서버 `warnings`는 warning toast로 개별 표시.
+  - 파일 input은 hidden + ref 트리거. 선택 직후 `e.target.value = ''` 리셋 — 같은 파일 재선택 허용.
 
 ## Props
 - `open: boolean` / `onClose: () => void` — 부모(WorkspacePage)가 제어 (HistorySheet와 동일 패턴)

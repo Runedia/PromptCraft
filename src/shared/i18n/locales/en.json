@@ -203,6 +203,16 @@
       "apiKey": "API key (optional)",
       "threshold": "Refine threshold (0-100)",
       "hint": "LM Studio, vllm, Ollama (/v1), etc. Recommended: gemma-4-E4B-it (light), Qwen3.5-9B (quality)."
+    },
+    "settingsData": {
+      "section": "Data",
+      "export": "Export",
+      "import": "Import",
+      "hint": "Back up or restore history and settings as a JSON file. Import merges — history entries are added, settings are overwritten.",
+      "exportError": "Export failed.",
+      "importConfirm": "Importing will overwrite existing settings. Continue?",
+      "importSuccess": "{{added}} added · {{skipped}} duplicates skipped · settings applied",
+      "importError": "Import failed"
     }
   },
   "cli": {

@@ -2,11 +2,19 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-// jest.mock 팩토리 내부에서 require 가능 — DATA_DIR을 temp dir로 대체
+// jest.mock 팩토리 내부에서 require 가능 — DATA_DIR을 temp dir로 대체.
+// 주의: bun의 jest.mock은 같은 테스트 프로세스 전체에 적용된다 — 다른 테스트 파일이
+// constants에서 import하는 경로 상수(DB_PATH, GLOBAL_CONFIG_PATH 등)도 함께 제공해야 한다.
 jest.mock('../../../src/shared/constants', () => {
   const path = require('node:path');
   const os = require('node:os');
-  return { DATA_DIR: path.join(os.tmpdir(), `promptcraft-config-test-${process.pid}`) };
+  const DATA_DIR = path.join(os.tmpdir(), `promptcraft-config-test-${process.pid}`);
+  return {
+    DATA_DIR,
+    DB_PATH: path.join(DATA_DIR, 'promptcraft.db'),
+    GLOBAL_CONFIG_PATH: path.join(DATA_DIR, 'config.json'),
+    LAST_SCAN_PATH: path.join(DATA_DIR, 'last-scan.json'),
+  };
 });
 
 const { ConfigManager, DEFAULTS } = require('../../../src/core/config/config-manager');

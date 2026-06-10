@@ -33,6 +33,8 @@
 | `GET`    | `/api/config`           | 설정 조회                       |
 | `PUT`    | `/api/config`           | 설정 수정                       |
 | `GET`    | `/api/locale`           | 현재 해소된 언어                |
+| `GET`    | `/api/export`           | 데이터 내보내기 (history+config+글로벌 설정 JSON) |
+| `POST`   | `/api/import`           | 데이터 가져오기 (병합: history dedup·설정 덮어쓰기, 50mb limit) |
 | `GET`    | `/api/mention/suggest`  | @멘션 파일 자동완성             |
 | `POST`   | `/api/mention/read`     | 멘션 파일 읽기                  |
 | `GET`    | `/api/llm/status`       | 로컬 LLM 엔드포인트 도달성·모델 목록 |

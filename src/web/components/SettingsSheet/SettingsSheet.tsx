@@ -30,7 +30,7 @@ const LANG_KEY = 'ui.language';
 type LangSetting = 'system' | Locale;
 
 /**
- * @ui-ids WORK_SETTINGS_SHEET, WORK_SETTINGS_THEME_GROUP, WORK_SETTINGS_SHELL_GROUP, WORK_SETTINGS_LANG_GROUP, WORK_SETTINGS_REFINE_SECTION, WORK_SETTINGS_REFINE_MODEL, WORK_SETTINGS_REFINE_REFRESH
+ * @ui-ids WORK_SETTINGS_SHEET, WORK_SETTINGS_THEME_GROUP, WORK_SETTINGS_SHELL_GROUP, WORK_SETTINGS_LANG_GROUP, WORK_SETTINGS_REFINE_SECTION, WORK_SETTINGS_REFINE_MODEL, WORK_SETTINGS_REFINE_REFRESH, WORK_SETTINGS_DATA_SECTION, WORK_SETTINGS_DATA_EXPORT, WORK_SETTINGS_DATA_IMPORT
  */
 export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
   const t = useT();
@@ -48,6 +48,9 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
   const [modelOpen, setModelOpen] = useState(false);
   const pendingRef = useRef(false);
   const langPendingRef = useRef(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   // /api/llm/status는 저장된 config(refine.baseUrl/apiKey) 기준으로 모델을 조회한다.
   // 따라서 새로고침 전에는 현재 입력값을 먼저 저장해야 한다(handleRefreshModels 참고).
@@ -185,6 +188,59 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
       toast.error(t('web.settingsSheet.saveError'));
     } finally {
       langPendingRef.current = false;
+    }
+  };
+
+  const handleExport = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const res = await fetch('/api/export');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      const cd = res.headers.get('Content-Disposition') ?? '';
+      const filename = /filename="([^"]+)"/.exec(cd)?.[1] ?? 'promptcraft-export.json';
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error(t('web.settingsData.exportError'));
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // 같은 파일 재선택이 가능하도록 리셋
+    if (!file) return;
+    if (!window.confirm(t('web.settingsData.importConfirm'))) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const res = await fetch('/api/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: text,
+      });
+      if (!res.ok) {
+        // 400은 JSON { error }, 500은 HTML일 수 있다 — 파싱 실패 시 상태 코드로 폴백
+        const msg = await res.json().then(
+          (b) => (b as { error?: string }).error,
+          () => undefined
+        );
+        throw new Error(msg ?? `HTTP ${res.status}`);
+      }
+      const body = (await res.json()) as { historyAdded?: number; historySkipped?: number; warnings?: string[] };
+      toast.success(t('web.settingsData.importSuccess', { added: body.historyAdded ?? 0, skipped: body.historySkipped ?? 0 }));
+      for (const w of body.warnings ?? []) toast.warning(w);
+    } catch (err) {
+      toast.error(`${t('web.settingsData.importError')}: ${(err as Error).message}`);
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -398,6 +454,28 @@ export function SettingsSheet({ open, onClose }: SettingsSheetProps) {
               />
             </div>
             <p className="text-[11px] text-muted-foreground">{t('web.settingsRefine.hint')}</p>
+          </section>
+
+          {/* 데이터 */}
+          <section className="space-y-3" data-ui-id={UI_IDS.WORK_SETTINGS_DATA_SECTION}>
+            <h3 className="text-[11px] font-code uppercase tracking-[0.07em] text-muted-foreground">{t('web.settingsData.section')}</h3>
+            <div className="flex items-center gap-2">
+              <Button type="button" variant="outline" size="sm" onClick={handleExport} disabled={exporting} data-ui-id={UI_IDS.WORK_SETTINGS_DATA_EXPORT}>
+                {t('web.settingsData.export')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importing}
+                data-ui-id={UI_IDS.WORK_SETTINGS_DATA_IMPORT}
+              >
+                {t('web.settingsData.import')}
+              </Button>
+              <input ref={fileInputRef} type="file" accept=".json,application/json" className="hidden" onChange={handleImportFile} />
+            </div>
+            <p className="text-[11px] text-muted-foreground">{t('web.settingsData.hint')}</p>
           </section>
         </div>
       </SheetContent>

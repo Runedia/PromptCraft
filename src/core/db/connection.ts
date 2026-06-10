@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { DB_PATH } from '../../shared/constants.js';
 import { DBError } from '../../shared/errors.js';
+import { runMigrations } from './migrations/index.js';
 
 let _db: Database | null = null;
 let _exitHandlerRegistered = false;
@@ -23,6 +24,9 @@ function initialize(dbPath?: string): Database {
 
   const resolvedPath = dbPath || process.env.PROMPTCRAFT_DB_PATH || DB_PATH;
 
+  // Database 생성자가 파일을 만들기 전에 신규 여부를 판정해야 한다 (신규 DB는 백업 생략).
+  const isNewDb = resolvedPath === ':memory:' || !fs.existsSync(resolvedPath);
+
   if (resolvedPath !== ':memory:') {
     const dir = path.dirname(resolvedPath);
     fs.mkdirSync(dir, { recursive: true });
@@ -34,28 +38,18 @@ function initialize(dbPath?: string): Database {
     throw new DBError(`Failed to open database: ${toErrorMessage(err)}`);
   }
 
-  _db.exec('PRAGMA journal_mode = WAL');
-  // 멀티 인스턴스 동시 실행 시 writer 경합으로 즉시 SQLITE_BUSY가 나는 대신 최대 5초 대기 후 재시도.
-  // journal_mode는 파일에 영속되지만 busy_timeout은 연결 범위 설정이므로 연결을 열 때마다 설정한다.
-  _db.exec('PRAGMA busy_timeout = 5000');
-
-  _db.exec(`
-    CREATE TABLE IF NOT EXISTS history (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      treeId TEXT NOT NULL,
-      situation TEXT NOT NULL,
-      prompt TEXT NOT NULL,
-      scanPath TEXT,
-      answers TEXT NOT NULL,
-      createdAt TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE TABLE IF NOT EXISTS config (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL,
-      updatedAt TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-  `);
+  // PRAGMA·마이그레이션 실패 시 기동 중단이 정상 동작 — 깨진 연결을 남기지 않고 정리 후 전파한다.
+  try {
+    _db.exec('PRAGMA journal_mode = WAL');
+    // 멀티 인스턴스 동시 실행 시 writer 경합으로 즉시 SQLITE_BUSY가 나는 대신 최대 5초 대기 후 재시도.
+    // journal_mode는 파일에 영속되지만 busy_timeout은 연결 범위 설정이므로 연결을 열 때마다 설정한다.
+    _db.exec('PRAGMA busy_timeout = 5000');
+    runMigrations(_db, { dbPath: resolvedPath, isNewDb });
+  } catch (err) {
+    _db.close();
+    _db = null;
+    throw err;
+  }
 
   // exit 핸들러는 프로세스 생애 1회만 등록한다. removeAllListeners('exit')는 다른 모듈의
   // exit 핸들러까지 제거하는 부작용이 있어, 가드 플래그로 중복 등록만 방지한다.

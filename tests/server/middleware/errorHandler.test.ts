@@ -30,6 +30,14 @@ describe('errorHandler()', () => {
     expect(res.json).toHaveBeenCalledWith({ error: 'DB 연결 실패' });
   });
 
+  test('err.status가 숫자면 그대로 반영한다 (body-parser 413 entity.too.large 등)', () => {
+    const err = Object.assign(new Error('request entity too large'), { status: 413 });
+    const res = makeRes();
+    errorHandler(err, {} as unknown as Request, res as unknown as Response, jest.fn());
+    expect(res.status).toHaveBeenCalledWith(413);
+    expect(res.json).toHaveBeenCalledWith({ error: 'request entity too large' });
+  });
+
   test('console.error로 에러를 로깅한다', () => {
     const err = new Error('테스트 에러');
     errorHandler(err, {} as unknown as Request, makeRes() as unknown as Response, jest.fn());

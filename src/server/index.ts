@@ -15,6 +15,7 @@ import localeRouter from './routes/locale.js';
 import mentionRouter from './routes/mention.js';
 import promptRouter from './routes/prompt.js';
 import scanRouter from './routes/scan.js';
+import transferRouter from './routes/transfer.js';
 import treesRouter from './routes/trees.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -30,6 +31,10 @@ export async function createServer(port: number): Promise<void> {
   app.use(securityHeaders);
   app.use(hostGuard(port));
   app.use(corsLocalhost(port));
+
+  // transfer는 라우트 전용 json limit(50mb)을 쓰므로 전역 json(5mb)보다 먼저 마운트한다.
+  app.use('/api', transferRouter);
+
   app.use(express.json({ limit: '5mb' }));
 
   // API 라우트
